@@ -11,6 +11,39 @@ client.on("ready", () => {
 })
 
 client.on("messageCreate", async msg => {
+    if(msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))){
+        const row = new Discord.MessageActionRow()
+        .addComponents(
+            new Discord.MessageButton()
+            .setLabel("hola")
+            .setStyle("DANGER")
+            .setCustomId("a"),
+
+            new Discord.MessageButton()
+            .setLabel("hola")
+            .setStyle("DANGER")
+            .setCustomId("a")
+        )
+        const embP = new Discord.MessageEmbed()
+        .setDescription("Hola")
+        .setColor("#ff0000")
+
+        const emb1 = new Discord.MessageEmbed()
+        .setDescription("Hola")
+        .setColor("#00ff00")
+
+        const pop = await msg.channel.send({embeds: [embP], components: [row]})
+
+        client.on("interactionCreate", async btn => {
+            if(btn.setCustomId === "a"){
+                btn.deferUpdate()
+                btn.msg.edit
+            }
+        })
+    }
+})
+
+client.on("messageCreate", async msg => {
     const prefijo = "ss."
 
     if(msg.author.bot) return; 
