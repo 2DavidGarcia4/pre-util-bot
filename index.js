@@ -2,46 +2,37 @@ const Discord = require("discord.js");
 const intents = new Discord.Intents();
 const client = new Discord.Client({intents: 32767});
 
-client.on("ready", () => {
-    console.log("Hola, estoy listo")
-
+client.on("ready",async () => {
+    console.log(client.user.username, "Hola, estoy listo")
+ 
     client.user.setPresence({
-        status: "idle"
+        status: "dnd"
     })
 })
 
-client.on("messageCreate", async msg => {
-    if(msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))){
-        const row = new Discord.MessageActionRow()
-        .addComponents(
-            new Discord.MessageButton()
-            .setLabel("hola")
-            .setStyle("DANGER")
-            .setCustomId("a"),
 
-            new Discord.MessageButton()
-            .setLabel("hola")
-            .setStyle("DANGER")
-            .setCustomId("a")
-        )
-        const embP = new Discord.MessageEmbed()
-        .setDescription("Hola")
-        .setColor("#ff0000")
 
-        const emb1 = new Discord.MessageEmbed()
-        .setDescription("Hola")
-        .setColor("#00ff00")
+client.on("messageCreate", async msg =>{
+    if(msg.author.bot) return;
+    
+    const canales = ["887130134308593694","892485197390565406","892209298732625931","891866153792700436"]
 
-        const pop = await msg.channel.send({embeds: [embP], components: [row]})
+    if(canales.some(ch => ch === msg.channel.id)){
+        const embed = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        // .setTitle()
+        .setDescription(`💬 **Mensaje:** ${msg.content}`)
+        .setColor("RANDOM")
+        .setFooter(`Desde: ${msg.guild.name} • Miembros: ${msg.guild.memberCount}`,msg.guild.iconURL({dynamic: true}))
+        .setTimestamp()
 
-        client.on("interactionCreate", async btn => {
-            if(btn.setCustomId === "a"){
-                btn.deferUpdate()
-                btn.msg.edit
-            }
-        })
+        for(let i=0; i<canales.length; i++){
+            client.channels.cache.get(canales[i]).send({embeds: [embed]})
+        }
+    msg.delete()
     }
 })
+
 
 client.on("messageCreate", async msg => {
     const prefijo = "ss."
@@ -63,7 +54,14 @@ client.on("messageCreate", async msg => {
         .setTimestamp()
         msg.channel.send({ embeds: [emb] })
     }
+
 })
+
+
+
+
+
+
 
 
 
