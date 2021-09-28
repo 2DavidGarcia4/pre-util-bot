@@ -1,13 +1,13 @@
 const Discord = require("discord.js");
 const intents = new Discord.Intents();
-const client = new Discord.Client({intents: 32767});
+const client = new Discord.Client({intents: 32767, ws:{properties:{$browser: "Discord Android"}}});
 
 client.on("ready",async () => {
     console.log(client.user.username, "Hola, estoy listo")
  
-    client.user.setPresence({
-        status: "dnd"
-    })
+    // client.user.setPresence({
+    //     status: "idle"
+    // })
 })
 
 
