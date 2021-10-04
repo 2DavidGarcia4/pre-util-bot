@@ -63,13 +63,15 @@ client.on("messageCreate", async msg => {
 
 
     if(comando === "servers"){
-        const servers = new Discord.MessageEmbed()
-        .setAuthor(msg.author.username,msg.author.displayAvatarURL())
-        .setTitle("Información de los servidores en los que estoy.")
-        .setDescription(`**Servidores:** ${client.guilds.cache.size}\n${client.guilds.cache.map(n => n.name + " **|** " + `**${n.memberCount}** Miembros\n**ID:** ${n.id}`).join(`\n\n`)}`)
-        .setFooter(client.user.username,client.user.displayAvatarURL())
-        .setTimestamp()
-        msg.reply({embeds: [servers]})
+        if(msg.author.id === creadorID){
+            const servers = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username,msg.author.displayAvatarURL())
+            .setTitle("Información de los servidores en los que estoy.")
+            .setDescription(`**Servidores:** ${client.guilds.cache.size}\n${client.guilds.cache.map(n => n.name + " **|** " + `**${n.memberCount}** Miembros\n**ID:** ${n.id}`).join(`\n\n`)}`)
+            .setFooter(client.user.username,client.user.displayAvatarURL())
+            .setTimestamp()
+            msg.reply({embeds: [servers]})
+        }
     }
 
     if(comando === "help"){
