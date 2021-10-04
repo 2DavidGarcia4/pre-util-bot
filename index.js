@@ -2,6 +2,11 @@ const Discord = require("discord.js");
 const intents = new Discord.Intents();
 const client = new Discord.Client({intents: 32767, ws:{properties:{$browser: "Discord Android"}}});
 
+const config = require("./config.json")
+const token = config.tokenSSBot
+
+const creadorID = "717420870267830382"
+
 client.on("ready",async () => {
     console.log(client.user.username, "Hola, estoy listo")
  
@@ -33,6 +38,19 @@ client.on("messageCreate", async msg =>{
     }
 })
 
+client.on("messageCreate", async msg => {
+    if(msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))){
+        const emb = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+        .setThumbnail(client.user.displayAvatarURL())
+        .setTitle(`Hola, soy **${client.user.username}** un Bot enfocado en la promoción aun que tambien puedo hacer otras cosas`)
+        .setDescription(`**Mi prefijo:** ${"``"}ss.${"``"}\n**Invitame:** [*Clic aquí*](https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647)\n**Usa el comando** ${"``"}ss.help${"``"} para conocer mas de mi`)
+        .setFooter(client.user.username,client.user.displayAvatarURL())
+        .setTimestamp()
+        msg.reply({embeds: [emb]})
+    }    
+})
+
 
 client.on("messageCreate", async msg => {
     const prefijo = "ss."
@@ -44,15 +62,24 @@ client.on("messageCreate", async msg => {
     const comando = args.shift()
 
 
-
     if(comando === "servers"){
-        const emb = new Discord.MessageEmbed()
-        .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
-        .setTitle("Servidores en los que estoy")
-        .setDescription(`Servidores: ${client.guilds.cache.size}\nNombres: ${client.guilds.cache.map(n => n.name)}\nMiembros totales: ${client.users.cache.size}`)
-        .setColor("RANDOM")
+        const servers = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username,msg.author.displayAvatarURL())
+        .setTitle("Información de los servidores en los que estoy.")
+        .setDescription(`**Servidores:** ${client.guilds.cache.size}\n${client.guilds.cache.map(n => n.name + " **|** " + `**${n.memberCount}** Miembros\n**ID:** ${n.id}`).join(`\n\n`)}`)
+        .setFooter(client.user.username,client.user.displayAvatarURL())
         .setTimestamp()
-        msg.channel.send({ embeds: [emb] })
+        msg.reply({embeds: [servers]})
+    }
+
+    if(comando === "help"){
+        const help = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username,msg.author.displayAvatarURL())
+        .setTitle("Ayuda")
+        .setDescription(`Por ahora no hay omandos ni interaciones.`)
+        .setFooter(client.user.username,client.user.displayAvatarURL())
+        .setTimestamp()
+        msg.channel.send({embeds: [help]})
     }
 
 })
@@ -65,14 +92,5 @@ client.on("messageCreate", async msg => {
 
 
 
-// Token del bot SS Bot
-client.login("ODQxNTMxMTU5Nzc4NDI2OTEw.YJoG9w.Mmp4gKEQJ5Ody-VQIA6aRLd17hA");
-// Token del bot de pruebas
-// client.login('ODU5NTU1NTgwNTU3NTI1MDUz.YNuZhA.joZ-KJLXMAEhZ76VbZhHJwBDtq4');
-// Toketn de SVSPBot
-// client.login('ODQzMTg1OTI5MDAyMDI1MDMw.YKAMFw.nqKx6MthbM0kfav2XFlep7QmB2M');
-// Token de PromoBot
-// client.login("ODQ0MjQ4NDg3MDI1MzExODA2.YKPprA.OqOGp7T-57QU_gpzhlZPc8yr01E");
 
-// Token de un bot de un YouTuber
-// client.login("ODM5NjQ4MzEwNDI3Mzg1ODU2.YJMtbQ.MnHBL6mAcn6dHp2gfSPeJ-gfiJQ");
+client.login(token);
