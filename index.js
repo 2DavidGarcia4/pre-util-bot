@@ -61,7 +61,6 @@ client.on("messageCreate", async msg =>{
         // .setTitle()
         .setDescription(`💬 **Mensaje:** ${msg.content}`)
         .setColor("RANDOM")
-        .setColor("RANDOM")
         .setFooter(`Desde: ${msg.guild.name} • Miembros: ${msg.guild.memberCount}`,msg.guild.iconURL({dynamic: true}))
         .setTimestamp()
 
@@ -97,52 +96,58 @@ client.on("messageCreate", async msg => {
     const comando = args.shift()
 
 
-    if(comando === "ser"){
-        let i0 = 0;
-        let i1 = 10;
+    if(comando === "er"){
         if(msg.author.id === creadorID){
+            let s0 = 0;
+            let s1 = 10;
+            let pagina = 1;
+
             const servers = new Discord.MessageEmbed()
             .setAuthor(msg.author.username,msg.author.displayAvatarURL())
             .setTitle("Información de los servidores en los que estoy.")
-            .setDescription(`**Servidores:** ${client.guilds.cache.size}\n${client.guilds.cache.map(r => r).map((r, i) => `**${i + 1}** - ${r.name} | ${r.memberCount} Miembros\nID - ${r.id}`).slice(i0, i1).join("\n\n")}`)
+            .setDescription(`**Servidores:** ${client.guilds.cache.size}\n\n${client.guilds.cache.map(m => m).map((r, i) => `**${i + 1}.** ${r.name} **| 👥 ${r.memberCount}**\n🆔 ${r.id}`).slice(s0, s1).join("\n\n")}`)
             .setColor(colorEmb)
-            .setFooter(client.user.username,client.user.displayAvatarURL())
+            .setFooter(`Pagina - ${pagina}/${Math.round(client.guilds.cache.size / 10 + 1)}`)
             .setTimestamp()
 
-          
-            
-            msg.channel.send({embeds: [servers]}).then(mre => {
-                mre.react("⬅")
-                mre.react("➡")
+            const embSv = await msg.channel.send({embeds: [servers]})
 
-                const filter = (reacion, usuario) => {
-                    return ["⬅","➡"].includes(reacion.emoji.name) && usuario.id === msg.author.id;
+            if(client.guilds.cache.size >= 11){
+                await embSv.react("⬅");
+                await embSv.react("➡");
+            }
+
+            const colector = embSv.createReactionCollector(usu => usu.id === msg.author.id)
+
+            colector.on("collect", async reacion => {
+                if(reacion.emoji.name === "⬅"){
+                    if(s1 <= 10) return await reacion.users.remove(msg.author.id)
+
+                    s0 = s0 - 10
+                    s1 = s1 - 10
+                    pagina = pagina - 1
+
+                    servers
+                    .setDescription(`**Servidores:** ${client.guilds.cache.size}\n\n${client.guilds.cache.map(m => m).map((r, i) => `**${i + 1}.** ${r.name} **| 👥 ${r.memberCount}**\n🆔 ${r.id}`).slice(s0, s1).join("\n\n")}`)
+                    .setFooter(`Pagina - ${pagina}/${Math.round(client.guilds.cache.size / 10 + 1)}`)
+                    embSv.edit({embeds: [servers]})
                 }
 
-                mre.awaitReactions({filter, time: 60000 }).then(colector => {
-                    const reacion = colector.first()
-                    if(reacion.emoji.name === "➡"){
-                        i0 = i0 + 10
-                        i1 = i1 + 10
+                if(reacion.emoji.name === "➡" && reacion.users.cache.get(msg.author.id)){
+                    if(client.guilds.cache.size <= s1) return await reacion.users.remove(msg.author.id)
 
-                        let description = `**Servidores:** ${client.guilds.cache.size}\n${client.guilds.cache.map(r => r).map((r, i) => `**${i + 1}** - ${r.name} | ${r.memberCount} Miembros\nID - ${r.id}`).slice(i0, i1).join("\n\n")}`
+                    s0 = s0 + 10
+                    s1 = s1 + 10
+                    pagina = pagina + 1
 
-                        servers
-                        .setDescription(description)
-                        mre.edit({embeds: [servers]})
-                    }
-                    if(reacion.emoji.name === "⬅"){
-                        i0 = i0 - 10
-                        i1 = i1 - 10
-
-                        let description = `**Servidores:** ${client.guilds.cache.size}\n${client.guilds.cache.map(r => r).map((r, i) => `**${i + 1}** - ${r.name} | ${r.memberCount} Miembros\nID - ${r.id}`).slice(i0, i1).join("\n\n")}`
-
-                        servers
-                        .setDescription(description)
-                        mre.edit({embeds: [servers]})
-                    }
-                })
+                    servers
+                    .setDescription(`**Servidores:** ${client.guilds.cache.size}\n\n${client.guilds.cache.map(m => m).map((r, i) => `**${i + 1}.** ${r.name} **| 👥 ${r.memberCount}**\n🆔 ${r.id}`).slice(s0, s1).join("\n\n")}`)
+                    .setFooter(`Pagina - ${pagina}/${Math.round(client.guilds.cache.size / 10 + 1)}`)
+                    embSv.edit({embeds: [servers]})
+                }
+                await reacion.users.remove(msg.author.id)
             })
+            
         }
     }
 
@@ -301,84 +306,6 @@ client.on("messageCreate", async msg => {
     //         }
     //     })
     // }
-
-
-    if(comando === "prueba"){
-        const ownerid = "717420870267830382"
-        if (msg.author.id === ownerid) {
-			if (!msg.guild.me.permissions.has("ADMINISTRATOR")) return msg.channel.send("No tengo permisos").then(ms => ms.delete({ timeout: 5000 }));
- 
-			let i0 = 0;
-			let i1 = 10;
-			let page = 1;
- 
-			let description = `Total Servers - ${client.guilds.cache.size}\n\n` + client.guilds.cache.sort((a, b) => b.memberCount - a.memberCount).map(r => r).map((r, i) => `**${i + 1}** - ${r.name} | ${r.memberCount} Miembros\nID - ${r.id}`).slice(i0, i1).join("\n\n");
- 
-			let embed = new Discord.MessageEmbed()
-				.setAuthor(client.user.tag, client.user.displayAvatarURL({ dynamic: true }))
-				.setColor("00FFFF")
-				.setFooter(`Pagina - ${page}/${Math.ceil(client.guilds.cache.size / 10)}`)
-				.setDescription(description);
- 
-			let mrs = await msg.channel.send({embeds: [embed]});
- 
-			await mrs.react("⬅");
-			await mrs.react("➡");
-			await mrs.react("❌");
- 
-			let collector = mrs.createReactionCollector(
-				(reaction, user) => user.id === msg.author.id
-			);
- 
-			collector.on("collect", async (reaction, user) => {
-				if (reaction._emoji.name === "⬅") {
-					i0 = i0 - 10;
-					i1 = i1 - 10;
-					page = page - 1;
-                    console.log(`${i0}\n${i1}`)
- 
-					if(i0 + 1 <= 0) {
-						console.log(i0 + "alto")
-						// mrs.delete();
-					}
- 
-					description = `Total Servers - ${client.guilds.cache.size}\n\n` + client.guilds.cache.sort((a, b) => b.memberCount - a.memberCount).map(r => r).map((r, i) => `**${i + 1}** - ${r.name} | ${r.memberCount} Miembros\nID - ${r.id}`).slice(i0, i1).join("\n\n");
- 
-					embed
-						.setFooter(`Pagina - ${page}/${Math.round(client.guilds.cache.size / 10 + 1)}`)
-						.setDescription(description);
- 
-					mrs.edit({embeds: [embed]});
-				}
- 
-				if (reaction._emoji.name === "➡") {
-					i0 = i0 + 10;
-					i1 = i1 + 10;
-					page = page + 1;
-                    console.log(`${i0}\n${i1}`)
- 
-					if(i1 > client.guilds.cache.size + 10) {
-						console.log(i1 + " alto")
-					}
- 
-					description = `Total Servers - ${client.guilds.cache.size}\n\n` + client.guilds.cache.sort((a, b) => b.memberCount - a.memberCount).map(r => r).map((r, i) => `**${i + 1}** - ${r.name} | ${r.memberCount} Miembros\nID - ${r.id}`).slice(i0, i1).join("\n\n");
- 
-					embed
-						.setFooter(`Pagina - ${page}/${Math.round(client.guilds.cache.size / 10 + 1)}`)
-						.setDescription(description);
- 
-					mrs.edit({embeds: [embed]});
-				}
- 
-				if(reaction._emoji.name === "❌") {
-					mrs.delete();
-				}
-				await reaction.users.remove(msg.author.id);
-			});
-		} else {
-			return;
-		}
-    }
 })
 
 
