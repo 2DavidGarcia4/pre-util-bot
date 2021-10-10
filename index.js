@@ -53,7 +53,7 @@ client.on("ready",async () => {
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
     
-    const canales = ["892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","893656997872926750"]
+    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952"]
 
     if(canales.some(ch => ch === msg.channel.id)){
         const embed = new Discord.MessageEmbed()
