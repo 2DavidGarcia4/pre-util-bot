@@ -53,12 +53,12 @@ client.on("ready",async () => {
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
     
-    const canales = ["887130134308593694","892485197390565406","892209298732625931","891866153792700436","892815046999175189","893245800627453952","893656997872926750"]
+    const canales = ["892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","893656997872926750"]
 
     if(canales.some(ch => ch === msg.channel.id)){
         const embed = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-        // .setTitle()
+        // .setTitle(`${msg.guild.invites.cache.}`)
         .setDescription(`💬 **Mensaje:** ${msg.content}`)
         .setColor("RANDOM")
         .setFooter(`Desde: ${msg.guild.name} • Miembros: ${msg.guild.memberCount}`,msg.guild.iconURL({dynamic: true}))
@@ -70,6 +70,8 @@ client.on("messageCreate", async msg =>{
     msg.delete()
     }
 })
+
+
 
 client.on("messageCreate", async msg => {
     if(msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))){
@@ -96,7 +98,7 @@ client.on("messageCreate", async msg => {
     const comando = args.shift()
 
 
-    if(comando === "er"){
+    if(comando === "servers"){
         if(msg.author.id === creadorID){
             let s0 = 0;
             let s1 = 10;
@@ -257,55 +259,6 @@ client.on("messageCreate", async msg => {
         .setURL("https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647")
         msg.channel.send({embeds: [inv]})
     }
-
-
-    // if(comando === "menu"){
-    //     const emb1 = new Discord.MessageEmbed()
-    //     .setDescription("2")
-    //     .setColor("GREYPLE")
-
-    //     const emb2 = new Discord.MessageEmbed()
-    //     .setDescription("3")
-    //     .setColor("GREYPLE")
-
-    //     const row = new Discord.MessageActionRow()
-    //     .addComponents(
-    //         new Discord.MessageSelectMenu()
-    //         .setCustomId("menn")
-    //         .setMaxValues(2)
-    //         .addOptions([
-    //             {
-    //                 label: "Discord.js",
-    //                 description: "Rol de discord.js",
-    //                 value: "1"
-    //             },
-    //             {
-    //                 label: "Discord.py",
-    //                 description: "Rol de Discord.py",
-    //                 value: "2"
-    //             }
-    //         ])
-    //     )
-
-    //     const embed = new Discord.MessageEmbed()
-    //     .setDescription(`Use los botones del menu para elejir un rol.`)
-    //     .setColor("GREY")
-
-    //     const m = await msg.channel.send({embeds: [embed], components: [row]})
-
-    //     const colector = m.createMessageComponentCollector({filter: i=> i.user.id === msg.author.id, time: 60000});
-
-    //     colector.on("collect", async ii => {
-    //         if(ii.values[0] === "1"){
-    //             await ii.deferUpdate()
-    //             ii.editReply({embeds: [emb1]})
-    //         }
-    //         if(ii.values[0] === "2"){
-    //             await ii.deferUpdate()
-    //             ii.editReply({embeds: [emb2]})
-    //         }
-    //     })
-    // }
 })
 
 
