@@ -52,14 +52,15 @@ client.on("ready",async () => {
 
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
-    
-    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952"]
 
+    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915","902593215042031657"]
+    
     if(canales.some(ch => ch === msg.channel.id)){
+        let invit = await msg.guild.invites.fetch()
+        let url = invit.filter(fi => fi.inviter.id === client.user.id).map(mi => mi.url)
         const embed = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-        // .setTitle(`${msg.guild.invites.cache.}`)
-        .setDescription(`💬 **Mensaje:** ${msg.content}`)
+        .setDescription(`<:61208:879518684039774239> [Unirse al servidor](${url})\n\n💬 **Mensaje:**\n${msg.content}`)
         .setColor("RANDOM")
         .setFooter(`Desde: ${msg.guild.name} • Miembros: ${msg.guild.memberCount}`,msg.guild.iconURL({dynamic: true}))
         .setTimestamp()
