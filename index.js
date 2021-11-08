@@ -53,7 +53,7 @@ client.on("ready",async () => {
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
 
-    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915","902593215042031657","906232063240306718","906275908040679424","906285104324833370"]
+    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915","902593215042031657","906232063240306718","906275908040679424"]
     
     if(canales.some(ch => ch === msg.channel.id)){
         let invit = await msg.guild.invites.fetch()
@@ -259,6 +259,17 @@ client.on("messageCreate", async msg => {
         .setTimestamp()
         .setURL("https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647")
         msg.channel.send({embeds: [inv]})
+    }
+
+    if(comando === "pr"){
+        let canal = args[0]
+        let ccc = client.channels.cache
+
+        const emb = new Discord.MessageEmbed()
+        .setDescription(`${ccc.get(canal).guild.name}\n${ccc.get(canal).name}\n${ccc.get(canal)}`)
+        .setColor("BLURPLE")
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [emb]}).catch(()=> msg.channel.send("Canal eliminado o a ocurido un error."))
     }
 })
 
