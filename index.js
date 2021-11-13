@@ -54,11 +54,11 @@ client.on("ready",async () => {
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
 
-    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915"]
+    const canales = ["896575496421269544","909166487367983124","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915"]
     
     if(canales.some(ch => ch === msg.channel.id)){
         let invit = await msg.guild.invites.fetch()
-        let url = invit.filter(fi => fi.inviter.id === client.user.id).map(mi => mi.url)
+        let url = invit.filter(fi => fi.inviter.id === client.user.id).map(mi => mi.url).slice(0,1)
         const embed = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setDescription(`<:61208:879518684039774239> [Unirse al servidor](${url})\n\n💬 **Mensaje:**\n${msg.content}`)
