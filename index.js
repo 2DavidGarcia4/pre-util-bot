@@ -6,6 +6,7 @@ const config = require("./config.json")
 const token = config.tokenSSBot
 
 const creadorID = "717420870267830382"
+const creadoresID = ["717420870267830382","825186118050775052"]
 const colorEmb = "#060606"
 const colorEmbInfo = "#ffffff"
 const ColorError = "#ff0000"
@@ -53,7 +54,7 @@ client.on("ready",async () => {
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
 
-    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915","902593215042031657","906232063240306718","906275908040679424"]
+    const canales = ["896575496421269544","892485197390565406","891866153792700436","892209298732625931","892815046999175189","893245800627453952","898324696154660915"]
     
     if(canales.some(ch => ch === msg.channel.id)){
         let invit = await msg.guild.invites.fetch()
@@ -111,7 +112,7 @@ client.on("messageCreate", async msg => {
         msg.channel.send({embeds: [help]})
     }
 
-    if(comando === "comandos"){
+    if(comando === "comandos" || comando == "commands"){
         const comandos = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("📑 Comandos")
@@ -323,7 +324,7 @@ client.on("messageCreate", async msg => {
     }
 
     // Generador de codigo QR
-    if(comando === "qrcode"){
+    if(comando === "qrcode" || comando === "QR"){
         let url = args[0]
         let urQR = `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=600x600`
 
@@ -350,7 +351,7 @@ client.on("messageCreate", async msg => {
 
     }
 
-    if(comando === "botInfo"){
+    if(comando === "botInfo" || comando === "botinfo"){
         const infBot = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL())
@@ -945,7 +946,7 @@ client.on("messageCreate", async msg => {
     }
 
     // clear 
-    if(comando === "clear"){
+    if(comando === "clear" || comando === "cl"){
         const embErrP1 = new Discord.MessageEmbed()
         .setTitle("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -1028,7 +1029,7 @@ client.on("messageCreate", async msg => {
     }
 
     // Banlist
-    if(comando === "banlist"){
+    if(comando === "banlist" || comando === "blist"){
         const embErrP1 = new Discord.MessageEmbed()
         .setTitle("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -1103,7 +1104,7 @@ client.on("messageCreate", async msg => {
     }
 
     // dmsend
-    if(comando === "dmsend"){
+    if(comando === "dmsend" || comando === "dm"){
         const embErrP1 = new Discord.MessageEmbed()
         .setTitle("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -1250,44 +1251,66 @@ client.on("messageCreate", async msg => {
 
 
     // Comandos de administracion
-    if(comando === "setInterP"){
-        if(!msg.member.permissions.has("ADMINISTRATOR")){
-            const error = new Discord.MessageEmbed()
-            .setDescription(`❌ __Solo un administrador del servidor puede ejecutar el comando.__`)
+    if(comando === "setInterP" || comando === "setinterp"){
+        const error = new Discord.MessageEmbed()
+        .setAuthor(`❌ Error`)
+        .setDescription(`Solo un administrador del servidor puede ejecutar el comando.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [error]}).then(tt => setTimeout(()=> {
+            msg.delete()
+            tt.delete()
+        },60000))
+
+        const embErrMiem = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`Tu servidor no cuenta con el mínimo de 100 miembros necesarios para poder usar el sistema de Inter Promoción.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(msg.guild.members.cache.size <= 99) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrMiem]}).then(tt => setTimeout(()=> {
+            msg.delete()
+            tt.delete()
+        },60000))
+
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando setInterP")
+        .addFields(
+            {name: "Uso:", value: `${"``"}ss.setInterP <Mención del canal>${"``"}\n${"``"}ss.setInterP <ID del canal>${"``"}`},
+            {name: "Ejemplos:", value: `ss.setInterP ${msg.channel}\n`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        let canal = msg.mentions.channels.first() || msg.guild.channels.cache.get(args[0])
+
+        if(canal){
+            const embErr1 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El argumento que has proporcionado no se identifico como un canal en este servidor, menciona o proporciona la ID de un canal de este servidor.`)
             .setColor(ColorError)
             .setTimestamp()
-            msg.reply({embeds: [error]}).then(tt => setTimeout(()=> {
+            if(!canal) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tt => setTimeout(()=> {
                 msg.delete()
                 tt.delete()
-            },30000))
-        }
-        let canal = msg.mentions.channels.first()
-        if(!args[0]){
-            let caP = msg.channel
-            const embInfo = new Discord.MessageEmbed()
-            .setTitle("Comando setInterP")
-            .setDescription(`**Uso:**\n${"``"}ss.setInterP <Mencion del canal>${"``"}\n\n**Ejemplo:**\nss.setInterP ${caP}`)
-            .setColor(colorEmbInfo)
+            },60000))
+
+            const embErr2 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El canal proporcionado no es de tipo texto, proporciona un canal de tipo texto.`)
+            .setColor(ColorError)
             .setTimestamp()
-            msg.reply({embeds: [embInfo], mentions: false}) 
-        }else{
-            if(!canal){
-                const error = new Discord.MessageEmbed()
-                .setDescription(`❌ __Menciona el canal.__`)
-                .setColor(ColorError)
-                .setTimestamp()
-                msg.reply({embeds: [error]}).then(tt => setTimeout(()=> {
-                    msg.delete()
-                    tt.delete()
-                },30000))
-            }
-        }
-        if(canal){
+            if(!canal.isText()) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tt => setTimeout(()=> {
+                msg.delete()
+                tt.delete()
+            },60000))
+
             const embMDCre = new Discord.MessageEmbed()
             .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
             .setThumbnail(msg.guild.iconURL({dynamic: true}))
             .setTitle("Nuevo canal agregado a Inter promoción")
-            .setDescription(`**Servidor:** ${msg.guild.name}\n**ID:** ${msg.guild.id}\nMiembros: ${msg.guild.memberCount}\n\n**Canal añadido:** ${canal.name}\n**ID:** ${canal.id}`)
+            .setDescription(`**Servidor:** ${msg.guild.name}\n**Miembros:** ${msg.guild.memberCount}\n[**Unirse**](${(await msg.guild.invites.fetch()).map(mi => mi.url).slice(0,1)})\n**ID:** ${msg.guild.id}\n\n**Canal:** ${canal.name}\n**ID:** ${canal.id}\n\n**Autor:** ${msg.author}\n${msg.author.tag}\n${msg.author.id}`)
             .setColor("#00ff00")
             .setFooter(client.user.username,client.user.displayAvatarURL())
             .setTimestamp()
@@ -1295,14 +1318,17 @@ client.on("messageCreate", async msg => {
             
 
             const emb = new Discord.MessageEmbed()
-            .setDescription(`✅ **Listo el canal se agregara al sistema de Inter promoción, gracias por usar nuestro Bot.**`)
+            .setDescription(`✅ **Listo el canal se agregara al sistema de Inter promoción, gracias por usar el Bot.**`)
             .setColor(colorEmb)
             .setFooter("Agregar el canal al sistema de Inter promoción puede tardar entre 10m a mas de 4h, por favor sea paciente.",client.user.displayAvatarURL())
             .setTimestamp()
-            msg.channel.send({embeds: [emb]})
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [emb]})
+ 
         }
     }
-    if(comando === "interPInfo"){
+
+
+    if(comando === "interPInfo" || comando === "interpinfo"){
         const embInf = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("¿Qué es el sistema de Inter promoción?")
@@ -1490,7 +1516,7 @@ client.on("messageCreate", async msg => {
     }
 
     // removeRol
-    if(comando === "removeRol" || comando === "emover"){
+    if(comando === "removeRol" || comando === "rmr"){
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -1661,7 +1687,7 @@ client.on("messageCreate", async msg => {
     }
 
     // createCha
-    if(comando === "createCha" || comando === "crch"){
+    if(comando === "createCha" || comando === "crech"){
         let categoriasGMS = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_CATEGORY").map(mc => mc.id)
         let randomCat = Math.floor(Math.random()* categoriasGMS.length)
 
@@ -1735,7 +1761,7 @@ client.on("messageCreate", async msg => {
     }
 
     // deleteCha
-    if(comando === "deleteCha" || comando === "delCh"){
+    if(comando == "deleteCha" || comando === "delch"){
         let canalesAlDel = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_TEXT" ).map(mc => mc)
         let randomChanne = Math.floor(Math.random()* canalesAlDel.length)
 
@@ -1801,6 +1827,18 @@ client.on("messageCreate", async msg => {
         }
     }
 
+    if(comando === "ver"){
+        if(creadoresID.some(sc => sc === msg.author.id)){
+            let canal = client.channels.cache.get(args[0])
+            let servidor = client.guilds.cache.get(canal.guild.id)
+
+            const emb = new Discord.MessageEmbed()
+            .setThumbnail(canal.guild.iconURL({dynamic: true}))
+            .setDescription(`${canal.name}\n${canal}\n${canal.id}\n\n${canal.guild.name}\n${canal.guild.id}\nMiembros: ${servidor.members.cache.size}\n${(await servidor.invites.fetch()).map(mi => mi.url).slice(0,1)}`)
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [emb]})
+        }
+    }
+
     if(comando === "servers"){
         if(msg.author.id === creadorID){
             let s0 = 0;
@@ -1856,10 +1894,6 @@ client.on("messageCreate", async msg => {
         }
     }
 })
-
-
-
-
 
 
 
