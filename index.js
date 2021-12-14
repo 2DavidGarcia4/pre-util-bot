@@ -4,7 +4,7 @@ const client = new Discord.Client({intents: 32767, ws:{properties:{$browser: "Di
 
 const config = require("./config.json")
 const token = config.tokenSSBot
-const canales = ["896575496421269544","909166487367983124","891866153792700436","892209298732625931","892815046999175189","893245800627453952","913552443088973844","915281737855148125","915762206140948510"]
+const canales = ["896575496421269544","909166487367983124","891866153792700436","892209298732625931","892815046999175189","893245800627453952","913552443088973844","915281737855148125"]
 
 const creadorID = "717420870267830382"
 const creadoresID = ["717420870267830382","825186118050775052"]
@@ -102,6 +102,11 @@ client.on("messageCreate", async msg => {
     const comando = args.shift()
 
 
+
+    if(comando === "canales"){
+        let algo = canales.map(mc => `${client.channels.cache.get(mc).guild.name} **|** ${client.channels.cache.get(mc).name}`).join("\n\n")
+        msg.channel.send(`${algo}`)
+    }
 
     if(comando === "help"){
         const help = new Discord.MessageEmbed()
@@ -250,7 +255,6 @@ client.on("messageCreate", async msg => {
         .setDescription(`El argumento ingresado no es la ID o nombre de un emoji del servidor.`)
         .setColor(ColorError)
         .setTimestamp()
-
         if(!emoji && !emojiID){
             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
                 msg.delete().catch(c=>{
@@ -488,7 +492,9 @@ client.on("messageCreate", async msg => {
         .setFooter("Permiso requerido: expulsar miembros o banear miembros.")
         .setTimestamp()
         if(!msg.member.permissions.has("KICK_MEMBERS" || "BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-            msg.delete()
+            msg.delete().catch(c=>{
+                return;
+            })
             dt.delete()
         },60000))
 
@@ -516,7 +522,9 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(mencion.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                msg.delete()
+                msg.delete().catch(c=>{
+                    return;
+                })
                 dt.delete()
             },60000))
 
@@ -526,7 +534,9 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(!razonM) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                msg.delete()
+                msg.delete().catch(c=>{
+                    return;
+                })
                 dt.delete()
             },60000))
 
@@ -557,7 +567,9 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(!usuario) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                    msg.delete()
+                    msg.delete().catch(c=>{
+                        return;
+                    })
                     dt.delete()
                 },60000))
 
@@ -567,7 +579,9 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(usuario.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                    msg.delete()
+                    msg.delete().catch(c=>{
+                        return;
+                    })
                     dt.delete()
                 },60000))
 
@@ -577,7 +591,9 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(!razonID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
-                    msg.delete()
+                    msg.delete().catch(c=>{
+                        return;
+                    })
                     dt.delete()
                 },60000))
 
@@ -610,7 +626,9 @@ client.on("messageCreate", async msg => {
         .setFooter("Permiso requerido: expulsar miembros o banear miembros.")
         .setTimestamp()
         if(!msg.member.permissions.has("KICK_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-            msg.delete()
+            msg.delete().catch(c=>{
+                return;
+            })
             dt.delete()
         },60000))
 
@@ -621,7 +639,9 @@ client.on("messageCreate", async msg => {
         .setFooter("Requiero del permiso para expulsar miembros.")
         .setTimestamp()
         if(!msg.guild.me.permissions.has("KICK_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-            msg.delete()
+            msg.delete().catch(c=>{
+                return;
+            })
             dt.delete()
         },60000))
 
@@ -650,7 +670,9 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(mencion.id === client.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                msg.delete()
+                msg.delete().catch(c=>{
+                    return;
+                })
                 dt.delete()
             },60000))
 
@@ -660,7 +682,9 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(msg.author.id === mencion.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                msg.delete()
+                msg.delete().catch(c=>{
+                    return;
+                })
                 dt.delete()
             },60000))
 
@@ -670,7 +694,9 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(msg.member.roles.highest.comparePositionTo(mencion.roles.highest)<= 0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
-                msg.delete()
+                msg.delete().catch(c=>{
+                    return;
+                })
                 dt.delete()
             },60000))
 
