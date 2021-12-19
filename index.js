@@ -93,7 +93,7 @@ client.on("messageCreate", async msg => {
 
 
 client.on("messageCreate", async msg => {
-    const prefijo = "|"
+    const prefijo = "ss."
 
     if(msg.author.bot) return; 
     if(!msg.content.startsWith(prefijo)) return; 
