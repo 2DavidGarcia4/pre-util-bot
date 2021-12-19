@@ -5,7 +5,7 @@ const client = new Discord.Client({intents: 32767, ws:{properties:{$browser: "Di
 const config = require("./config.json")
 const token = config.tokenSSBot
 const ms = require("ms")
-const canales = ["887829645649641472","850121919382159421"]
+const canales = ["896575496421269544","909166487367983124","891866153792700436","892209298732625931","893245800627453952","913552443088973844","915281737855148125"]
 
 const creadorID = "717420870267830382"
 const creadoresID = ["717420870267830382","825186118050775052"]
