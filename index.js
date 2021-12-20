@@ -3500,28 +3500,37 @@ client.on("messageCreate", async msg => {
     }
 })
 
+
 // Registro de nuevo servidor 
 client.on("guildCreate", async gc => {
     let creador = gc.members.cache.get(gc.ownerId)
-    let url = (await gc.invites.fetch()).map(mi => mi.url).slice(0,1)
-    let invitacion
-    if(url){
-        invitacion = `[Unirse](${url})`
-    }
-    if(!url){
-        invitacion = "El servidor no tiene invitaciones."
-    }
+    
     const embGC = new Discord.MessageEmbed()
     .setAuthor(creador.user.tag,creador.user.displayAvatarURL({dynamic: true}))
     .setThumbnail(gc.iconURL({dynamic: true}))
     .setTitle("➕ Añadido en un nuevo servidor")
     .addFields(
-        {name: `**${gc.name}**`, value: `🆔 ${gc.id}\n👥 ${gc.members.cache.filter(fm => !fm.user.bot).size}\n🤖 ${gc.members.cache.filter(fb => fb.user.bot).size}\n📅 <t:${Math.round(gc.createdAt / 1000)}:R>\n${invitacion}`},
-        {name: "Baneos", value: `${(await gc.bans.fetch()).size}`}
+        {name: `**${gc.name}**`, value: `🆔 ${gc.id}\n👥 ${gc.members.cache.filter(fm => !fm.user.bot).size}\n🤖 ${gc.members.cache.filter(fb => fb.user.bot).size}\n📅 <t:${Math.round(gc.createdAt / 1000)}:R>`}
     )
-    .setColor()
+    .setColor("GREEN")
     .setTimestamp()
     client.channels.cache.get("838457311684853827").send({embeds: [embGC]})
+})
+
+// Registro de expulsion de servidor
+client.on("guildDelete",async gd => {
+    let creador = gd.members.cache.get(gd.ownerId)
+    const embGD = new Discord.MessageEmbed()
+    .setAuthor(creador.user.tag,creador.user.displayAvatarURL({dynamic: true}))
+    .setThumbnail(gd.iconURL({dynamic: true}))
+    .setTitle("➖ Expulsado de un servidor")
+    .addFields(
+        {name: `**${gd.name}**`, value: `🆔 ${gd.id}\n👥 ${gd.members.cache.filter(fm => !fm.user.bot).size}\n🤖 ${gd.members.cache.filter(fb => fb.user.bot).size}\n📅 Creado:\n<t:${Math.round(gd.createdAt / 1000)}:R>`}
+    )
+    .setColor("RED")
+    .setTimestamp()
+    client.channels.cache.get("838457311684853827").send({embeds: [embGD]})
+
 })
 
 
