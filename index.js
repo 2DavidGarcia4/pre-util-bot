@@ -3535,7 +3535,4 @@ client.on("guildDelete",async gd => {
 
 
 
-
-
-
 client.login(token);
