@@ -5,13 +5,88 @@ const client = new Discord.Client({intents: 32767, ws:{properties:{$browser: "Di
 const config = require("./config.json")
 const token = config.tokenSSBot
 const ms = require("ms")
-const canales = ["896575496421269544","909166487367983124","891866153792700436","892209298732625931","893245800627453952","913552443088973844","915281737855148125"]
+const mongoose = require("mongoose")
 
 const creadorID = "717420870267830382"
 const creadoresID = ["717420870267830382","825186118050775052"]
 const colorEmb = "#060606"
 const colorEmbInfo = "#ffffff"
 const ColorError = "#ff0000"
+
+mongoose.connect("mongodb+srv://Music:oQJo4VnF3rXj615k@ssbot.jbt17.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(()=>{
+    console.log("Conectado corectamente a la base de datos.")
+}).catch(e=>{
+    console.log("Ocurrio un error al conectarse con la DB", e)
+})
+
+// // Sistema de inter promocion
+const interPromocion = new mongoose.Schema({
+    Nombre: {
+        type: String,
+        required: true
+    },
+    canalID: {
+        type: Array,
+        required: true
+    },
+    autor: {
+        type: Array,
+        required: true
+    },
+    serverID: {
+        type: Array,
+        required: true
+    }
+})
+const interP = mongoose.model("Inter promo", interPromocion)
+
+
+// // Prefijo configurable
+const confPrefijo = new mongoose.Schema({
+    Nombre: {
+        type: String,
+        required: true
+    },
+    serverID: {
+        type: Array,
+        required: true
+    },
+    prefijo: {
+        type: Array,
+        required: true
+    }
+})
+const mPrefix = mongoose.model("Prefijo", confPrefijo)
+
+
+// // Sistema de puntos
+const puntosMongo = new mongoose.Schema({
+    serverName: {
+        type: String,
+        required: true
+    },
+    serverID: {
+        type: String,
+        required: true
+    },
+    emoji: {
+        type: String,
+        required: true
+    },
+    miembro: {
+        type: Array,
+        required: true
+    },
+    puntos: {
+        type: Array,
+        required: true
+    }
+})
+const sPuntos = mongoose.model("Sistema de puntos", puntosMongo)
+
 
 client.on("ready",async () => {
     console.log(client.user.username, "Hola, estoy listo")
@@ -30,10 +105,6 @@ client.on("ready",async () => {
             type: "WATCHING"
         },
         {
-            name: `${canales.length} canales de Inter promoción`,
-            type: "WATCHING"
-        },
-        {
             name: "ss.invite",
             type: "LISTENING"
         }
@@ -48,15 +119,37 @@ client.on("ready",async () => {
     autoPresencia()
     setInterval(()=>{
         autoPresencia()
-    },30000)
+    },60000)
 })
 
-
-// Inter promocion
+let cooldInterP = []
+// sistema Inter promocion
 client.on("messageCreate", async msg =>{
     if(msg.author.bot) return;
+    let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+    let canales = []
+
+    for(let i=0; i<dataIP.canalID.length; i++){
+        if(client.channels.cache.get(dataIP.canalID[i])){
+            canales.push(dataIP.canalID[i])
+        }
+    }
     
     if(canales.some(ch => ch === msg.channel.id)){
+        const embCool = new Discord.MessageEmbed()
+        .setAuthor("⏲ Tiempo")
+        .setDescription(`Espera **30** minutos para bolver a publicara tu promoción.`)
+        .setColor("BLUE")
+        .setTimestamp()
+        if(cooldInterP.some(s=> s === msg.author.id) && !creadoresID.some(s=>s === msg.author.id)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embCool]}).then(mt=> setTimeout(()=>{
+            msg.delete().catch(c=>{
+                return
+            })
+            mt.delete().catch(c=>{
+                return
+            })
+        },15000))
+
         let invit = await msg.guild.invites.fetch()
         let url = invit.filter(fi => fi.inviter.id === client.user.id).map(mi => mi.url).slice(0,1)
         const embed = new Discord.MessageEmbed()
@@ -69,21 +162,32 @@ client.on("messageCreate", async msg =>{
         for(let i=0; i<canales.length; i++){
             client.channels.cache.get(canales[i]).send({embeds: [embed]})
         }
-    msg.delete()
+        msg.delete()
+
+        cooldInterP.push(msg.author.id)
+        setTimeout(()=>{
+            let num = cooldInterP.indexOf(msg.author.id)
+            cooldInterP.splice(num,1)
+        },ms(`30m`))
     }
 })
 
 
-
 client.on("messageCreate", async msg => {
     if(msg.author.bot)return;
+
+    let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
+    let num = dataPre.serverID.indexOf(msg.guildId)
+    let pref = dataPre.prefijo[num] ? dataPre.prefijo[num]: "ss."
+
+
     if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
     if(msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))){
         const emb = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL())
-        .setTitle(`Hola, soy **${client.user.username}** un Bot enfocado en la ayuda de tareas que se necesita interactuar con otros servidores`)
-        .setDescription(`**Mi prefijo:** ${"``"}ss.${"``"}\n**Invitame:** [*Clic aquí*](https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647)\n**Usa el comando** ${"``"}ss.help${"``"} para conocer mas de mi`)
+        .setTitle(`Hola, soy **${client.user.username}** un Bot multi fundacional, tengo comandos de moderación, comandos informativos y mas tipos de comandos.`)
+        .setDescription(`**Mi prefijo en este servidor:** ${"``"}${pref}${"``"}\n**Invitame:** [*Clic aquí*](https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647)\n**Usa el comando** ${"``"}${pref}help${"``"} para conocer mas de mi.`)
         .setColor(colorEmb)
         .setFooter(client.user.username,client.user.displayAvatarURL())
         .setTimestamp()
@@ -93,9 +197,13 @@ client.on("messageCreate", async msg => {
 
 
 client.on("messageCreate", async msg => {
-    const prefijo = "ss."
-
     if(msg.author.bot) return; 
+
+    let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
+    let num = dataPre.serverID.indexOf(msg.guildId)
+    let prefijo = dataPre.prefijo[num] ? dataPre.prefijo[num]: "ss."
+
+
     if(!msg.content.startsWith(prefijo)) return; 
 
     const args = msg.content.slice(prefijo.length).trim().split(/ +/g);
@@ -106,9 +214,10 @@ client.on("messageCreate", async msg => {
 
 
     if(comando === "help"){
+        msg.channel.sendTyping()
         const help = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL())
-        .setDescription(`**Mi prefijo:** ${"``"}ss.${"``"}\n\n**Comandos principales:**\n${"``"}ss.comandos${"``"} **| Te muestra todos los comandos.**\n${"``"}ss.botInfo${"``"} **| Te muestra información del bot.**`)
+        .setDescription(`**Mi prefijo en este servidor:** ${"``"}${prefijo}${"``"}\n\n**Comandos principales:**\n${"``"}${prefijo}comandos${"``"} **|** Te muestra todos los comandos.\n${"``"}${prefijo}botInfo${"``"} **|** Te muestra información del bot.`)
         .setColor(colorEmb)
         .setFooter(client.user.username,client.user.displayAvatarURL())
         .setTimestamp()
@@ -116,24 +225,28 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "comandos" || comando == "commands"){
+        msg.channel.sendTyping()
         const comandos = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("📑 Comandos")
         .addField("\u200B","\u200B")
         .setDescription(`Un comando es una palabra a la que el bot responde.`)
-        .addField("🌎 Comandos generales",`Comandos que todos pueden usar.\n\n${"``"}ss.user${"``"} **|** Muestra información del usuario.\n${"``"}ss.stats${"``"} **|** Muestra estadisticas generales de todos los servidores.\n${"``"}ss.jumbo${"``"} **|** Muestra en grande un emoji del servidor.\n${"``"}ss.emojis${"``"} **|** Muestra todos los emojis del servidor.\n${"``"}ss.uptime${"``"} **|** Muestra el tiempo que llevo activo o encendido.\n${"``"}ss.avatar${"``"} **|** Muestra el avatar del usuario.\n${"``"}ss.server${"``"} **|** Muestra información del servidor.\n${"``"}ss.invite${"``"} **|** Te muestra la invitación del bot.\n${"``"}ss.qrcode${"``"} **|** Genera un código QR de un enlace.\n${"``"}${prefijo}stikers${"``"} **|** Te muestra todos los stikers del servidor.\n${"``"}ss.botInfo${"``"} **|** Te muestra información del bot.`)
+        .addField("🌎 **Comandos generales:**",`Comandos que todos pueden usar.\n\n${"``"}${prefijo}user${"``"} **|** Muestra información del usuario.\n${"``"}${prefijo}stats${"``"} **|** Muestra estadisticas generales de todos los servidores.\n${"``"}${prefijo}jumbo${"``"} **|** Muestra en grande un emoji del servidor.\n${"``"}${prefijo}emojis${"``"} **|** Muestra todos los emojis del servidor.\n${"``"}${prefijo}uptime${"``"} **|** Muestra el tiempo que llevo activo o encendido.\n${"``"}${prefijo}avatar${"``"} **|** Muestra el avatar del usuario.\n${"``"}${prefijo}server${"``"} **|** Muestra información del servidor.\n${"``"}${prefijo}invite${"``"} **|** Te muestra la invitación del bot.\n${"``"}${prefijo}qrcode${"``"} **|** Genera un código QR de un enlace.\n${"``"}${prefijo}stikers${"``"} **|** Te muestra todos los stikers del servidor.\n${"``"}${prefijo}botInfo${"``"} **|** Te muestra información del bot.`)
         .addField("\u200B", "\u200B")
-        .addField("👮 Comandos de moderacion",`Comandos que solo los moderadores pueden usar.\n\n${"``"}ss.warn${"``"} **|** Advierte a un usuario.\n${"``"}ss.kick${"``"} **|** Expulsa a un usuario dándole una razón.\n${"``"}ss.ban${"``"} **|** Prohíbe a un usuario entrar al servidor.\n${"``"}ss.unban${"``"} **|** Elimina la prohibición de un miembro al servidor.\n${"``"}ss.clear${"``"} **|** Elimina múltiples mensajes en un canal.\n${"``"}ss.dmsend${"``"} **|** Envía un mensaje directo por medio del bot a un miembro.\n${"``"}ss.banlist${"``"} **|** Te muestra una lista de los usuarios baneados en el servidor.`)
+        .addField("👮 **Comandos de moderacion:**",`Comandos que solo los moderadores pueden usar.\n\n${"``"}${prefijo}warn${"``"} **|** Advierte a un usuario.\n${"``"}${prefijo}kick${"``"} **|** Expulsa a un usuario dándole una razón.\n${"``"}${prefijo}ban${"``"} **|** Prohíbe a un usuario entrar al servidor.\n${"``"}${prefijo}unban${"``"} **|** Elimina la prohibición de un miembro al servidor.\n${"``"}${prefijo}clear${"``"} **|** Elimina múltiples mensajes en un canal.\n${"``"}${prefijo}dmsend${"``"} **|** Envía un mensaje directo por medio del bot a un miembro.\n${"``"}${prefijo}banlist${"``"} **|** Te muestra una lista de los usuarios baneados en el servidor.`)
         .addField("\u200B", "\u200B")
-        .addField("💎 Comandos de administración",`Comandos que solo los administradores pueden usar.\n\n${"``"}ss.setInterP${"``"} **|** Establece un canal de inter promoción en tu servidor, para mas informacion de este comando usa el comando ${"``"}ss.interPInfo${"``"}\n${"``"}ss.addRol${"``"} **|** Añade un rol a un miembro o mas en el servidor.\n${"``"}ss.removeRol${"``"} **|** Remueve un rol de un miembro o mas en el servidor.\n${"``"}ss.createCha${"``"} **|** Crea un canal.\n${"``"}ss.deleteCha${"``"} **|** Elimina un canal.`)
+        .addField("💎 **Comandos de administración:**",`Comandos que solo los administradores pueden usar.\n\n${"``"}${prefijo}setPrefix${"``"} **|** Establece un prefijo personalizado en este servidor.\n${"``"}${prefijo}addRol${"``"} **|** Añade un rol a un miembro o mas en el servidor.\n${"``"}${prefijo}removeRol${"``"} **|** Remueve un rol de un miembro o mas en el servidor.\n${"``"}${prefijo}createCha${"``"} **|** Crea un canal.\n${"``"}${prefijo}deleteCha${"``"} **|** Elimina un canal.\n${"``"}${prefijo}setSlowMode${"``"} **|** Establece el modo pausado de un canal de texto.`)
+        .addField("\u200B", "\u200B")
+        .addField("⚙ **Comandos de sistemas:**", `Comandos de los sistemas que tiene el bot.\n\n${"``"}${prefijo}interPInfo${"``"} **|** Te muestra información de que es el sistema de inter promoción y te muestra sus comandos.\n${"``"}${prefijo}puntosInfo${"``"} **|** Te muestra información del sistema de Puntos y sus comandos.`)
         .setFooter(client.user.username,client.user.displayAvatarURL())
         .setColor(colorEmb)
         .setTimestamp()
-        msg.reply({allowedMentions: {repliedUser: false}, embeds: [comandos]}).catch(()=> console.log("No se ha podido enviar el mensaje"))
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [comandos]})
     }
 
     // Comandos generales
     if(comando === "user"){
+        msg.channel.sendTyping()
         let presencia = {
             "dnd": "<:nomolestar:904558124793475083> No molestar",
             "idle": "<:ausente:904557543228059650> Ausente",
@@ -169,6 +282,20 @@ client.on("messageCreate", async msg => {
 
         let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
 
+        const embErr1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No puede encontrar a ese miembro.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!miembro) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
+            msg.delete().catch(c=>{
+                return;
+            })
+            dt.delete().catch(e=>{
+                return;
+            })
+        },40000))
+
         if(miembro){
             let actyvidad 
             if(miembro.presence?.activities.length <= 0){
@@ -203,6 +330,25 @@ client.on("messageCreate", async msg => {
             
             }else{
                 if(miembro.user.bot){
+                    const embUserNo = new Discord.MessageEmbed()
+                    .setAuthor(`Información de ${miembro.user.username} pedida por ${msg.author.username}`,msg.author.displayAvatarURL({dynamic: true}))
+                    .setThumbnail(miembro.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048}))
+                    .setDescription(`🤖 Bot: ${miembro}`)
+                    .addFields(
+                        {name: "🏷 **Tag:**", value: `${miembro.user.tag}`, inline: true},
+                        {name: "🆔 **ID:**", value: `${miembro.user.id}`, inline: true},
+                        {name: "📌 **Apodo:**", value: `${miembro.nickname !== null ? `${miembro.nickname}`: "Ninguno"}`, inline: true},
+                        {name: "📅 **Fue creado:**", value: `<t:${Math.round(miembro.user.createdAt / 1000)}:R>`, inline: true},
+                        {name: "📥 **Se unio:**", value: `<t:${Math.round(miembro.joinedAt / 1000)}:R>`, inline: true},
+                        {name: "<:Booster:920792402376130582> **Booster:**", value: `Un bot no puede boostear`, inline: true},
+                        {name: `🎖 **Insignias:** 0`, value: `No tiene insignias`, inline: true},
+                        {name: "🔍 **Estado:**", value: `${presencia[miembro.presence?.status]}\n${actyvidad}`, inline: true},
+                    )
+                    .setColor(msg.guild.me.displayHexColor)
+                    .setTimestamp()
+                    if(!miembro.user.flags) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUserNo]})
+
+
                     const embUser = new Discord.MessageEmbed()
                     .setAuthor(`Información de ${miembro.user.username} pedida por ${msg.author.username}`,msg.author.displayAvatarURL({dynamic: true}))
                     .setThumbnail(miembro.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048}))
@@ -222,6 +368,25 @@ client.on("messageCreate", async msg => {
                     msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
 
                 }else{
+                    const embUserNo = new Discord.MessageEmbed()
+                    .setAuthor(`Información de ${miembro.user.username} pedida por ${msg.author.username}`,msg.author.displayAvatarURL({dynamic: true}))
+                    .setThumbnail(miembro.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048})) 
+                    .setDescription(`👤 Miembro: ${miembro}`)
+                    .addFields(
+                        {name: "🏷 **Tag:**", value: `${miembro.user.tag}`, inline: true},
+                        {name: "🆔 **ID:**", value: `${miembro.user.id}`, inline: true},
+                        {name: "📌 **Apodo:**", value: `${miembro.nickname !== null ? `${miembro.nickname}`: "Ninguno"}`, inline: true},
+                        {name: "📅 **Creo la cuenta:**", value: `<t:${Math.round(miembro.user.createdAt / 1000)}:R>`, inline: true},
+                        {name: "📥 **Se unio:**", value: `<t:${Math.round(miembro.joinedAt / 1000)}:R>`, inline: true},
+                        {name: "<:Booster:920792402376130582> **Booster:**", value: `${miembro.premiumSince ? "Es Booster": "No es Booster"}`, inline: true},
+                        {name: `🎖 **Insignias:** 0`, value: `No tiene insignias`, inline: true},
+                        {name: "🔍 **Estado:**", value: `${presencia[miembro.presence?.status]}\n${actyvidad}`, inline: true},
+                    )
+                    .setColor(msg.guild.me.displayHexColor)
+                    .setTimestamp()
+                    if(!miembro.user.flags) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUserNo]})
+
+
                     const embUser = new Discord.MessageEmbed()
                     .setAuthor(`Información de ${miembro.user.username} pedida por ${msg.author.username}`,msg.author.displayAvatarURL({dynamic: true}))
                     .setThumbnail(miembro.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048})) 
@@ -242,75 +407,11 @@ client.on("messageCreate", async msg => {
                 }
             }
         
-        }else{
-            if(args[0]){
-                let usuario = await client.users.fetch(args[0])
-
-                if(usuario.bot){
-                    const embUser = new Discord.MessageEmbed()
-                    .setAuthor(`Información de ${usuario.tag} pedida por ${msg.author.tag}`,msg.author.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048}))
-                    .setThumbnail(usuario.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048}))
-                    .setDescription(`🤖 Bot: ${usuario}`)
-                    .addFields(
-                        {name: "🏷 **Tag:**", value: `${usuario.tag}`, inline: true},
-                        {name: "🆔 **ID:**", value: `${usuario.id}`, inline: true},
-                        {name: "📅 **Fue creado:**", value: `<t:${Math.round(usuario.createdAt/ 1000)}:R>`, inline: true},
-                        {name: `🎖 **Insignias:** ${usuario.flags.toArray().length}`, value: `${usuario.flags.toArray().length ? usuario.flags.toArray().map(i=> insignias[i]).join("\n") : "No tiene insignias"}`, inline: true},
-                    )
-                    .setColor(msg.guild.me.displayHexColor)
-                    .setTimestamp()
-                    msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
-
-                }else{
-                    const embUser = new Discord.MessageEmbed()
-                    .setAuthor(`Información de ${usuario.tag} pedida por ${msg.author.tag}`,msg.author.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048}))
-                    .setThumbnail(usuario.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048}))
-                    .setDescription(`👤 Usuario: ${usuario}`)
-                    .addFields(
-                        {name: "🏷 **Tag:**", value: `${usuario.tag}`, inline: true},
-                        {name: "🆔 **ID:**", value: `${usuario.id}`, inline: true},
-                        {name: "📅 **Creao la cuenta:**", value: `<t:${Math.round(usuario.createdAt/ 1000)}:R>`, inline: true},
-                        {name: `🎖 **Insignias:** ${usuario.flags.toArray().length}`, value: `${usuario.flags.toArray().length ? usuario.flags.toArray().map(i=> insignias[i]).join("\n") : "No tiene insignias"}`, inline: true},
-                    )
-                    .setColor(msg.guild.me.displayHexColor)
-                    .setTimestamp()
-                    msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
-                }
-            }else{
-                let actyvidad 
-                if(msg.member.presence?.activities.length <= 0){
-                    actyvidad = "Sin texto de estado"
-                }
-                if(msg.member.presence?.activities.length >=1){
-                    if(msg.member.presence?.activities[0].type === "CUSTOM"){
-                        actyvidad = `${msg.member.presence?.activities[0].emoji ? msg.member.presence?.activities[0].emoji: ""} ${msg.member.presence?.activities[0].state}`
-                    }else{
-                        actyvidad = `${tyEstado[msg.member.presence?.activities[0].type]} ${msg.member.presence?.activities[0].emoji ? msg.member.presence?.activities[0].emoji: ""} ${msg.member.presence?.activities[0].name}`
-                    }
-                }
-
-                const embUser = new Discord.MessageEmbed()
-                .setAuthor(`Información de ${msg.member.user.tag} pedida por el`,msg.author.displayAvatarURL({dynamic: true}))
-                .setThumbnail(msg.author.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 2048})) 
-                .setDescription(`👤 Tu: ${msg.author}`)
-                .addFields(
-                    {name: "🏷 **Tag:**", value: `${msg.author.tag}`, inline: true},
-                    {name: "🆔 **ID:**", value: `${msg.author.id}`, inline: true},
-                    {name: "📌 **Apodo:**", value: `${msg.member.nickname !== null ? `${msg.member.nickname}`: "Ninguno"}`, inline: true},
-                    {name: "📅 **Creaste la cuenta:**", value: `<t:${Math.round(msg.author.createdAt / 1000)}:R>`, inline: true},
-                    {name: "📥 **Te uniste:**", value: `<t:${Math.round(msg.member.joinedAt / 1000)}:R>`, inline: true},
-                    {name: "<:Booster:920792402376130582> **Booster:**", value: `${msg.member.premiumSince ? "Eres Booster": "No eres Booster"}`, inline: true},
-                    {name: `🎖 **Insignias:** ${msg.author.flags.toArray().length}`, value: `${msg.author.flags.toArray().length ? msg.author.flags.toArray().map(i=> insignias[i]).join("\n") : "No tienes insignias"}`, inline: true},
-                    {name: "🔍 **Estado:**", value: `${presencia[msg.member.presence?.status]}\n${actyvidad}`, inline: true},
-                )
-                .setColor(msg.guild.me.displayHexColor)
-                .setTimestamp()
-                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
-            }
         }     
     }
 
     if(comando === "stats"){
+        msg.channel.sendTyping()
         let textCh = client.channels.cache.filter(ft=>ft.type==="GUILD_TEXT").size
         let voiseCH = client.channels.cache.filter(fv=>fv.type==="GUILD_VOICE").size
         let cateCh = client.channels.cache.filter(fc=>fc.type==="GUILD_CATEGORY").size
@@ -331,7 +432,7 @@ client.on("messageCreate", async msg => {
         .setTitle("Estadisticas")
         .addFields(
             {name: "<:wer:920166217086537739> **Servidores:**", value: `${client.guilds.cache.size.toLocaleString()}`, inline: true},
-            {name: "📑 **Comandos:**", value: `25`, inline: true},
+            {name: "📑 **Comandos:**", value: `39`, inline: true},
             {name: "⏱ **Uptime:**", value: `${ms(client.uptime)}`, inline: true},
             {name: `${ping} **Ping:**`, value: `${client.ws.ping} ms`, inline: true},
             {name: "<:memoria:920501773272227880> **Memoria:**", value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, inline: true},
@@ -350,13 +451,14 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "jumbo"){
+        msg.channel.sendTyping()
         let emojisSV = msg.guild.emojis.cache.map(e=>e)
         let emR = Math.floor(Math.random()*emojisSV.length)
         const embInfo = new Discord.MessageEmbed()
         .setAuthor("🔎 Comando jumbo")
         .addFields(
-            {name: "**Uso:**", value: `${"``"}ss.jumbo <Emoji>${"``"}`},
-            {name: "**Ejemplo:**", value: `ss.jumbo ${emojisSV[emR]}`}
+            {name: "**Uso:**", value: `${"``"}${prefijo}jumbo <Emoji>${"``"}`},
+            {name: "**Ejemplo:**", value: `${prefijo}jumbo ${emojisSV[emR]}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -387,6 +489,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "emojis"){
+        msg.channel.sendTyping()
         let emojisAl = ["😃","😄","😅","🤣","😊","🤪","😐","😝","🤑","😡"]
         let emojRandom = Math.floor(Math.random()*emojisAl.length)
         
@@ -401,6 +504,13 @@ client.on("messageCreate", async msg => {
             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embEmojis]})
 
         }else{
+            let segPage
+            if(String(emojis.size).slice(-1) === 0){
+                segPage = Math.floor(emojis.size / 10)
+            }else{
+                segPage = Math.floor(emojis.size / 10 + 1)
+            }
+
             let em1 = 0
             let em2 = 10
             let pagina = 1
@@ -408,9 +518,9 @@ client.on("messageCreate", async msg => {
             const embEmojis = new Discord.MessageEmbed()
             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
             .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
-            .setDescription(`Emojis: ${emojis.size}\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
+            .setDescription(`Emojis: ${emojis.size}\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
             .setColor(msg.guild.me.displayHexColor)
-            .setFooter(`Pagina - ${pagina}/${Math.round(emojis.size / 10)}`,msg.guild.iconURL({dynamic: true}))
+            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
             const msEm = await msg.reply({allowedMentions: {repliedUser: false}, embeds: [embEmojis]})
              
@@ -430,8 +540,8 @@ client.on("messageCreate", async msg => {
                     pagina=pagina-1
 
                     embEmojis
-                    .setDescription(`Emojis: ${emojis.size}\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
-                    .setFooter(`Pagina - ${pagina}/${Math.round(emojis.size / 10)}`,msg.guild.iconURL({dynamic: true}))
+                    .setDescription(`Emojis: ${emojis.size}\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
+                    .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                     msEm.edit({embeds: [embEmojis]})
                 }
 
@@ -442,8 +552,8 @@ client.on("messageCreate", async msg => {
                     pagina=pagina+1
 
                     embEmojis
-                    .setDescription(`Emojis: ${emojis.size}\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
-                    .setFooter(`Pagina - ${pagina}/${Math.round(emojis.size / 10)}`,msg.guild.iconURL({dynamic: true}))
+                    .setDescription(`Emojis: ${emojis.size}\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
+                    .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                     msEm.edit({embeds: [embEmojis]})
                 } 
                 await reaccion.users.remove(msg.author.id)
@@ -452,6 +562,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "stikers"){
+        msg.channel.sendTyping()
         let stikers = msg.guild.stickers.cache
 
         if(stikers.size <= 0){
@@ -515,6 +626,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "uptime"){
+        msg.channel.sendTyping()
         let dias = Math.floor(client.uptime / 86400000);
         let horas = Math.floor(client.uptime / 3600000) % 24;
         let minutos = Math.floor(client.uptime / 60000) % 60;
@@ -522,12 +634,13 @@ client.on("messageCreate", async msg => {
         const embed = new Discord.MessageEmbed()
         .setTitle("⏱ Tiempo activo")
         .setDescription(`${"``"}Dias: ${dias}${"``"} **|** ${"``"}Horas: ${horas}${"``"} **|** ${"``"}Minutos: ${minutos}${"``"} **|** ${"``"}Segundos: ${segundos}${"``"} `)
-        .setColor(colorEmb)
+        .setColor(msg.guild.me.displayHexColor)
         .setTimestamp()
         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embed]})
     }
     
     if(comando === "avatar"){
+        msg.channel.sendTyping()
         let mencion = msg.mentions.members.first()
 
         if(mencion){
@@ -565,7 +678,7 @@ client.on("messageCreate", async msg => {
                 }
             }else{
                 const embAva = new Discord.MessageEmbed()
-                .setAuthor(`Avatar de ${msg.author.tag} pedoido por el`,msg.author.displayAvatarURL({dynamic: true}))
+                .setAuthor(`Tu avatar ${msg.author.tag}`,msg.author.displayAvatarURL({dynamic: true}))
                 .setTitle("Avatar")
                 .setURL(msg.author.displayAvatarURL({dynamic: true, format: "png" || "gif", size: 4096}))
                 .setImage(msg.author.displayAvatarURL({dynamic: true, format: "png" || "gif", size: 4096}))
@@ -577,6 +690,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "server"){
+        msg.channel.sendTyping()
         let feat = {
             "ANIMATED_ICON": "Icono animado",
             "BANNER": "Banner",
@@ -652,6 +766,8 @@ client.on("messageCreate", async msg => {
                             }else{
                                 if(msg.guild.discoverySplashURL()){
                                     imgs = `[Discovery](${msg.guild.discoverySplashURL({size: 4096, format: "png"})})`
+                                }else{
+                                    imgs = "\u200B"
                                 }
                             }
                         }
@@ -671,40 +787,169 @@ client.on("messageCreate", async msg => {
         let chText = msg.guild.channels.cache.filter(t=>t.type==="GUILD_TEXT").size
         let chVoize = msg.guild.channels.cache.filter(v=>v.type==="GUILD_VOICE").size
         let chCategorie = msg.guild.channels.cache.filter(c=>c.type==="GUILD_CATEGORY").size
-        
-        const embServer = new Discord.MessageEmbed()
-        .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
-        .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-        .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
-        .setTitle("Informacion del servidor")
-        .addFields(
-            {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
-            {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
-            {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
-            {name: `📅 **Creado:**`, value: `<t:${Math.floor(msg.guild.createdAt / 1000)}:R>`, inline: true},
-            {name: `✅ **Verificado:**`, value: `${msg.guild.verified ? "Si": "No"}`, inline: true},
-            {name: `<:DiscordPartner:920746109259898890> **Socio:**`, value: `${msg.guild.partnered ? "Si es socio": "No es socio"}`, inline: true},
-            {name: `😃 **Emojis:** ${msg.guild.emojis.cache.size.toLocaleString()}`, value: `${msg.guild.emojis.cache.filter(n=> !n.animated).size.toLocaleString()} normales\n${msg.guild.emojis.cache.filter(a=> a.animated).size.toLocaleString()} animados`, inline: true},
-            {name: `<:sticker:920136186687795262> **Stikers:**`, value: `${msg.guild.stickers.cache.size.toLocaleString()}`, inline: true},
-            {name: "💈 **Roles:**", value: `${msg.guild.roles.cache.size}`, inline: true},
-            {name: `✉ **Invitaciones creadas:**`, value: `${(await msg.guild.invites.fetch()).size.toLocaleString()}`, inline: true},
-            {name: `⛔ **Baneos:**`, value: `${(await msg.guild.bans.fetch()).size.toLocaleString()}`, inline: true},
-            {name: "🔎 **Nivel de verificacion:**", value: `${verificacion[msg.guild.verificationLevel]}`, inline: true},
-            {name: "<:boost:921843079596609566> **Mejoras:**", value: `${msg.guild.premiumSubscriptionCount}`, inline: true},
-            {name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true},
-            {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
-            {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
-            {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
-            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
-            {name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.map(f=> feat[f]).join(" **|** ")}`, inline: false},
-            {name: `\u200B`, value: `${imgs}`, inline: true},
-        )
-        .setColor(msg.guild.me.displayHexColor)
-        .setTimestamp()
-        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+
+        if(msg.guild.features.length >= 1 && msg.guild.me.permissions.has(["BAN_MEMBERS","MANAGE_GUILD"])){
+            const embServer = new Discord.MessageEmbed()
+            .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+            .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+            .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
+            .setTitle("Informacion del servidor")
+            .addFields(
+                {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
+                {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
+                {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
+                {name: `📅 **Creado:**`, value: `<t:${Math.floor(msg.guild.createdAt / 1000)}:R>`, inline: true},
+                {name: `✅ **Verificado:**`, value: `${msg.guild.verified ? "Si": "No"}`, inline: true},
+                {name: `<:DiscordPartner:920746109259898890> **Socio:**`, value: `${msg.guild.partnered ? "Si es socio": "No es socio"}`, inline: true},
+                {name: `😃 **Emojis:** ${msg.guild.emojis.cache.size.toLocaleString()}`, value: `${msg.guild.emojis.cache.filter(n=> !n.animated).size.toLocaleString()} normales\n${msg.guild.emojis.cache.filter(a=> a.animated).size.toLocaleString()} animados`, inline: true},
+                {name: `<:sticker:920136186687795262> **Stikers:**`, value: `${msg.guild.stickers.cache.size.toLocaleString()}`, inline: true},
+                {name: "💈 **Roles:**", value: `${msg.guild.roles.cache.size}`, inline: true},
+                {name: `✉ **Invitaciones creadas:**`, value: `${(await msg.guild.invites.fetch()).size.toLocaleString()}`, inline: true},
+                {name: `⛔ **Baneos:**`, value: `${(await msg.guild.bans.fetch()).size.toLocaleString()}`, inline: true},
+                {name: "🔎 **Nivel de verificacion:**", value: `${verificacion[msg.guild.verificationLevel]}`, inline: true},
+                {name: "<:boost:921843079596609566> **Mejoras:**", value: `${msg.guild.premiumSubscriptionCount}`, inline: true},
+                {name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true},
+                {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
+                {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
+                {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
+                {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                {name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.map(f=> feat[f]).join(" **|** ")}`, inline: false},
+                {name: `\u200B`, value: `${imgs}`, inline: true},
+            )
+            .setColor(msg.guild.me.displayHexColor)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+
+        }else{
+            if(msg.guild.me.permissions.has(["BAN_MEMBERS","MANAGE_GUILD"])){        
+                const embServer = new Discord.MessageEmbed()
+                .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+                .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+                .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
+                .setTitle("Informacion del servidor")
+                .addFields(
+                    {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
+                    {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
+                    {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
+                    {name: `📅 **Creado:**`, value: `<t:${Math.floor(msg.guild.createdAt / 1000)}:R>`, inline: true},
+                    {name: `✅ **Verificado:**`, value: `${msg.guild.verified ? "Si": "No"}`, inline: true},
+                    {name: `<:DiscordPartner:920746109259898890> **Socio:**`, value: `${msg.guild.partnered ? "Si es socio": "No es socio"}`, inline: true},
+                    {name: `😃 **Emojis:** ${msg.guild.emojis.cache.size.toLocaleString()}`, value: `${msg.guild.emojis.cache.filter(n=> !n.animated).size.toLocaleString()} normales\n${msg.guild.emojis.cache.filter(a=> a.animated).size.toLocaleString()} animados`, inline: true},
+                    {name: `<:sticker:920136186687795262> **Stikers:**`, value: `${msg.guild.stickers.cache.size.toLocaleString()}`, inline: true},
+                    {name: "💈 **Roles:**", value: `${msg.guild.roles.cache.size}`, inline: true},
+                    {name: `✉ **Invitaciones creadas:**`, value: `${(await msg.guild.invites.fetch()).size.toLocaleString()}`, inline: true},
+                    {name: `⛔ **Baneos:**`, value: `${(await msg.guild.bans.fetch()).size.toLocaleString()}`, inline: true},
+                    {name: "🔎 **Nivel de verificacion:**", value: `${verificacion[msg.guild.verificationLevel]}`, inline: true},
+                    {name: "<:boost:921843079596609566> **Mejoras:**", value: `${msg.guild.premiumSubscriptionCount}`, inline: true},
+                    {name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true},
+                    {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
+                    {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
+                    {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
+                    {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                    {name: `\u200B`, value: `${imgs}`, inline: true},
+                )
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+
+            }else{
+                if(msg.guild.me.permissions.has("BAN_MEMBERS")){
+                    const embServer = new Discord.MessageEmbed()
+                    .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+                    .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+                    .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
+                    .setTitle("Informacion del servidor")
+                    .addFields(
+                        {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
+                        {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
+                        {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
+                        {name: `📅 **Creado:**`, value: `<t:${Math.floor(msg.guild.createdAt / 1000)}:R>`, inline: true},
+                        {name: `✅ **Verificado:**`, value: `${msg.guild.verified ? "Si": "No"}`, inline: true},
+                        {name: `<:DiscordPartner:920746109259898890> **Socio:**`, value: `${msg.guild.partnered ? "Si es socio": "No es socio"}`, inline: true},
+                        {name: `😃 **Emojis:** ${msg.guild.emojis.cache.size.toLocaleString()}`, value: `${msg.guild.emojis.cache.filter(n=> !n.animated).size.toLocaleString()} normales\n${msg.guild.emojis.cache.filter(a=> a.animated).size.toLocaleString()} animados`, inline: true},
+                        {name: `<:sticker:920136186687795262> **Stikers:**`, value: `${msg.guild.stickers.cache.size.toLocaleString()}`, inline: true},
+                        {name: "💈 **Roles:**", value: `${msg.guild.roles.cache.size}`, inline: true},
+                        {name: `⛔ **Baneos:**`, value: `${(await msg.guild.bans.fetch()).size.toLocaleString()}`, inline: true},
+                        {name: "🔎 **Nivel de verificacion:**", value: `${verificacion[msg.guild.verificationLevel]}`, inline: true},
+                        {name: "<:boost:921843079596609566> **Mejoras:**", value: `${msg.guild.premiumSubscriptionCount}`, inline: true},
+                        {name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true},
+                        {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
+                        {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
+                        {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
+                        {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                        {name: `\u200B`, value: `${imgs}`, inline: true},
+                    )
+                    .setColor(msg.guild.me.displayHexColor)
+                    .setTimestamp()
+                    msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+                }else{
+                    if(msg.guild.me.permissions.has("MANAGE_GUILD")){
+                        const embServer = new Discord.MessageEmbed()
+                        .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+                        .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+                        .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
+                        .setTitle("Informacion del servidor")
+                        .addFields(
+                            {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
+                            {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
+                            {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
+                            {name: `📅 **Creado:**`, value: `<t:${Math.floor(msg.guild.createdAt / 1000)}:R>`, inline: true},
+                            {name: `✅ **Verificado:**`, value: `${msg.guild.verified ? "Si": "No"}`, inline: true},
+                            {name: `<:DiscordPartner:920746109259898890> **Socio:**`, value: `${msg.guild.partnered ? "Si es socio": "No es socio"}`, inline: true},
+                            {name: `😃 **Emojis:** ${msg.guild.emojis.cache.size.toLocaleString()}`, value: `${msg.guild.emojis.cache.filter(n=> !n.animated).size.toLocaleString()} normales\n${msg.guild.emojis.cache.filter(a=> a.animated).size.toLocaleString()} animados`, inline: true},
+                            {name: `<:sticker:920136186687795262> **Stikers:**`, value: `${msg.guild.stickers.cache.size.toLocaleString()}`, inline: true},
+                            {name: "💈 **Roles:**", value: `${msg.guild.roles.cache.size}`, inline: true},
+                            {name: `✉ **Invitaciones creadas:**`, value: `${(await msg.guild.invites.fetch()).size.toLocaleString()}`, inline: true},
+                            {name: "🔎 **Nivel de verificacion:**", value: `${verificacion[msg.guild.verificationLevel]}`, inline: true},
+                            {name: "<:boost:921843079596609566> **Mejoras:**", value: `${msg.guild.premiumSubscriptionCount}`, inline: true},
+                            {name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true},
+                            {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
+                            {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
+                            {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
+                            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                            {name: `\u200B`, value: `${imgs}`, inline: true},
+                        )
+                        .setColor(msg.guild.me.displayHexColor)
+                        .setTimestamp()
+                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+
+                    }else{
+                        const embServer = new Discord.MessageEmbed()
+                        .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+                        .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+                        .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
+                        .setTitle("Informacion del servidor")
+                        .addFields(
+                            {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
+                            {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
+                            {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
+                            {name: `📅 **Creado:**`, value: `<t:${Math.floor(msg.guild.createdAt / 1000)}:R>`, inline: true},
+                            {name: `✅ **Verificado:**`, value: `${msg.guild.verified ? "Si": "No"}`, inline: true},
+                            {name: `<:DiscordPartner:920746109259898890> **Socio:**`, value: `${msg.guild.partnered ? "Si es socio": "No es socio"}`, inline: true},
+                            {name: `😃 **Emojis:** ${msg.guild.emojis.cache.size.toLocaleString()}`, value: `${msg.guild.emojis.cache.filter(n=> !n.animated).size.toLocaleString()} normales\n${msg.guild.emojis.cache.filter(a=> a.animated).size.toLocaleString()} animados`, inline: true},
+                            {name: `<:sticker:920136186687795262> **Stikers:**`, value: `${msg.guild.stickers.cache.size.toLocaleString()}`, inline: true},
+                            {name: "💈 **Roles:**", value: `${msg.guild.roles.cache.size}`, inline: true},
+                            {name: "🔎 **Nivel de verificacion:**", value: `${verificacion[msg.guild.verificationLevel]}`, inline: true},
+                            {name: "<:boost:921843079596609566> **Mejoras:**", value: `${msg.guild.premiumSubscriptionCount}`, inline: true},
+                            {name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true},
+                            {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
+                            {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
+                            {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
+                            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                            {name: `\u200B`, value: `${imgs}`, inline: true},
+                        )
+                        .setColor(msg.guild.me.displayHexColor)
+                        .setTimestamp()
+                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+                    }
+                }
+            }
+        }
     }
+
     
     if(comando === "invite"){
+        msg.channel.sendTyping()
         let invURL = "https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647"
         const inv = new Discord.MessageEmbed()
         .setAuthor(`hola ${msg.author.username}`,msg.author.displayAvatarURL({dynamic: true}))
@@ -726,18 +971,31 @@ client.on("messageCreate", async msg => {
 
     // Generador de codigo QR
     if(comando === "qrcode" || comando === "QR" || comando === "qr"){
+        msg.channel.sendTyping()
         let url = args[0]
         let urQR = `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=600x600`
 
-        const embInfo = new Discord.MessageEmbed()
-        .setTitle("🔎 Comando qrcode")
-        .addFields(
-            {name: "Uso:", value: `${"``"}ss.qrcode <URL o link>${"``"}`},
-            {name: "Ejemplo", value: `ss.qrcode ${(await msg.guild.invites.fetch()).map(mi => mi.url).slice(0,1)}`}
-        )
-        .setColor(colorEmbInfo)
-        .setTimestamp()
-        if(!url) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+        if(!args[0]){
+            if(msg.guild.me.permissions.has("MANAGE_GUILD")){
+                const embInfo = new Discord.MessageEmbed()
+                .setTitle("🔎 Comando qrcode")
+                .addFields(
+                    {name: "Uso:", value: `${"``"}${prefijo}qrcode <URL o link>${"``"}`},
+                    {name: "Ejemplo", value: `${prefijo}qrcode ${(await msg.guild.invites.fetch()).map(mi => mi.url).slice(0,1)}`}
+                )
+                .setColor(colorEmbInfo)
+                return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+            }else{
+                const embInfo = new Discord.MessageEmbed()
+                .setTitle("🔎 Comando qrcode")
+                .addFields(
+                    {name: "Uso:", value: `${"``"}${prefijo}qrcode <URL o link>${"``"}`},
+                    {name: "Ejemplo", value: `${prefijo}qrcode https://discord.gg/yKfWU4uykc`}
+                )
+                .setColor(colorEmbInfo)
+                return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+            }
+        }
 
         const attachment = new Discord.MessageAttachment(urQR, `imagen.png`)
 
@@ -751,11 +1009,13 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "botInfo" || comando === "botinfo"){
+        msg.channel.sendTyping()
         const infBot = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL())
         .setTitle(`<:sslogo:895014367920287754> ${client.user.username}`)
-        .setDescription(`Es un bot enfocado en facilitar tareas que requieren la interacción en otros servidores, como crear alianzas, promocionar contenido en servidores, también enfocado en la creación de un sistema de puntos que puede usar el dueño del servidor para determinar cuando un miembro de soporte se merece subir de rol.\n\n**Sistemas:**\n**Sistema de auto alianzas:** *en desarrollo...*\n**Sistema de Inter promoción:** *fase beta lo puede usar usando el comando ${"``"}ss.setInterP${"``"}*\n**Sistema de puntos y registro de acciones:** *en desarrollo...*`)      
+        .setDescription(`Es un bot enfocado en facilitar tareas que requieren la interacción en otros servidores, como crear alianzas, promocionar contenido en servidores, también enfocado en la creación de un sistema de puntos que puede usar el dueño del servidor para determinar cuando un miembro de soporte se merece subir de rango de acuerdo con los puntos acumulados que tenga.`)
+        .addField("⚙ **Sistemas:**", `📣 **Sistema de inter promoción:**\nFase semi final, para mas información utilice el comando ${"``"}${prefijo}interPInfo${"``"}.\n\n🟢 **Sistema de puntos:**\nFase beta, para mas información utilice el comando ${"``"}${prefijo}puntosInfo${"``"}.\n\n🤝 **Sistema de auto alianzas:**\nEn desarollo...`)      
         .setFooter(`Creador del bot ${client.users.cache.get(creadorID).tag}`,client.users.cache.get(creadorID).displayAvatarURL({dynamic: true}))
         .setColor(colorEmb)
         .setTimestamp()
@@ -767,6 +1027,7 @@ client.on("messageCreate", async msg => {
 
     // Comandos de moderacion
     if(comando === "warn"){
+        msg.channel.sendTyping()
         const embErr1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
@@ -777,8 +1038,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(c=>{
                 return;
             })
-            dt.delete()
-        },60000))
+            dt.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         let mencion = msg.mentions.members.first()
         let razonM = args.join(" ").slice(22)
@@ -787,8 +1050,8 @@ client.on("messageCreate", async msg => {
             const embInfo = new Discord.MessageEmbed()
             .setTitle("🔎 Comando warn")
             .addFields(
-                {name: "Uso:", value: `${"``"}ss.warn <Mencion> <Razón>${"``"}\n${"``"}ss.warn <ID del usuario> <Razón>${"``"}`},
-                {name: "Ejemplo:", value: `ss.warn ${msg.author} Mal uso de canales.\nss.warn ${msg.author.id} Uso de palabras in adecuadas.`}
+                {name: "Uso:", value: `${"``"}${prefijo}warn <Mencion> <Razón>${"``"}\n${"``"}${prefijo}warn <ID del usuario> <Razón>${"``"}`},
+                {name: "Ejemplo:", value: `${prefijo}warn ${msg.author} Mal uso de canales.\n${prefijo}warn ${msg.author.id} Uso de palabras in adecuadas.`}
             )
             .setColor(colorEmbInfo)
             .setTimestamp()
@@ -812,8 +1075,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -824,8 +1089,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr3 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -836,8 +1103,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embMencion = new Discord.MessageEmbed()
                 .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
@@ -861,8 +1130,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(cm=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
                 })
 
             }else{
@@ -881,8 +1152,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -893,8 +1166,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr3 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -905,8 +1180,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr4 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -917,8 +1194,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr5 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -929,8 +1208,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embMencion = new Discord.MessageEmbed()
                 .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
@@ -954,208 +1235,238 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(cm=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
                 })
             }
+
         }else{
-            const embErr1 = new Discord.MessageEmbed()
-            .setAuthor("❌ Error")
-            .setDescription(`El argumento proporcionado (${args[0]}) no se reconoce como una Mención o una ID de un miembro del servidor, proporciona una Mención o ID valida de un miembro del servidor.`)
-            .setColor(ColorError)
-            .setTimestamp()
-            if(isNaN(args[0])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                msg.delete().catch(c=>{
-                    return;
-                })
-                dt.delete()
-            },60000))
-
-            const embErr2 = new Discord.MessageEmbed()
-            .setAuthor("❌ Error")
-            .setDescription(`La ID ingresada no puede ser valida ya que contiene menos de 18 caracteres numéricos.`)
-            .setColor(ColorError)
-            .setTimestamp()
-            if(args[0].length < 18) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                msg.delete().catch(c=>{
-                    return;
-                })
-                dt.delete()
-            },60000))
-
-            const embErr3 = new Discord.MessageEmbed()
-            .setAuthor("❌ Error")
-            .setDescription(`La ID ingresada no puede ser valida ya que contiene mas de 18 caracteres numéricos.`)
-            .setColor(ColorError)
-            .setTimestamp()
-            if(args[0].length > 18) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
-                msg.delete().catch(c=>{
-                    return;
-                })
-                dt.delete()
-            },60000))
-
-            let razonID = args.join(" ").slice(18)
-            let miembroID = msg.guild.members.cache.get(args[0])
-
-            const embErr4 = new Discord.MessageEmbed()
-            .setAuthor("❌ Error")
-            .setDescription(`La ID proporcionada no es de ningún miembro del servidor o es incorrecta, proporciona una ID de un miembro del servidor.`)
-            .setColor(ColorError)
-            .setTimestamp()
-            if(!miembroID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(dt => setTimeout(()=>{
-                msg.delete().catch(c=>{
-                    return;
-                })
-                dt.delete()
-            },60000))
-
-            if(miembroID){
+            if(args[0]){
                 const embErr1 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
-                .setDescription(`Esa ID es de un bot, no puedes advertir a un bot.`)
+                .setDescription(`El argumento proporcionado (${args[0]}) no se reconoce como una Mención o una ID de un miembro del servidor, proporciona una Mención o ID valida de un miembro del servidor.`)
                 .setColor(ColorError)
                 .setTimestamp()
-                if(miembroID.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
+                if(isNaN(args[0])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
-    
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
-                .setDescription(`Esa ID es tuya, ¿Por que quieres advertirte a ti mismo?, no puedo realizar esa acción.`)
+                .setDescription(`La ID ingresada no puede ser valida ya que contiene menos de 18 caracteres numéricos.`)
                 .setColor(ColorError)
                 .setTimestamp()
-                if(miembroID.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
+                if(args[0].length < 18) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
                     msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
-
-                if(msg.author.id === msg.guild.ownerId){
-                    const embErr1 = new Discord.MessageEmbed()
-                    .setAuthor("❌ Error")
-                    .setDescription(`No he podido enviar la advertencia al usuario, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
-                    .setColor(ColorError)
-                    .setTimestamp()
-
-                    const embErr2 = new Discord.MessageEmbed()
-                    .setAuthor("❌ Error")
-                    .setDescription(`No has proporcionado una razón, proporciona una razón.`)
-                    .setColor(ColorError)
-                    .setTimestamp()
-                    if(!razonID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                        msg.delete().catch(c=>{
-                            return;
-                        })
-                        dt.delete()
-                    },60000))
-    
-                    const embID = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
-                    .setThumbnail(miembroID.user.displayAvatarURL({dynamic: true}))
-                    .setTitle("⚠ Usuario advertido")
-                    .setDescription(`👤 ${miembroID}\n${miembroID.user.tag}\n${miembroID.id}\n\n📝 **razón:** ${razonID}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
-                    .setColor("#E5DA00")
-                    .setTimestamp()
-    
-                    const embMDID = new Discord.MessageEmbed()
-                    .setAuthor(miembroID.user.tag,miembroID.user.displayAvatarURL({dynamic: true}))
-                    .setTitle("⚠ Has sido advertido")
-                    .setDescription(`📝 **Por la razón:**\n${razonID}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:** ${msg.author.id}`)
-                    .setColor("#E5DA00")
-                    .setFooter(`En el servidor ${msg.guild.name}`,msg.guild.iconURL({dynamic: true}))
-                    .setTimestamp()
-                    miembroID.send({embeds: [embMDID]}).then(tn=>{
-                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embID]})
-                    }).catch(ch=>{
-                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(te=>setTimeout(()=>{
-                            msg.delete().catch(cd=>{
-                                return;
-                            })
-                            te.delete()
-                        },60000))
+                    dt.delete().catch(e=>{
+                        return;
                     })
+                },40000))
 
-                }else{
+                const embErr3 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`La ID ingresada no puede ser valida ya que contiene mas de 18 caracteres numéricos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(args[0].length > 18) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
+                    msg.delete().catch(c=>{
+                        return;
+                    })
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
+
+                let razonID = args.join(" ").slice(18)
+                let miembroID = msg.guild.members.cache.get(args[0])
+
+                const embErr4 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`La ID proporcionada no es de ningún miembro del servidor o es incorrecta, proporciona una ID de un miembro del servidor.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(!miembroID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(dt => setTimeout(()=>{
+                    msg.delete().catch(c=>{
+                        return;
+                    })
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
+
+                if(miembroID){
                     const embErr1 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
-                    .setDescription(`No he podido enviar la advertencia al usuario, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
+                    .setDescription(`Esa ID es de un bot, no puedes advertir a un bot.`)
                     .setColor(ColorError)
                     .setTimestamp()
+                    if(miembroID.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
+                        msg.delete().catch(c=>{
+                            return;
+                        })
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
+        
 
                     const embErr2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
-                    .setDescription(`Esa ID es del dueño del servidor, no puedes advertir al dueño del servidor.`)
+                    .setDescription(`Esa ID es tuya, ¿Por que quieres advertirte a ti mismo?, no puedo realizar esa acción.`)
                     .setColor(ColorError)
                     .setTimestamp()
-                    if(miembroID.id === msg.guild.ownerId) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
+                    if(miembroID.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
                         msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
-
-                    const embErr3 = new Discord.MessageEmbed()
-                    .setAuthor("❌ Error")
-                    .setDescription(`Esa ID es de un miembro con igual o mayor rol que tu por lo tanto no lo puedes advertir.`)
-                    .setColor(ColorError)
-                    .setTimestamp()
-                    if(msg.member.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
-                        msg.delete().catch(c=>{
+                        dt.delete().catch(e=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                    },40000))
 
+                    if(msg.author.id === msg.guild.ownerId){
+                        const embErr1 = new Discord.MessageEmbed()
+                        .setAuthor("❌ Error")
+                        .setDescription(`No he podido enviar la advertencia al usuario, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
+                        .setColor(ColorError)
+                        .setTimestamp()
 
-                    const embErr4 = new Discord.MessageEmbed()
-                    .setAuthor("❌ Error")
-                    .setDescription(`No has proporcionado una razón, proporciona una razón.`)
-                    .setColor(ColorError)
-                    .setTimestamp()
-                    if(!razonID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(dt => setTimeout(()=>{
-                        msg.delete().catch(c=>{
-                            return;
-                        })
-                        dt.delete()
-                    },60000))
-
-                    const embID = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
-                    .setThumbnail(miembroID.user.displayAvatarURL({dynamic: true}))
-                    .setTitle("⚠ Usuario advertido")
-                    .setDescription(`👤 ${miembroID}\n${miembroID.user.tag}\n${miembroID.id}\n\n📝 **razón:** ${razonID}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
-                    .setColor("#E5DA00")
-                    .setTimestamp()
-
-                    const embMDID = new Discord.MessageEmbed()
-                    .setAuthor(miembroID.user.tag,miembroID.user.displayAvatarURL({dynamic: true}))
-                    .setTitle("⚠ Has sido advertido")
-                    .setDescription(`📝 **Por la razón:**\n${razonID}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:** ${msg.author.id}`)
-                    .setColor("#E5DA00")
-                    .setFooter(`En el servidor ${msg.guild.name}`,msg.guild.iconURL({dynamic: true}))
-                    .setTimestamp()
-                    miembroID.send({embeds: [embMDID]}).then(t=>{
-                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embID]})
-                    }).catch(c=>{
-                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt=>setTimeout(()=>{
+                        const embErr2 = new Discord.MessageEmbed()
+                        .setAuthor("❌ Error")
+                        .setDescription(`No has proporcionado una razón, proporciona una razón.`)
+                        .setColor(ColorError)
+                        .setTimestamp()
+                        if(!razonID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
-                    })
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
+        
+                        const embID = new Discord.MessageEmbed()
+                        .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+                        .setThumbnail(miembroID.user.displayAvatarURL({dynamic: true}))
+                        .setTitle("⚠ Usuario advertido")
+                        .setDescription(`👤 ${miembroID}\n${miembroID.user.tag}\n${miembroID.id}\n\n📝 **razón:** ${razonID}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
+                        .setColor("#E5DA00")
+                        .setTimestamp()
+        
+                        const embMDID = new Discord.MessageEmbed()
+                        .setAuthor(miembroID.user.tag,miembroID.user.displayAvatarURL({dynamic: true}))
+                        .setTitle("⚠ Has sido advertido")
+                        .setDescription(`📝 **Por la razón:**\n${razonID}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:** ${msg.author.id}`)
+                        .setColor("#E5DA00")
+                        .setFooter(`En el servidor ${msg.guild.name}`,msg.guild.iconURL({dynamic: true}))
+                        .setTimestamp()
+                        miembroID.send({embeds: [embMDID]}).then(tn=>{
+                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embID]})
+                        }).catch(ch=>{
+                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(te=>setTimeout(()=>{
+                                msg.delete().catch(cd=>{
+                                    return;
+                                })
+                                te.delete().catch(e=>{
+                                    return;
+                                })
+                            },40000))
+                        })
+
+                    }else{
+                        const embErr1 = new Discord.MessageEmbed()
+                        .setAuthor("❌ Error")
+                        .setDescription(`No he podido enviar la advertencia al usuario, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
+                        .setColor(ColorError)
+                        .setTimestamp()
+
+                        const embErr2 = new Discord.MessageEmbed()
+                        .setAuthor("❌ Error")
+                        .setDescription(`Esa ID es del dueño del servidor, no puedes advertir al dueño del servidor.`)
+                        .setColor(ColorError)
+                        .setTimestamp()
+                        if(miembroID.id === msg.guild.ownerId) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
+                            msg.delete().catch(c=>{
+                                return;
+                            })
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
+
+                        const embErr3 = new Discord.MessageEmbed()
+                        .setAuthor("❌ Error")
+                        .setDescription(`Esa ID es de un miembro con igual o mayor rol que tu por lo tanto no lo puedes advertir.`)
+                        .setColor(ColorError)
+                        .setTimestamp()
+                        if(msg.member.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
+                            msg.delete().catch(c=>{
+                                return;
+                            })
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
+
+
+                        const embErr4 = new Discord.MessageEmbed()
+                        .setAuthor("❌ Error")
+                        .setDescription(`No has proporcionado una razón, proporciona una razón.`)
+                        .setColor(ColorError)
+                        .setTimestamp()
+                        if(!razonID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(dt => setTimeout(()=>{
+                            msg.delete().catch(c=>{
+                                return;
+                            })
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
+
+                        const embID = new Discord.MessageEmbed()
+                        .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+                        .setThumbnail(miembroID.user.displayAvatarURL({dynamic: true}))
+                        .setTitle("⚠ Usuario advertido")
+                        .setDescription(`👤 ${miembroID}\n${miembroID.user.tag}\n${miembroID.id}\n\n📝 **razón:** ${razonID}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
+                        .setColor("#E5DA00")
+                        .setTimestamp()
+
+                        const embMDID = new Discord.MessageEmbed()
+                        .setAuthor(miembroID.user.tag,miembroID.user.displayAvatarURL({dynamic: true}))
+                        .setTitle("⚠ Has sido advertido")
+                        .setDescription(`📝 **Por la razón:**\n${razonID}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:** ${msg.author.id}`)
+                        .setColor("#E5DA00")
+                        .setFooter(`En el servidor ${msg.guild.name}`,msg.guild.iconURL({dynamic: true}))
+                        .setTimestamp()
+                        miembroID.send({embeds: [embMDID]}).then(t=>{
+                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embID]})
+                        }).catch(c=>{
+                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt=>setTimeout(()=>{
+                                msg.delete().catch(c=>{
+                                    return;
+                                })
+                                dt.delete().catch(e=>{
+                                    return;
+                                })
+                            },40000))
+                        })
+                    }
                 }
             }
         }
     }
 
     if(comando === "kick"){
+        msg.channel.sendTyping()
         const embErr1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
@@ -1163,11 +1474,13 @@ client.on("messageCreate", async msg => {
         .setFooter("Permiso requerido: Expulsar miembros")
         .setTimestamp()
         if(!msg.member.permissions.has("KICK_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            dt.delete()
-        },60000))
+            dt.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErr2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -1176,17 +1489,19 @@ client.on("messageCreate", async msg => {
         .setFooter("Requiero del permiso: Expulsar miembros.")
         .setTimestamp()
         if(!msg.guild.me.permissions.has("KICK_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            dt.delete()
-        },60000))
+            dt.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando kick")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.kick <Mencion> <Razón>${"``"}\n${"``"}ss.kick <ID del usuario> <Razón>${"``"}`},
-            {name: "Ejemplo:", value: `ss.kick ${msg.author} Romper una regla.\nss.kick ${msg.author.id} Flood en canales.`}
+            {name: "Uso:", value: `${"``"}${prefijo}kick <Mencion> <Razón>${"``"}\n${"``"}${prefijo}kick <ID del usuario> <Razón>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}kick ${msg.author} Romper una regla.\n${prefijo}kick ${msg.author.id} Flood en canales.`}
         )
         .setColor(colorEmbInfo)
         .setFooter("La razón es opcional")
@@ -1205,11 +1520,13 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(mencion.id === client.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                    msg.delete().then(t=>{
+                    msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -1217,11 +1534,13 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(msg.author.id === mencion.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                    msg.delete().then(t=>{
+                    msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 if(!razonM){
                     razonM = "*no proporcionada*"
@@ -1234,11 +1553,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(msg.guild.me.roles.highest.comparePositionTo(mencion.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb1]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embedMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1256,11 +1577,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(msg.guild.me.roles.highest.comparePositionTo(mencion.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb1]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embedMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1289,11 +1612,13 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(mencion.id === client.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                    msg.delete().then(t=>{
+                    msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -1301,11 +1626,13 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setTimestamp()
                 if(msg.author.id === mencion.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                    msg.delete().then(t=>{
+                    msg.delete().catch(c=>{
                         return;
                     })
-                    dt.delete()
-                },60000))
+                    dt.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 if(!razonM){
                     razonM = "*no proporcionada*"
@@ -1318,11 +1645,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(msg.guild.me.roles.highest.comparePositionTo(mencion.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb1]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrb2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1330,11 +1659,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(msg.member.roles.highest.comparePositionTo(mencion.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb2]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embedMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1352,11 +1683,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(mencion.id === msg.guild.ownerId) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb1]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrb2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1364,11 +1697,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(msg.guild.me.roles.highest.comparePositionTo(mencion.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb2]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrb3 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1376,11 +1711,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(msg.member.roles.highest.comparePositionTo(mencion.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrb3]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embedMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1410,11 +1747,13 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(isNaN(args[0])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                msg.delete().then(t=>{
+                msg.delete().catch(c=>{
                     return;
                 })
-                dt.delete()
-            },60000))
+                dt.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             const embErr2 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -1422,11 +1761,13 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(args[0].length < 18) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                msg.delete().then(t=>{
+                msg.delete().catch(c=>{
                     return;
                 })
-                dt.delete()
-            },60000))
+                dt.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             const embErr3 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -1434,11 +1775,13 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(args[0].length > 18) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(dt => setTimeout(()=>{
-                msg.delete().then(t=>{
+                msg.delete().catch(c=>{
                     return;
                 })
-                dt.delete()
-            },60000))
+                dt.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             let miembroID = msg.guild.members.cache.get(args[0])
             let razonID = args.join(" ").slice(18)
@@ -1449,11 +1792,13 @@ client.on("messageCreate", async msg => {
             .setColor(ColorError)
             .setTimestamp()
             if(!miembroID) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(dt => setTimeout(()=>{
-                msg.delete().then(t=>{
+                msg.delete().catch(c=>{
                     return;
                 })
-                dt.delete()
-            },60000))
+                dt.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             if(miembroID){
                 if(msg.author.id === msg.guild.ownerId){
@@ -1463,11 +1808,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(miembroID.id === msg.author.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1475,11 +1822,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(miembroID.id === client.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     if(!razonID){
                         razonID = "*no proporcionada*"
@@ -1492,11 +1841,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(msg.guild.me.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrB1]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embMiemIDB = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1515,11 +1866,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(msg.guild.me.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrM1]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embMiemID = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1549,11 +1902,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(miembroID.id === msg.author.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1561,11 +1916,13 @@ client.on("messageCreate", async msg => {
                     .setColor(ColorError)
                     .setTimestamp()
                     if(miembroID.id === client.user.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(dt => setTimeout(()=>{
-                        msg.delete().then(t=>{
+                        msg.delete().catch(c=>{
                             return;
                         })
-                        dt.delete()
-                    },60000))
+                        dt.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     if(!razonID){
                         razonID = "*no proporcionada*"
@@ -1578,11 +1935,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(msg.guild.me.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrB1]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErrB2 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -1590,11 +1949,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(msg.member.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrB2]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embMiemIDB = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1613,11 +1974,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(miembroID.id === msg.guild.ownerId) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrM1]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErrM2 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -1625,11 +1988,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(msg.guild.me.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrM2]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErrM3 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -1637,11 +2002,13 @@ client.on("messageCreate", async msg => {
                         .setColor(ColorError)
                         .setTimestamp()
                         if(msg.member.roles.highest.comparePositionTo(miembroID.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrM3]}).then(dt => setTimeout(()=>{
-                            msg.delete().then(t=>{
+                            msg.delete().catch(c=>{
                                 return;
                             })
-                            dt.delete()
-                        },60000))
+                            dt.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embMiemID = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1670,6 +2037,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "ban"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -1680,8 +2048,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -1693,14 +2063,16 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setAuthor("🔎 Comanod ban")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.ban <Mencion> <Razón>${"``"}\n${"``"}ss.ban <ID del usuario> <Razón>${"``"}`},
-            {name: "Ejemplo:", value: `ss.ban ${msg.author} Publicar URLs maliciosas.\nss.ban ${msg.author.id} Romper múltiples reglas en el servidor.`}
+            {name: "Uso:", value: `${"``"}${prefijo}ban <Mencion> <Razón>${"``"}\n${"``"}${prefijo}ban <ID del usuario> <Razón>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}ban ${msg.author} Publicar URLs maliciosas.\n${prefijo}ban ${msg.author.id} Romper múltiples reglas en el servidor.`}
         )
         .setColor(colorEmbInfo)
         .setFooter("La razón es obligatoria")
@@ -1721,8 +2093,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErrM2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -1733,8 +2107,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
 
                 if(mencion.user.bot){
@@ -1747,8 +2123,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrM4 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1759,8 +2137,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1782,8 +2162,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrM4 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1794,8 +2176,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1826,8 +2210,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 const embErrM2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -1838,8 +2224,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(c=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(e=>{
+                        return;
+                    })
+                },40000))
 
                 if(mencion.user.bot){
                     const embErrM2 = new Discord.MessageEmbed()
@@ -1851,8 +2239,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrM3 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1863,8 +2253,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
 
                     const embErrM4 = new Discord.MessageEmbed()
@@ -1876,8 +2268,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1899,8 +2293,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrM2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1911,8 +2307,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrM3 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1923,8 +2321,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrM4 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -1935,8 +2335,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embMencion = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -1969,8 +2371,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(c=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             const embErrID2 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -1981,8 +2385,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(c=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             const embErrID3 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -1993,8 +2399,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(c=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(e=>{
+                    return;
+                })
+            },40000))
 
             let userID = msg.guild.members.cache.get(args[0])
             let razonID = args.join(" ").slice(18)
@@ -2009,8 +2417,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrID2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -2021,8 +2431,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
 
                     if(userID.user.bot){
@@ -2035,8 +2447,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr2 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2047,8 +2461,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embID = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2070,8 +2486,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr2 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2082,8 +2500,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embID = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2117,8 +2537,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErrID2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -2129,8 +2551,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(c=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(e=>{
+                            return;
+                        })
+                    },40000))
 
 
                     if(userID.user.bot){
@@ -2143,8 +2567,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr2 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2155,8 +2581,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr3 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2167,8 +2595,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embID = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2190,8 +2620,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr2 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2202,7 +2634,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr3 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2213,8 +2648,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embErr4 = new Discord.MessageEmbed()
                         .setAuthor("❌ Error")
@@ -2225,8 +2662,10 @@ client.on("messageCreate", async msg => {
                             msg.delete().catch(c=>{
                                 return;
                             })
-                            tm.delete()
-                        },60000))
+                            tm.delete().catch(e=>{
+                                return;
+                            })
+                        },40000))
 
                         const embID = new Discord.MessageEmbed()
                         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2262,7 +2701,9 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(dm=>{
                             return;
                         })
-                        mbt.delete()
+                        mbt.delete().catch(e=>{
+                            return;
+                        })
                     },40000));
 
                     if(usuarioID.bot){
@@ -2299,6 +2740,7 @@ client.on("messageCreate", async msg => {
 
     // unban
     if(comando === "unban"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -2306,11 +2748,13 @@ client.on("messageCreate", async msg => {
         .setFooter("Requiero del permiso de Banear miembros.")
         .setTimestamp()
         if(!msg.guild.me.permissions.has("BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2319,11 +2763,13 @@ client.on("messageCreate", async msg => {
         .setFooter("Requieres del permiso de Banear miembros.")
         .setTimestamp()
         if(!msg.member.permissions.has("BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErrP3 = new Discord.MessageEmbed()
         .setTitle("📄")
@@ -2331,17 +2777,19 @@ client.on("messageCreate", async msg => {
         .setColor(colorEmbInfo)
         .setTimestamp()
         if((await msg.guild.bans.fetch()).size === 0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP3]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando unban")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.unban <ID del usuario baneado>${"``"}`},
-            {name: "Ejemplo:", value: `ss.unban ${(await msg.guild.bans.fetch()).map(mb => mb.user.id).slice(0,1)}`}
+            {name: "Uso:", value: `${"``"}${prefijo}unban <ID del usuario baneado>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}unban ${(await msg.guild.bans.fetch()).map(mb => mb.user.id).slice(0,1)}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -2355,11 +2803,13 @@ client.on("messageCreate", async msg => {
         .setColor(ColorError)
         .setTimestamp()
         if(!(await msg.guild.bans.fetch()).find(fb => fb.user.id === args[0])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP4]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embUban = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2374,6 +2824,7 @@ client.on("messageCreate", async msg => {
 
     // clear 
     if(comando === "clear" || comando === "cl"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -2381,11 +2832,13 @@ client.on("messageCreate", async msg => {
         .setFooter("Requiero del permiso: Gestionar mensajes .")
         .setTimestamp()
         if(!msg.guild.me.permissions.has("MANAGE_MESSAGES")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2394,19 +2847,21 @@ client.on("messageCreate", async msg => {
         .setFooter("Requieres del permiso: Gestionar mensajes .")
         .setTimestamp()
         if(!msg.member.permissions.has("MANAGE_MESSAGES")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         let algo = args[0]
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando clear")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.clear <Cantidad>${"``"}`},
-            {name: "Ejemplo:", value: `ss.clear ${Math.round(Math.random(1)*100)}`}
+            {name: "Uso:", value: `${"``"}${prefijo}clear <Cantidad>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}clear ${Math.round(Math.random(1)*100)}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -2418,11 +2873,13 @@ client.on("messageCreate", async msg => {
         .setColor(ColorError)
         .setTimestamp()
         if(isNaN(algo)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErr2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2430,11 +2887,13 @@ client.on("messageCreate", async msg => {
         .setColor(ColorError)
         .setTimestamp()
         if(algo <= 2) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErr3 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2442,24 +2901,30 @@ client.on("messageCreate", async msg => {
         .setColor(ColorError)
         .setTimestamp()
         if(algo > 100) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tm => setTimeout(()=>{
-            msg.delete().then(t=>{
+            msg.delete().catch(c=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embClear = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("🗑 Mensajes eliminados")
-        .setDescription(`${msg.author} ha eliminado **${algo}** mensajes.`)
+        .setDescription(`${msg.author} ha eliminado **${Math.round(algo)}** mensajes.`)
         .setColor(colorEmb)
 
         setTimeout(()=>{
             msg.delete()
             setTimeout(()=>{
-                msg.channel.bulkDelete(algo)
+                msg.channel.bulkDelete(Math.round(algo)).catch(e=>{
+                    return;
+                })
                 msg.channel.send({embeds: [embClear]}).then(tm => setTimeout(()=>{
-                    tm.delete()
+                    tm.delete().catch(e=>{
+                        return;
+                    })
                 },20000))
             },1000)
         },800)
@@ -2467,6 +2932,7 @@ client.on("messageCreate", async msg => {
 
     // Banlist
     if(comando === "banlist" || comando === "blist"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -2474,9 +2940,13 @@ client.on("messageCreate", async msg => {
         .setFooter("Requiero del permiso: Banear miembros.")
         .setTimestamp()
         if(!msg.guild.me.permissions.has("BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
-            msg.delete()
-            tm.delete()
-        },60000))
+            msg.delete().catch(c=>{
+                return;
+            })
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2485,9 +2955,13 @@ client.on("messageCreate", async msg => {
         .setFooter("Requieres del permiso: Banear miembros.")
         .setTimestamp()
         if(!msg.member.permissions.has("BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(tm => setTimeout(()=>{
-            msg.delete()
-            tm.delete()
-        },60000))
+            msg.delete().catch(c=>{
+                return;
+            })
+            tm.delete().catch(e=>{
+                return;
+            })
+        },40000))
 
         let ss0 = 0
         let ss1 = 10
@@ -2498,7 +2972,7 @@ client.on("messageCreate", async msg => {
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("🧾 Lista de baneos")
         .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m=>m).map((bm, i) => `**${i+1}. ${bm.user.tag}**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}\n[Avatar del usuario](${bm.user.displayAvatarURL({dynamic: true})})`).slice(ss0,ss1).join("\n\n")}`)
-        .setColor(colorEmb)
+        .setColor(msg.guild.me.displayHexColor)
         .setFooter(`Pagina - ${pagina}/${Math.round(gb.size / 10)}`)
         .setTimestamp()
 
@@ -2542,6 +3016,7 @@ client.on("messageCreate", async msg => {
 
     // dmsend
     if(comando === "dmsend" || comando === "dm"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -2552,8 +3027,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2565,14 +3042,16 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando dmsend")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.dmsend <Mencion del usuario> <Mensaje>${"``"}\n${"``"}ss.dmsend <ID sel usuario> <Mensaje>${"``"}`},
-            {name: "Ejemplo:", value: `ss.dmsend ${msg.author} Mensaje a enviar.\nss.dmsend ${msg.author.id} Mensaje a enviar.`}
+            {name: "Uso:", value: `${"``"}${prefijo}dmsend <Mencion del usuario> <Mensaje>${"``"}\n${"``"}${prefijo}dmsend <ID sel usuario> <Mensaje>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}dmsend ${msg.author} Mensaje a enviar.\n${prefijo}dmsend ${msg.author.id} Mensaje a enviar.`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -2598,8 +3077,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(t=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             const embErr3 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -2610,8 +3091,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(t=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             const embErr4 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -2622,8 +3105,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(t=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             const embErr5 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
@@ -2634,8 +3119,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(t=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             const emdSendDM = new Discord.MessageEmbed()
             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2659,8 +3146,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
             })
         }
         if(args[0]){
@@ -2684,8 +3173,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr3 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -2696,8 +3187,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr4 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -2708,8 +3201,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr5 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -2720,8 +3215,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const emdSendDM = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -2745,8 +3242,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
                 })
             }
         }
@@ -2756,37 +3255,130 @@ client.on("messageCreate", async msg => {
 
 
     // Comandos de administracion
-    if(comando === "setInterP" || comando === "setinterp"){
-        const error = new Discord.MessageEmbed()
-        .setAuthor(`❌ Error`)
-        .setDescription(`Solo un administrador del servidor puede ejecutar el comando.`)
-        .setColor(ColorError)
-        .setTimestamp()
-        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [error]}).then(tt => setTimeout(()=> {
-            msg.delete().catch(t=>{
-                return;
-            })
-            tt.delete()
-        },60000))
 
-        const embErrMiem = new Discord.MessageEmbed()
+    // Establecer prefijo en el servidor
+    if(comando === "setPrefix" || comando === "setprefix"){
+        msg.channel.sendTyping()
+        const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
-        .setDescription(`Tu servidor no cuenta con el mínimo de 100 miembros necesarios para poder usar el sistema de Inter Promoción.`)
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando, solo un administrador del servidor lo puede ejecutar.`)
         .setColor(ColorError)
         .setTimestamp()
-        if(msg.guild.members.cache.filter(f=> !f.user.bot).size < 100) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrMiem]}).then(tt => setTimeout(()=> {
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
             msg.delete().catch(t=>{
                 return;
             })
-            tt.delete()
-        },60000))
-
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
-        .setTitle("🔎 Comando setInterP")
+        .setTitle("🔎 Comando setPrefix")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.setInterP <Mención del canal>${"``"}\n${"``"}ss.setInterP <ID del canal>${"``"}`},
-            {name: "Ejemplos:", value: `ss.setInterP ${msg.channel}\nss.setInterP ${msg.channelId}`}
+            {name: "Uso:", value: `${"``"}${prefijo}setPrefix <Nuevo prefijo>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}setPrefix s!`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false},embeds: [embInfo]})
+
+        const embErrP2 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No puedes establecer un prefijo con un emoji.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(args[0].includes(":")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embErrP3 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`El prefijo no puede tener mas de 3 caracteres.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(args[0].length > 3) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP3]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+
+
+        let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
+
+        if(!dataPre.serverID.some(s=> s === msg.guildId)){
+            dataPre.serverID.push(msg.guildId)
+            dataPre.prefijo.push(args[0])
+
+            const embPrefix = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("Prefijo cambiado")
+            .setDescription(`Nuevo prefijo: ${"``"}${args[0]}${"``"}`)
+            .setColor(msg.guild.me.displayHexColor)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPrefix]})
+            return await dataPre.save()
+        }
+        let num = dataPre.serverID.indexOf(msg.guildId)
+        dataPre.prefijo[num] = args[0]
+
+        const embPrefix = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setTitle("Prefijo cambiado")
+        .setDescription(`Nuevo prefijo: ${"``"}${args[0]}${"``"}`)
+        .setColor(msg.guild.me.displayHexColor)
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPrefix]})
+        return await dataPre.save()
+    }
+
+    if(comando === "setSlowMode" || comando === "setslowmode" || comando === "setSlow" || comando === "setslow" || comando === "slowmode"){
+        msg.channel.sendTyping()
+        const embErrP1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido:  Gestionar canales o Administrador")
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR") || !msg.member.permissions.has("MANAGE_CHANNELS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embErrP2 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tengo los permisos suficientes.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido: Gestionar canales")
+        .setTimestamp()
+        if(!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        let tiempos = ["10s","2m","30m","1h","6h","12h"]
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando setSlowMode")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}setSlowMode <Mención del canal> <Tiempo a establecer el modo pausado>${"``"}\n${"``"}${prefijo}setSlowMode <ID del canal> <Tiempo a establecer el modo pausado>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}setSlowMode ${msg.channel} ${tiempos[Math.floor(Math.random()*tiempos.length)]}\n${prefijo}setSlowMode ${msg.channelId} ${tiempos[Math.floor(Math.random()*tiempos.length)]}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -2797,78 +3389,71 @@ client.on("messageCreate", async msg => {
         if(canal){
             const embErr1 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
-            .setDescription(`El argumento que has proporcionado no se identifico como un canal en este servidor, menciona o proporciona la ID de un canal de este servidor.`)
+            .setDescription(`El canal proporcionado (${canal}) no es de tipo texto, el modo pausado solo se puede establecer en canales de tipo texto.`)
             .setColor(ColorError)
             .setTimestamp()
-            if(!canal) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tt => setTimeout(()=> {
+            if(!canal.isText()) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
                 msg.delete().catch(t=>{
                     return;
                 })
-                tt.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             const embErr2 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
-            .setDescription(`El canal proporcionado no es de tipo texto, proporciona un canal de tipo texto.`)
+            .setDescription(`No has proporcionado el tiempo del modo pausado a establecer para el canal.`)
             .setColor(ColorError)
             .setTimestamp()
-            if(!canal.isText()) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tt => setTimeout(()=> {
+            if(!args[1]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tm => setTimeout(()=>{
                 msg.delete().catch(t=>{
                     return;
                 })
-                tt.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             const embErr3 = new Discord.MessageEmbed()
             .setAuthor("❌ Error")
-            .setDescription(`No tengo los permisos suficientes en ese canal.`)
+            .setDescription(`No solo ingreses números determina si son segundos con ${"``"}s${"``"}, minutos con ${"``"}m${"``"}, horas con ${"``"}h${"``"} al final del numero, ejemplo ${"``"}10s${"``"}.`)
             .setColor(ColorError)
             .setTimestamp()
-            .setFooter("Permisos requeridos: Crear invitación, Gestionar mensajes, Gestionar canal.")
-            if(!msg.guild.me.permissionsIn(canal).has(["CREATE_INSTANT_INVITE","MANAGE_MESSAGES","MANAGE_CHANNELS"])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tt => setTimeout(()=> {
+            if(!isNaN(args[1])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tm => setTimeout(()=>{
                 msg.delete().catch(t=>{
                     return;
                 })
-                tt.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
-            canal.setRateLimitPerUser(8*60, "El modo pausado de 8m es necesario para el Sistema de Inter promoción para evitar flood")
-            canal.createInvite({maxAge: 0, reason: "Importante para el sistema de Inter promoción."}).then(ti=> client.channels.cache.get("850189144826052648").send(`${ti}`))
+            const embErr4 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El tiempo del modo pausado de un canal no debe de superar 6h.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(ms(args[1])/1000 >= 21600) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
-            const embMDCre = new Discord.MessageEmbed()
-            .setAuthor(`${msg.author.tag} - ID: ${msg.author.id}`,msg.author.displayAvatarURL({dynamic: true}))
-            .setThumbnail(msg.guild.iconURL({dynamic: true}))
-            .setTitle("Nuevo canal agregado a Inter promoción")
-            .addFields(
-                {name: "**Servidor:**", value: `${msg.guild.name}\n**ID:** ${msg.guildId}\n👥 ${msg.guild.members.cache.size}`},
-                {name: "**Canal:**", value: `${msg.channel}\n${msg.channel.name}\n**ID:** ${msg.channelId}\n**Permisos:** ${msg.guild.me.permissionsIn(canal).toArray().length}`}
-            )
+            const embSlow = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("⏲ Modo pausado")
+            .setDescription(`El modo pausado de **${args[1]}** ha sido establecido en el canal **${canal}**.`)
             .setColor(msg.guild.me.displayHexColor)
-            .setFooter(client.user.tag,client.user.displayAvatarURL({dynamic: true}))
             .setTimestamp()
-            client.channels.cache.get("850189144826052648").send({content: `${creadoresID.map(c=> `<@${c}>`).join(" **|** ")}`, embeds: [embMDCre]})
-            
-
-            const emb = new Discord.MessageEmbed()
-            .setDescription(`✅ **Listo el canal se agregara al sistema de Inter promoción, gracias por usar el Bot.**`)
-            .setColor(colorEmb)
-            .setFooter("Agregar el canal al sistema de Inter promoción puede tardar entre 10m a mas de 4h, por favor sea paciente.",client.user.displayAvatarURL())
-            .setTimestamp()
-            msg.reply({allowedMentions: {repliedUser: false}, embeds: [emb]})
- 
+            canal.setRateLimitPerUser(ms(args[1]) / 1000, `Modo pausado de ${args[1]} establecido en el canal por ${msg.author.tag}.`).then(tm=>{
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embSlow]})
+            }).catch(c=> console.log(c))
         }
-    }
 
-
-    if(comando === "interPInfo" || comando === "interpinfo"){
-        const embInf = new Discord.MessageEmbed()
-        .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
-        .setTitle("¿Qué es el sistema de Inter promoción?")
-        .setDescription(`Es un sistema que te facilita la tarea de promocionar contenido en otros servidores, con el solo tienes que promocionar el contenido en un canal el bot lo publicara en otros canales de otroas servidores.\n\n**Uso:**\nCrea un canal solo para esta función luego usar el comando ${"``"}ss.setInterP${"``"} para agregar el canal al sistema después seria empezar a publicar tu promoción en el, cada ves que publiques algo en ese canal te mandara tu publicación a todos los canales de los demás servidores que estén conectados al sistema de **Inter promoción**.`)
-        .setFooter(client.user.username,client.user.displayAvatarURL())
-        .setColor(colorEmb)
-        .setTimestamp()
-        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInf]})
     }
 
     // addrol
@@ -2878,6 +3463,7 @@ client.on("messageCreate", async msg => {
     let randomRID = Math.floor(Math.random()* rolesParaID.length)
 
     if(comando === "addrol" || comando === "addr"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -2888,8 +3474,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2901,15 +3489,16 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
-        msg.guild.ownerId
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando addrol")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.addrol <Mencion del miembro> <Mencion del rol>${"``"}\n${"``"}ss.addrol <ID del miembro> <ID del rol>${"``"}`},
-            {name: "Ejemplos:", value: `ss.addrol ${msg.author} ${roles[random]}\nss.addrol ${msg.author} ${rolesParaID[randomRID]}\nss.addrol ${msg.author.id} ${rolesParaID[randomRID]}\nss.addrol ${msg.author.id} ${roles[random]}`}
+            {name: "Uso:", value: `${"``"}${prefijo}addrol <Mencion del miembro> <Mencion del rol>${"``"}\n${"``"}${prefijo}addrol <ID del miembro> <ID del rol>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}addrol ${msg.author} ${roles[random]}\n${prefijo}addrol ${msg.author} ${rolesParaID[randomRID]}\n${prefijo}addrol ${msg.author.id} ${rolesParaID[randomRID]}\n${prefijo}addrol ${msg.author.id} ${roles[random]}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -2931,8 +3520,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(t=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             if(rolParaAdd){
                 let rolesDelMenc = mencionUs.roles.cache.map(mp => mp.id)
@@ -2946,8 +3537,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -2958,8 +3551,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr3 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -2970,8 +3565,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr4 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -2983,8 +3580,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embRoladd = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -3005,8 +3604,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 if(rolParaAdd){
                     let rolesDelMenc = usuarioID.roles.cache.map(mp => mp.id)
@@ -3019,8 +3620,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -3031,8 +3634,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr3 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -3043,8 +3648,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr4 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -3056,8 +3663,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embRoladd = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -3073,6 +3682,7 @@ client.on("messageCreate", async msg => {
 
     // removeRol
     if(comando === "removeRol" || comando === "removerol" || comando === "rmr"){
+        msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
         .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
@@ -3083,8 +3693,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3096,15 +3708,17 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
         msg.guild.ownerId
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando removeRol")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.removeRol <Mencion del miembro> <Mencion del rol>${"``"}\n${"``"}ss.removeRol <ID del miembro> <ID del rol>${"``"}`},
-            {name: "Ejemplos:", value: `ss.removeRol ${msg.author} ${roles[random]}\nss.removeRol ${msg.author} ${rolesParaID[randomRID]}\nss.removeRol ${msg.author.id} ${rolesParaID[randomRID]}\nss.removeRol ${msg.author.id} ${roles[random]}`}
+            {name: "Uso:", value: `${"``"}${prefijo}removeRol <Mencion del miembro> <Mencion del rol>${"``"}\n${"``"}${prefijo}removeRol <ID del miembro> <ID del rol>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}removeRol ${msg.author} ${roles[random]}\n${prefijo}removeRol ${msg.author} ${rolesParaID[randomRID]}\n${prefijo}removeRol ${msg.author.id} ${rolesParaID[randomRID]}\n${prefijo}removeRol ${msg.author.id} ${roles[random]}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -3126,8 +3740,10 @@ client.on("messageCreate", async msg => {
                 msg.delete().catch(t=>{
                     return;
                 })
-                tm.delete()
-            },60000))
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
 
             if(rolParaAdd){
                 let rolesDelMenc = mencionUs.roles.cache.map(mp => mp.id)
@@ -3141,8 +3757,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr2 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -3153,8 +3771,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr3 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -3165,8 +3785,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embErr4 = new Discord.MessageEmbed()
                 .setAuthor("❌ Error")
@@ -3178,8 +3800,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 const embRoladd = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -3200,8 +3824,10 @@ client.on("messageCreate", async msg => {
                     msg.delete().catch(t=>{
                         return;
                     })
-                    tm.delete()
-                },60000))
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
 
                 if(rolParaAdd){
                     let rolesDelMenc = usuarioID.roles.cache.map(mp => mp.id)
@@ -3214,8 +3840,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr2 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -3226,8 +3854,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr3 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -3238,8 +3868,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embErr4 = new Discord.MessageEmbed()
                     .setAuthor("❌ Error")
@@ -3251,8 +3883,10 @@ client.on("messageCreate", async msg => {
                         msg.delete().catch(t=>{
                             return;
                         })
-                        tm.delete()
-                    },60000))
+                        tm.delete().catch(t=>{
+                            return;
+                        })
+                    },40000))
 
                     const embRoladd = new Discord.MessageEmbed()
                     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -3268,6 +3902,7 @@ client.on("messageCreate", async msg => {
 
     // createCha
     if(comando === "createCha" || comando === "createcha"  || comando === "crech"){
+        msg.channel.sendTyping()
         let categoriasGMS = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_CATEGORY").map(mc => mc.id)
         let randomCat = Math.floor(Math.random()* categoriasGMS.length)
 
@@ -3285,8 +3920,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3298,14 +3935,16 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando createCha")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.createCha <Nombre del canal>${"``"}\nCrea un canal con el nombre proporcionado de tipo texto en la categoría que estas utilizando\n${"``"}ss.createCha <Nombre del canal> - <Tipo de canal (texto o voz)>${"``"}\nCrea un canal con el nombre ingresado y el tipo de canal ingresado en la categoría que estas usando\n${"``"}ss.createCha <Nombre del canal> - <Tipo de canal (texto o voz)> - <ID de la categoría en la que se creara>${"``"}\nCrea un canal con el nombre ingresado, tipo de canal ingresado y en la categoría ingresada.`},
-            {name: "Ejemplos:", value: `ss.createCha Chat\nss.createCha Reglas - texto\nss.createCha Musica - voz - ${categoriasGMS[randomCat]}`}
+            {name: "Uso:", value: `${"``"}${prefijo}createCha <Nombre del canal>${"``"}\nCrea un canal con el nombre proporcionado de tipo texto en la categoría que estas utilizando\n${"``"}${prefijo}createCha <Nombre del canal> - <Tipo de canal (texto o voz)>${"``"}\nCrea un canal con el nombre ingresado y el tipo de canal ingresado en la categoría que estas usando\n${"``"}${prefijo}createCha <Nombre del canal> - <Tipo de canal (texto o voz)> - <ID de la categoría en la que se creara>${"``"}\nCrea un canal con el nombre ingresado, tipo de canal ingresado y en la categoría ingresada.`},
+            {name: "Ejemplos:", value: `${prefijo}createCha Chat\n${prefijo}createCha Reglas - texto\n${prefijo}createCha Musica - voz - ${categoriasGMS[randomCat]}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -3346,6 +3985,7 @@ client.on("messageCreate", async msg => {
 
     // deleteCha
     if(comando == "deleteCha" || comando == "deletecha" || comando === "delch"){
+        msg.channel.sendTyping()
         let canalesAlDel = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_TEXT" ).map(mc => mc)
         let randomChanne = Math.floor(Math.random()* canalesAlDel.length)
 
@@ -3365,8 +4005,10 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embErrP2 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3378,14 +4020,16 @@ client.on("messageCreate", async msg => {
             msg.delete().catch(t=>{
                 return;
             })
-            tm.delete()
-        },60000))
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle("🔎 Comando deleteCha")
         .addFields(
-            {name: "Uso:", value: `${"``"}ss.deleteCha <Mencion del canal>${"``"}\n${"``"}ss.deleteCha <ID del canal>${"``"}`},
-            {name: "Ejemplos:", value: `ss.deleteCha ${canalesAlDel[randomChanne]}\nss.deleteCha ${canalesAlDel[randomChanne].id}`}
+            {name: "Uso:", value: `${"``"}${prefijo}deleteCha <Mencion del canal>${"``"}\n${"``"}${prefijo}deleteCha <ID del canal>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}deleteCha ${canalesAlDel[randomChanne]}\n${prefijo}deleteCha ${canalesAlDel[randomChanne].id}`}
         )
         .setColor(colorEmbInfo)
         .setTimestamp()
@@ -3407,6 +4051,845 @@ client.on("messageCreate", async msg => {
     }
 
 
+    // Comandos del sistema de Inter Promocion
+    if(comando === "interPInfo" || comando === "interpinfo"){
+        msg.channel.sendTyping()
+        const embInf = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+        .setTitle("📣 ¿Qué es el sistema de Inter promoción?")
+        .setDescription(`Es un sistema que te facilita la tarea de promocionar contenido en otros servidores, con el solo tienes que promocionar el contenido en un canal el bot lo publicara en otros canales de otroas servidores.\n\n📑 **Comandos:**\n${"``"}${prefijo}setInterP${"``"} **|** Agrega un canal al sistema de *Inter promoción*.\n${"``"}${prefijo}removeInterP${"``"} **|** Elimina el canal establecido para el sistema de *Inter promoción*.\n${"``"}${prefijo}InterPlist${"``"} **|** Muestra una lista de servidores que tienen activo el sistema de *Inter promoción*.`)
+        .setFooter(client.user.username,client.user.displayAvatarURL())
+        .setColor(colorEmb)
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInf]})
+    }
+
+    // Establecer el canal de inter promocion
+    if(comando === "setInterP" || comando === "setinterp"){
+        msg.channel.sendTyping()
+        const error = new Discord.MessageEmbed()
+        .setAuthor(`❌ Error`)
+        .setDescription(`Solo un administrador del servidor puede ejecutar el comando.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [error]}).then(tt => setTimeout(()=> {
+            msg.delete().catch(t=>{
+                return;
+            })
+            tt.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embErrMiem = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`Este servidor no cuenta con el mínimo de 100 miembros necesarios para poder usar el sistema de Inter Promoción.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(msg.guild.members.cache.filter(f=> !f.user.bot).size < 100) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrMiem]}).then(tt => setTimeout(()=> {
+            msg.delete().catch(t=>{
+                return;
+            })
+            tt.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando setInterP")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}setInterP <Mención del canal>${"``"}\n${"``"}${prefijo}setInterP <ID del canal>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}setInterP ${msg.channel}\n${prefijo}setInterP ${msg.channelId}`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        let canal = msg.mentions.channels.first() || msg.guild.channels.cache.get(args[0])
+
+        const embErr1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`El argumento que has proporcionado no se identifico como un canal en este servidor, menciona o proporciona la ID de un canal de este servidor.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!canal) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tt => setTimeout(()=> {
+            msg.delete().catch(t=>{
+                return;
+            })
+            tt.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        if(canal){
+            const embErr1 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`En este servidor ya hay un canal de Inter promoción, no puedes agregar otro al sistema de Inter promoción.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(dataIP.serverID.some(s=> s === msg.guildId)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tt => setTimeout(()=> {
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tt.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr2 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El canal proporcionado no es de tipo texto, proporciona un canal de tipo texto.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(!canal.isText()) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tt => setTimeout(()=> {
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tt.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr3 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`Ese canal ya esta agregado al sistema de **Inter promoción**.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(dataIP.canalID.some(s=> s === canal.id)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tt => setTimeout(()=> {
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tt.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr4 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`No tengo los permisos suficientes en ese canal.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            .setFooter("Permisos requeridos: Crear invitación, Gestionar mensajes, Gestionar canal.")
+            if(!msg.guild.me.permissionsIn(canal).has(["CREATE_INSTANT_INVITE","MANAGE_MESSAGES","MANAGE_CHANNELS"])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(tt => setTimeout(()=> {
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tt.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            dataIP.canalID.push(canal.id)
+            dataIP.autor.push(msg.author.id)
+            dataIP.serverID.push(msg.guildId)
+
+            canal.setRateLimitPerUser(8*60, "El modo pausado de 8m es necesario para el Sistema de Inter promoción para evitar flood")
+            canal.createInvite({maxAge: 0, reason: "Importante para el sistema de Inter promoción."}).then(ti=> client.channels.cache.get("850189144826052648").send(`${ti}`))
+
+            const embMDCre = new Discord.MessageEmbed()
+            .setAuthor(`${msg.author.tag} - ID: ${msg.author.id}`,msg.author.displayAvatarURL({dynamic: true}))
+            .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+            .setTitle("Nuevo canal agregado al sistema de Inter promoción")
+            .addFields(
+                {name: "**Servidor:**", value: `${msg.guild.name}\n**ID:** ${msg.guildId}\n👥 ${msg.guild.members.cache.size}`},
+                {name: "**Canal:**", value: `${msg.channel}\n${msg.channel.name}\n**ID:** ${msg.channelId}\n**Permisos:** ${msg.guild.me.permissionsIn(canal).toArray().length}`}
+            )
+            .setColor("GREEN")
+            .setFooter(client.user.tag,client.user.displayAvatarURL({dynamic: true}))
+            .setTimestamp()
+            client.channels.cache.get("850189144826052648").send({embeds: [embMDCre]})
+            
+
+            const emb = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("✅ El canal se agregara al sistema de Inter promoción, gracias por usar el Bot.")
+            .setDescription(`<:canaldetexto:904812801925738557> **Canal:** ${canal}`)
+            .setColor("GREEN")
+            .setFooter(client.user.username,client.user.displayAvatarURL())
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [emb]})
+            return await dataIP.save()
+        }
+    }
+
+
+    // Eliminar el canal de inter promocion
+    if(comando === "removeInterP" || comando === "removeinterp"){
+        msg.channel.sendTyping()
+        const error = new Discord.MessageEmbed()
+        .setAuthor(`❌ Error`)
+        .setDescription(`Solo un administrador del servidor puede ejecutar el comando.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [error]}).then(tt => setTimeout(()=> {
+            msg.delete().catch(t=>{
+                return;
+            })
+            tt.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando removeInterP")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}removeInterP <Mención del canal>${"``"}\n${"``"}${prefijo}removeInterP <ID del canal>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}removeInterP ${msg.channel}\n${prefijo}removeInterP ${msg.channelId}`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        let canal = msg.mentions.channels.first() || msg.guild.channels.cache.get(args[0])
+
+        const embErr1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`El argumento que has proporcionado no se identifico como un canal en este servidor, menciona o proporciona la ID de un canal de este servidor.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!canal) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tt => setTimeout(()=> {
+            msg.delete().catch(t=>{
+                return;
+            })
+            tt.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        if(canal){
+            const embErr1 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El canal proporcionado no se encontró en el sistema de Inter promoción.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(!dataIP.canalID.some(s=> s === canal.id)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tt => setTimeout(()=> {
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tt.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            let num = dataIP.canalID.indexOf(canal.id)
+            dataIP.canalID.splice(num,1)
+            dataIP.autor.splice(num,1)
+            dataIP.serverID.splice(num,1)
+
+            canal.setRateLimitPerUser(0,"Se ha eliminado el canal del sistema de Inter promoción.");
+            (await msg.guild.invites.fetch()).filter(fi => fi.channel.id === canal.id && fi.inviter.id === client.user.id).map(mi => mi.delete("He eliminado la invitación que anteriormente había creado para el sistema de inter promoción."));
+
+            const embCIDel = new Discord.MessageEmbed()
+            .setAuthor(`${msg.author.tag} - ID: ${msg.author.id}`,msg.author.displayAvatarURL({dynamic: true}))
+            .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+            .setTitle("❌ Canal eliminado del sistema de Inter promoción")
+            .addFields(
+                {name: "**Servidor:**", value: `${msg.guild.name}\n**ID:** ${msg.guildId}\n👥 ${msg.guild.members.cache.size}`},
+                {name: "**Canal:**", value: `${msg.channel}\n${msg.channel.name}\n**ID:** ${msg.channelId}\n**Permisos:** ${msg.guild.me.permissionsIn(canal).toArray().length}`}
+            )
+            .setColor("RED")
+            .setFooter(client.user.tag,client.user.displayAvatarURL({dynamic: true}))
+            .setTimestamp()
+            client.channels.cache.get("850189144826052648").send({embeds: [embCIDel]})
+
+            const embF = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("❌ Canal eliminado del sistema de Inter promoción")
+            .setDescription(`<:canaldetexto:904812801925738557> **Canal:** ${canal}`)
+            .setColor("RED")
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embF]})
+            return await dataIP.save()
+        }
+    }
+
+    if(comando === "InterPlist" || comando === "interplist"){
+        msg.channel.sendTyping()
+        let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+        
+        let canales = []
+        let servidores = []
+        for(let i=0; i<dataIP.canalID.length; i++){
+            if(client.channels.cache.get(dataIP.canalID[i])){
+                canales.push(dataIP.canalID[i])
+                servidores.push(dataIP.serverID[i])
+            }
+        }
+
+        let list = []
+        for(let i=0; i<canales.length; i++){
+            list.push(`**${i+1}.** ${client.guilds.cache.get(servidores[i]).name}\n**Miembros:** ${client.guilds.cache.get(servidores[i]).members.cache.size.toLocaleString()}\n**Canal:** ${client.channels.cache.get(canales[i]).name}\n[Unirse](${(await client.guilds.cache.get(servidores[i]).invites.fetch()).filter(fi=> fi.inviter.id === client.user.id).map(mi => mi.url).slice(0,1)})`)
+        }
+        
+        const embSIP = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setTitle("Lista de servidores que tienen activado el sistema de Inter promoción")
+        .setDescription(`**Servidores:** ${servidores.length}\n\n${list.join("\n\n")}`)
+        .setColor(msg.guild.me.displayHexColor)
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embSIP]})
+    }
+
+
+
+    // Sistema de puntos
+    if(comando === "puntosInfo" || comando === "puntosinfo"){
+        msg.channel.sendTyping()
+        const embInfoP = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setTitle("🟢 ¿Qué es el sistema de Puntos?")
+        .setDescription(`Es un sistema creado con la intención de ayudar a los creadores de servidores a tener un registro de las acciones que han realizado los miembros del equipo de soporte del servidor.\n\n📑 **Comandos:**\n${"``"}${prefijo}puntos${"``"} **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n${"``"}${prefijo}addPuntos${"``"} **|** Agrega puntos a un miembro.\n${"``"}${prefijo}removePuntos${"``"} **|** Elimina puntos a un miembro.\n${"``"}${prefijo}leaderboardP${"``"} **|** Muestra una tabla con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n${"``"}${prefijo}setEmojiP${"``"} **|** Establece el icono o emoji de los puntos.`)
+        .setColor(colorEmb)
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfoP]})
+    }
+
+    if(comando === "puntos" || comando === "ps"){
+        msg.channel.sendTyping()
+        let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
+
+        if(miembro){
+            const embErrP1 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El miembro proporcionado es un bot, por lo tanto no tiene puntos.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(miembro.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete()
+            },60000))
+
+            let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+
+            if(!dataSP){
+                let nuevaDataSP = new sPuntos({
+                    serverName: msg.guild.name,
+                    serverID: msg.guildId,
+                    emoji: "🟢",
+                    miembro: [],
+                    puntos: []
+                })
+                nuevaDataSP.miembro.push(miembro.id)
+                nuevaDataSP.puntos.push(0)
+
+                const embPMi = new Discord.MessageEmbed()
+                .setAuthor(miembro.user.tag,miembro.user.displayAvatarURL({dynamic: true}))
+                .setDescription(`Tiene 🟢 **0** puntos.`)
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPMi]})
+
+                return await nuevaDataSP.save()
+            }
+
+            if(!dataSP.miembro.some(s=> s === miembro.id)){
+                dataSP.miembro.push(miembro.id)
+                dataSP.puntos.push(0)
+
+                const embPMi = new Discord.MessageEmbed()
+                .setAuthor(miembro.user.tag,miembro.user.displayAvatarURL({dynamic: true}))
+                .setDescription(`Tiene ${dataSP.emoji} **0** puntos.`)
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPMi]})
+
+                return await dataSP.save()
+            }
+
+            let num = dataSP.miembro.indexOf(miembro.id)
+
+            const embPMi = new Discord.MessageEmbed()
+            .setAuthor(miembro.user.tag,miembro.user.displayAvatarURL({dynamic: true}))
+            .setDescription(`Tiene ${dataSP.emoji} **${dataSP.puntos[num]}** puntos.`)
+            .setColor(msg.guild.me.displayHexColor)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPMi]})
+        }else{
+            let dataSP = await sPuntos.findOne({
+                serverID: msg.guildId
+            })
+
+            if(!dataSP){
+                let nuevaDataSP = new sPuntos({
+                    serverName: msg.guild.name,
+                    serverID: msg.guildId,
+                    emoji: "🟢",
+                    miembro: [],
+                    puntos: []
+                })
+                nuevaDataSP.miembro.push(msg.author.id)
+                nuevaDataSP.puntos.push(0)
+
+                const embPAu = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setDescription(`Tienes 🟢 **0** puntos.`)
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPAu]})
+
+                return await nuevaDataSP.save()
+            }
+
+            if(!dataSP.miembro.some(s=> s === msg.author.id)){
+                dataSP.miembro.push(msg.author.id)
+                dataSP.puntos.push(0)
+
+                const embPAu = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setDescription(`Tienes ${dataSP.emoji} **0** puntos.`)
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPAu]})
+
+                return await dataSP.save()
+            }
+
+            let num = dataSP.miembro.indexOf(msg.author.id)
+
+            const embPAu = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setDescription(`Tienes ${dataSP.emoji} **${dataSP.puntos[num]}** puntos.`)
+            .setColor(msg.guild.me.displayHexColor)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPAu]})
+        }
+    }
+
+    if(comando === "addPuntos" || comando === "addpuntos" || comando === "addp"){
+        msg.channel.sendTyping()
+        const embErrP1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido: Administrador")
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando addPuntos")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}addPuntos <Mención del miembro> <Puntos a dar>${"``"}\n${"``"}${prefijo}addPuntos <ID del miembro> <Puntos a dar>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}addPuntos ${msg.author} ${Math.round(Math.random(1)*200)}\n${prefijo}addPuntos ${msg.author.id} ${Math.round(Math.random(1)*200)}`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+
+        let mencionM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
+
+        if(mencionM){
+            const embErr1 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El miembro es un bot, no puedes dar puntos a un bot.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(mencionM.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr2 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`No has proporcionado la cantidad de puntos a dar.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(!args[1]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr3 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El segundo argumento no es numérico, debe de ser numérico para poder agregar al miembro una cantidad de puntos.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(isNaN(args[1])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            let cantidad = Math.round(args[1])
+
+            if(!dataSP){
+                nuevaDataSP = new sPuntos({
+                    serverName: msg.guild.name,
+                    serverID: msg.guildId,
+                    emoji: "🟢",
+                    miembro: [],
+                    puntos: []
+                })
+                nuevaDataSP.miembro.push(mencionM.id)
+                nuevaDataSP.puntos.push(cantidad)
+                
+                const embAddP = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setTitle("✅ Puntos agregados al miembro")
+                .setDescription(`Se le han agregado 🟢 **${cantidad}** puntos a **${mencionM}**.`)
+                .setColor("GREEN")
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAddP]})
+                return await nuevaDataSP.save()
+            }
+
+            if(!dataSP.miembro.some(s=> s === mencionM.id)){
+                dataSP.miembro.push(mencionM.id)
+                dataSP.puntos.push(cantidad)
+
+                const embAddP = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setTitle("✅ Puntos agregados al miembro")
+                .setDescription(`Se le han agregado ${dataSP.emoji} **${cantidad}** puntos a **${mencionM}**.`)
+                .setColor("GREEN")
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAddP]})
+
+                return await dataSP.save()
+            }
+
+            let num = dataSP.miembro.indexOf(mencionM.id)
+
+            dataSP.puntos[num] = dataSP.puntos[num] + cantidad
+
+            const embAddP = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("✅ Puntos agregados al miembro")
+            .setDescription(`Se le han agregado ${dataSP.emoji} **${cantidad}** puntos a **${mencionM}**.`)
+            .setColor("GREEN")
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAddP]})
+
+            return await dataSP.save()
+        }
+    }
+
+    if(comando === "removePuntos" || comando === "removepuntos" || comando === "removep"){
+        msg.channel.sendTyping()
+        const embErrP1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido: Administrador")
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando removePuntos")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}removePuntos <Mención del miembro> <Puntos a eliminar>${"``"}\n${"``"}${prefijo}removePuntos <ID del miembro> <Puntos a eliminar>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}removePuntos ${msg.author} ${Math.round(Math.random(1)*200)}\n${prefijo}removePuntos ${msg.author.id} ${Math.round(Math.random(1)*200)}`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+
+        let mencionM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
+
+        if(mencionM){
+            const embErr1 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El miembro es un bot, no puedes eliminar puntos a un bot.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(mencionM.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr2 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`No has proporcionado la cantidad de puntos a eliminar.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(!args[1]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            const embErr3 = new Discord.MessageEmbed()
+            .setAuthor("❌ Error")
+            .setDescription(`El segundo argumento no es numérico, debe de ser numérico para poder eliminar al miembro una cantidad de puntos.`)
+            .setColor(ColorError)
+            .setTimestamp()
+            if(isNaN(args[1])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tm => setTimeout(()=>{
+                msg.delete().catch(t=>{
+                    return;
+                })
+                tm.delete().catch(t=>{
+                    return;
+                })
+            },40000))
+
+            let cantidad = Math.round(args[1])
+
+            if(!dataSP){
+                nuevaDataSP = new sPuntos({
+                    serverName: msg.guild.name,
+                    serverID: msg.guildId,
+                    emoji: "🟢",
+                    miembro: [],
+                    puntos: []
+                })
+                nuevaDataSP.miembro.push(mencionM.id)
+                nuevaDataSP.puntos.push(0-cantidad)
+                
+                const embAddP = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setTitle("❌ Puntos eliminados al miembro")
+                .setDescription(`Se le han eliminado 🟢 **${cantidad}** puntos a **${mencionM}**.`)
+                .setColor("RED")
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAddP]})
+                return await nuevaDataSP.save()
+            }
+
+            if(!dataSP.miembro.some(s=> s === mencionM.id)){
+                dataSP.miembro.push(mencionM.id)
+                dataSP.puntos.push(0-cantidad)
+
+                const embAddP = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setTitle("❌ Puntos eliminados al miembro")
+                .setDescription(`Se le han eliminado ${dataSP.emoji} **${cantidad}** puntos a **${mencionM}**.`)
+                .setColor("RED")
+                .setTimestamp()
+                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAddP]})
+
+                return await dataSP.save()
+            }
+
+            let num = dataSP.miembro.indexOf(mencionM.id)
+
+            dataSP.puntos[num] = dataSP.puntos[num] - cantidad
+
+            const embAddP = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("❌ Puntos eliminados al miembro")
+            .setDescription(`Se le han eliminado ${dataSP.emoji} **${cantidad}** puntos a **${mencionM}**.`)
+            .setColor("RED")
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAddP]})
+
+            return await dataSP.save()
+        }
+    }
+
+    if(comando === "leaderboardP" || comando === "leaderboardp" || comando === "topP" || comando === "topp"){
+        msg.channel.sendTyping()
+        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+
+        if(!dataSP){
+            nuevaDataSP = new sPuntos({
+                serverName: msg.guild.name,
+                serverID: msg.guildId,
+                emoji: "🟢",
+                miembro: [],
+                puntos: []
+            })
+
+            const embed = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema usa el comando ${"``"}${prefijo}puntosInfo${"``"}.`)
+            .setColor(msg.guild.me.displayHexColor)
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embed]})
+            return nuevaDataSP.save()
+        }
+
+        const embed = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema usa el comando ${"``"}${prefijo}puntosInfo${"``"}.`)
+        .setColor(msg.guild.me.displayHexColor)
+        if(dataSP.miembro.length <= 0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embed]})
+
+        let sistPs = []
+        for(let i=0; i<dataSP.miembro.length; i++){
+            sistPs.push({miembro: `${dataSP.miembro[i]}`, puntos: dataSP.puntos[i]})
+        }
+
+        let ordenPs = sistPs.sort((a,b)=> b.puntos - a.puntos)
+        let top = []
+        
+        for(let i=0; i<ordenPs.length; i++){
+            top.push(`**${i+1}.** ${client.users.cache.get(ordenPs[i].miembro)} - ${dataSP.emoji} **${ordenPs[i].puntos}**`)
+        }
+
+        let segPage 
+        if(String(ordenPs.length).slice(-1) === "0"){
+            segPage = Math.floor(ordenPs.length / 10)
+        }else{
+            segPage = Math.floor(ordenPs.length / 10 + 1)
+        }
+
+        let cps1 = 0
+        let cps2 = 10
+        let pagina = 1 
+
+        const embTopP = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1,cps2).join("\n")}`)
+        .setColor(msg.guild.me.displayHexColor)
+        .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+        .setTimestamp()
+        const mensajeSend = await msg.reply({allowedMentions: {repliedUser: false}, embeds: [embTopP]})
+
+        if(ordenPs.length > 10){
+            await mensajeSend.react("⬅")
+            await mensajeSend.react("➡")
+        }
+
+        const colector = mensajeSend.createReactionCollector(rec => rec.id === msg.author.id)
+
+        colector.on("collect", async reaccion => {
+            if(reaccion.emoji.name === "⬅" && reaccion.users.cache.get(msg.author.id)){
+                if(cps2 <= 10) return await reaccion.users.remove(msg.author.id)
+
+                cps1=cps1-10
+                cps2=cps2-10
+                pagina=pagina-1
+
+                embTopP
+                .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1,cps2).join("\n")}`)
+                .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                mensajeSend.edit({embeds: [embTopP]})
+            }
+
+            if(reaccion.emoji.name === "➡" && reaccion.users.cache.get(msg.author.id)){
+                if(cps2>=ordenPs.length) return await reaccion.users.remove(msg.author.id)
+                cps1=cps1+10
+                cps2=cps2+10
+                pagina=pagina+1
+
+                embTopP
+                .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1,cps2).join("\n")}`)
+                .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                mensajeSend.edit({embeds: [embTopP]})
+            } 
+            await reaccion.users.remove(msg.author.id)
+        })
+    }
+
+    if(comando === "setEmojiP" || comando === "setemojip" || comando === "setep"){
+        msg.channel.sendTyping()
+        let emojis = msg.guild.emojis.cache.map(e=>e)
+        let embRandom = Math.floor(Math.random()*emojis.length)
+        const embErrP1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido: Administrador")
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando setEmojiP")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}setEmojiP <Emoji a establecer>${"``"}`},
+            {name: "Ejemplo:", value: `${prefijo}setEmojiP ${emojis[embRandom]}`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        const embErrP3 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No puedes establecer números como símbolo del sistema de puntos.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!isNaN(args[0])) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP3]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000)) 
+
+        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+
+        if(!dataSP){
+            nuevaDataSP = new sPuntos({
+                serverName: msg.guild.name,
+                serverID: msg.guildId,
+                emoji: args[0],
+                miembro: [],
+                puntos: []
+            })
+
+            const embSetE = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setDescription(`Emoji ${args[0]} establecido como el emoji del sistema de puntos.`)
+            .setColor(msg.guild.me.displayHexColor)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embSetE]})
+            return nuevaDataSP.save()
+        }
+
+        await sPuntos.findOneAndUpdate({
+            serverName: msg.guild.name,
+            serverID: msg.guildId,
+            emoji: args[0]
+        })
+
+        const embSetE = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setDescription(`Emoji ${args[0]} establecido como el emoji del sistema de puntos.`)
+        .setColor(msg.guild.me.displayHexColor)
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embSetE]})
+    }
+
+
     // Comandos para el creador
     if(comando === "crearI"){
         if(creadoresID.some(s=>s === msg.author.id)){
@@ -3414,6 +4897,19 @@ client.on("messageCreate", async msg => {
             if(!canalID) return msg.reply({allowedMentions: {repliedUser: false}, content: "No se ha encontrado el canal o la ID es incorecta."})
             canalID.createInvite({maxAge: 0, reason: "Importante para el sistema de Inter promoción."}).then(tt => msg.channel.send(`${tt}`))
         }
+    }
+
+    if(comando === "infoCH" && creadoresID.some(s=> s === msg.author.id)){
+        let canal = client.channels.cache.get(args[0])
+        let servidor = canal.guild
+
+        const embCanales = new Discord.MessageEmbed()
+        .setAuthor(`${client.users.cache.get(servidor.ownerId).tag} - ${servidor.ownerId}`,client.users.cache.get(servidor.ownerId).displayAvatarURL({dynamic: true}))
+        .setDescription(`Servidor:\n${servidor.name}\n${servidor.id}\n\nCanal: ${canal.name}`)
+        .setColor(servidor.me.displayHexColor)
+        .setThumbnail(servidor.iconURL({dynamic: true}))
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embCanales]})
     }
 
     if(comando === "infoSv"){
@@ -3498,6 +4994,74 @@ client.on("messageCreate", async msg => {
             
         }
     }
+
+    if(comando === "statsinterp" && creadoresID.some(s => s === msg.author.id)){
+        let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+
+        let servidoresSi = []
+
+        let servidoresNo = []
+
+        for(let i=0; i<dataIP.canalID.length; i++){
+            if(client.channels.cache.get(dataIP.canalID[i])){
+                servidoresSi.push(dataIP.serverID[i])
+            }else{
+                servidoresNo.push(dataIP.serverID[i])   
+            }
+        }
+
+        const embStatsIP = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setTitle("Estadisticas del seistema de Inter promoción")
+        .addFields(
+            {name: "Datos validos:", value: `${servidoresSi.length}`},
+            {name: "Datos no validos:", value: `${servidoresNo.length}`}
+        )
+        .setColor(colorEmb)
+        .setTimestamp()
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embStatsIP]})
+    }
+
+    if(comando === "deletefalsedata" && creadoresID.some(s => s === msg.author.id)){
+        let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+
+        let servers = []
+        let channels = []
+        let authores = []
+
+        for(let e=0; e<dataIP.serverID.length; e++){
+            for(let i=0; i<dataIP.serverID.length; i++){
+                if(!client.channels.cache.get(dataIP.canalID[i])){
+                    servers.push(dataIP.serverID[i])
+                    channels.push(dataIP.canalID[i])
+                    authores.push(dataIP.autor[i])
+    
+                    dataIP.serverID.splice(i,1)
+                    dataIP.canalID.splice(i,1)
+                    dataIP.autor.splice(i,1)
+                }
+            }
+        }
+
+        if(servers.length <= 0){
+            const embDelDIP = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("No hay datos invalidos.")
+            .setColor(colorEmb)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embDelDIP]})
+
+        }else{
+            const embDelDIP = new Discord.MessageEmbed()
+            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+            .setTitle("Datos inválidos eliminados de la base de datos.")
+            .setDescription(`Información de los datos eliminados de la base de datos.\n\n**Servidores:**\n${servers.map(s=> s).join(" **|** ")}\n**Canales:**\n${channels.map(c=> c).join(" **|** ")}\n**Autores:**\n${authores.map(a=> a).join(" **|** ")}`)
+            .setColor(colorEmb)
+            .setTimestamp()
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embDelDIP]})
+            await dataIP.save()
+        }
+    }
 })
 
 
@@ -3533,6 +5097,16 @@ client.on("guildDelete",async gd => {
 
 })
 
+client.on("channelDelete",async cdl => {
+    let dataIP = await interP.findOne({Nombre: "Inter promocion"})
+    if(dataIP.canalID.some(s => s === cdl.id)){
+        let num = dataIP.canalID.indexOf(cdl.id)
+        dataIP.serverID.splice(num,1)
+        dataIP.canalID.splice(num,1)
+        dataIP.autor.splice(num,1)
+        return await dataIP.save()
+    }
+})
 
 
 client.login(token);
