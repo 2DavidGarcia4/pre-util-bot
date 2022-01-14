@@ -90,6 +90,11 @@ const sPuntos = mongoose.model("Sistema de puntos", puntosMongo)
 
 client.on("ready",async () => {
     console.log(client.user.username, "Hola, estoy listo")
+    const embReady = new Discord.MessageEmbed()
+    .setTitle("<a:si:929138357940944977> Estoy conectado")
+    .setColor("00ff00")
+    .setTimestamp()
+    client.channels.cache.get("922546474896752651").send({embeds: [embReady]})
 
     const estado = [
         {
@@ -209,11 +214,9 @@ client.on("messageCreate", async msg => {
     const args = msg.content.slice(prefijo.length).trim().split(/ +/g);
     const comando = args.shift()
 
-    if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
-
-
 
     if(comando === "help"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const help = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL())
@@ -225,6 +228,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "comandos" || comando == "commands"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const comandos = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
@@ -246,6 +250,7 @@ client.on("messageCreate", async msg => {
 
     // Comandos generales
     if(comando === "user"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let presencia = {
             "dnd": "<:nomolestar:904558124793475083> No molestar",
@@ -411,6 +416,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "stats"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let textCh = client.channels.cache.filter(ft=>ft.type==="GUILD_TEXT").size
         let voiseCH = client.channels.cache.filter(fv=>fv.type==="GUILD_VOICE").size
@@ -451,6 +457,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "jumbo"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let emojisSV = msg.guild.emojis.cache.map(e=>e)
         let emR = Math.floor(Math.random()*emojisSV.length)
@@ -489,6 +496,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "emojis"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let emojisAl = ["😃","😄","😅","🤣","😊","🤪","😐","😝","🤑","😡"]
         let emojRandom = Math.floor(Math.random()*emojisAl.length)
@@ -562,6 +570,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "stikers"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let stikers = msg.guild.stickers.cache
 
@@ -626,6 +635,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "uptime"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let dias = Math.floor(client.uptime / 86400000);
         let horas = Math.floor(client.uptime / 3600000) % 24;
@@ -640,6 +650,7 @@ client.on("messageCreate", async msg => {
     }
     
     if(comando === "avatar"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let mencion = msg.mentions.members.first()
 
@@ -690,6 +701,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "server"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let feat = {
             "ANIMATED_ICON": "Icono animado",
@@ -949,6 +961,7 @@ client.on("messageCreate", async msg => {
 
     
     if(comando === "invite"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let invURL = "https://discord.com/oauth2/authorize?client_id=841531159778426910&scope=bot%20applications.commands&permissions=2147483647"
         const inv = new Discord.MessageEmbed()
@@ -971,6 +984,7 @@ client.on("messageCreate", async msg => {
 
     // Generador de codigo QR
     if(comando === "qrcode" || comando === "QR" || comando === "qr"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let url = args[0]
         let urQR = `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=600x600`
@@ -1009,6 +1023,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "botInfo" || comando === "botinfo"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const infBot = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
@@ -1027,6 +1042,7 @@ client.on("messageCreate", async msg => {
 
     // Comandos de moderacion
     if(comando === "warn"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErr1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -1466,6 +1482,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "kick"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErr1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2037,6 +2054,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "ban"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2740,6 +2758,7 @@ client.on("messageCreate", async msg => {
 
     // unban
     if(comando === "unban"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2824,6 +2843,7 @@ client.on("messageCreate", async msg => {
 
     // clear 
     if(comando === "clear" || comando === "cl"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -2932,6 +2952,7 @@ client.on("messageCreate", async msg => {
 
     // Banlist
     if(comando === "banlist" || comando === "blist"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3016,6 +3037,7 @@ client.on("messageCreate", async msg => {
 
     // dmsend
     if(comando === "dmsend" || comando === "dm"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3258,6 +3280,7 @@ client.on("messageCreate", async msg => {
 
     // Establecer prefijo en el servidor
     if(comando === "setPrefix" || comando === "setprefix"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3342,6 +3365,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "setSlowMode" || comando === "setslowmode" || comando === "setSlow" || comando === "setslow" || comando === "slowmode"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3463,6 +3487,7 @@ client.on("messageCreate", async msg => {
     let randomRID = Math.floor(Math.random()* rolesParaID.length)
 
     if(comando === "addrol" || comando === "addr"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3682,6 +3707,7 @@ client.on("messageCreate", async msg => {
 
     // removeRol
     if(comando === "removeRol" || comando === "removerol" || comando === "rmr"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -3902,6 +3928,7 @@ client.on("messageCreate", async msg => {
 
     // createCha
     if(comando === "createCha" || comando === "createcha"  || comando === "crech"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let categoriasGMS = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_CATEGORY").map(mc => mc.id)
         let randomCat = Math.floor(Math.random()* categoriasGMS.length)
@@ -3985,6 +4012,7 @@ client.on("messageCreate", async msg => {
 
     // deleteCha
     if(comando == "deleteCha" || comando == "deletecha" || comando === "delch"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let canalesAlDel = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_TEXT" ).map(mc => mc)
         let randomChanne = Math.floor(Math.random()* canalesAlDel.length)
@@ -4053,6 +4081,7 @@ client.on("messageCreate", async msg => {
 
     // Comandos del sistema de Inter Promocion
     if(comando === "interPInfo" || comando === "interpinfo"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embInf = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
@@ -4066,6 +4095,7 @@ client.on("messageCreate", async msg => {
 
     // Establecer el canal de inter promocion
     if(comando === "setInterP" || comando === "setinterp"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const error = new Discord.MessageEmbed()
         .setAuthor(`❌ Error`)
@@ -4218,6 +4248,7 @@ client.on("messageCreate", async msg => {
 
     // Eliminar el canal de inter promocion
     if(comando === "removeInterP" || comando === "removeinterp"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const error = new Discord.MessageEmbed()
         .setAuthor(`❌ Error`)
@@ -4309,6 +4340,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "InterPlist" || comando === "interplist"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let dataIP = await interP.findOne({Nombre: "Inter promocion"})
         
@@ -4339,6 +4371,7 @@ client.on("messageCreate", async msg => {
 
     // Sistema de puntos
     if(comando === "puntosInfo" || comando === "puntosinfo"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embInfoP = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4350,6 +4383,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "puntos" || comando === "ps"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
 
@@ -4463,6 +4497,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "addPuntos" || comando === "addpuntos" || comando === "addp"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -4591,6 +4626,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "removePuntos" || comando === "removepuntos" || comando === "removep"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -4719,6 +4755,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "leaderboardP" || comando === "leaderboardp" || comando === "topP" || comando === "topp"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let dataSP = await sPuntos.findOne({serverID: msg.guildId})
 
@@ -4813,6 +4850,7 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "setEmojiP" || comando === "setemojip" || comando === "setep"){
+        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let emojis = msg.guild.emojis.cache.map(e=>e)
         let embRandom = Math.floor(Math.random()*emojis.length)
