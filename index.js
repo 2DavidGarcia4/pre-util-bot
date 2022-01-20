@@ -143,7 +143,7 @@ client.on("messageCreate", async msg =>{
     if(canales.some(ch => ch === msg.channel.id)){
         const embCool = new Discord.MessageEmbed()
         .setAuthor("⏲ Tiempo")
-        .setDescription(`Espera **30** minutos para bolver a publicara tu promoción.`)
+        .setDescription(`Espera **40** minutos para bolver a publicara tu promoción.`)
         .setColor("BLUE")
         .setTimestamp()
         if(cooldInterP.some(s=> s === msg.author.id) && !creadoresID.some(s=>s === msg.author.id)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embCool]}).then(mt=> setTimeout(()=>{
@@ -173,7 +173,7 @@ client.on("messageCreate", async msg =>{
         setTimeout(()=>{
             let num = cooldInterP.indexOf(msg.author.id)
             cooldInterP.splice(num,1)
-        },ms(`30m`))
+        },ms(`40m`))
     }
 })
 
