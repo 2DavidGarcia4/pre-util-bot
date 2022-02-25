@@ -63,12 +63,13 @@ const mPrefix = mongoose.model("Prefijo", confPrefijo)
 
 
 // // Sistema de puntos
+// Sistema de puntos
 const puntosMongo = new mongoose.Schema({
-    serverName: {
+    _id: {
         type: String,
         required: true
     },
-    serverID: {
+    serverName: {
         type: String,
         required: true
     },
@@ -76,16 +77,12 @@ const puntosMongo = new mongoose.Schema({
         type: String,
         required: true
     },
-    miembro: {
-        type: Array,
-        required: true
-    },
-    puntos: {
+    sistema: {
         type: Array,
         required: true
     }
 })
-const sPuntos = mongoose.model("Sistema de puntos", puntosMongo)
+const sPuntos = mongoose.model("Sistema de puntos", puntosMongo) 
 
 
 client.on("ready",async () => {
@@ -4370,20 +4367,18 @@ client.on("messageCreate", async msg => {
 
 
     // Sistema de puntos
-    if(comando === "puntosInfo" || comando === "puntosinfo"){
-        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
+    if(comando.toLowerCase() === "puntosInfo"){
         msg.channel.sendTyping()
         const embInfoP = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("🟢 ¿Qué es el sistema de Puntos?")
-        .setDescription(`Es un sistema creado con la intención de ayudar a los creadores de servidores a tener un registro de las acciones que han realizado los miembros del equipo de soporte del servidor.\n\n📑 **Comandos:**\n${"``"}${prefijo}puntos${"``"} **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n${"``"}${prefijo}addPuntos${"``"} **|** Agrega puntos a un miembro.\n${"``"}${prefijo}removePuntos${"``"} **|** Elimina puntos a un miembro.\n${"``"}${prefijo}leaderboardP${"``"} **|** Muestra una tabla con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n${"``"}${prefijo}setEmojiP${"``"} **|** Establece el icono o emoji de los puntos.`)
+        .setDescription(`Es un sistema creado con la intención de ayudar a los creadores de servidores a tener un registro de las acciones que han realizado los miembros del equipo de soporte del servidor.\n\n📑 **Comandos:**\n${"``"}${prefijo}puntos${"``"} **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n${"``"}${prefijo}addPuntos${"``"} **|** Agrega puntos a un miembro.\n${"``"}${prefijo}removePuntos${"``"} **|** Elimina puntos a un miembro.\n${"``"}${prefijo}leaderboardP${"``"} **|** Muestra una tabla con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n${"``"}${prefijo}setEmojiP${"``"} **|** Establece el icono o emoji de los puntos.\n\`\`${prefijo}updateSystemP\`\` **|** Actualiza la base de datos de tu servidor eliminando a todos los miembros que ya no estén en tu servidor de la base de datos del sistema de puntos.\n\`\`${prefijo}removeSystemPUser\`\` **|** Elimina del sistema de puntos a un miembro de tu servidor.`)
         .setColor(colorEmb)
         .setTimestamp()
         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfoP]})
     }
 
     if(comando === "puntos" || comando === "ps"){
-        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
 
@@ -4400,18 +4395,15 @@ client.on("messageCreate", async msg => {
                 tm.delete()
             },60000))
 
-            let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+            let dataSP = await sPuntos.findOne({_id: msg.guildId})
 
             if(!dataSP){
                 let nuevaDataSP = new sPuntos({
+                    _id: msg.guildId,
                     serverName: msg.guild.name,
-                    serverID: msg.guildId,
                     emoji: "🟢",
-                    miembro: [],
-                    puntos: []
+                    sistema: [{nombre: msg.author.tag, miembroID: msg.author.id, puntos: 0}]
                 })
-                nuevaDataSP.miembro.push(miembro.id)
-                nuevaDataSP.puntos.push(0)
 
                 const embPMi = new Discord.MessageEmbed()
                 .setAuthor(miembro.user.tag,miembro.user.displayAvatarURL({dynamic: true}))
@@ -4423,9 +4415,8 @@ client.on("messageCreate", async msg => {
                 return await nuevaDataSP.save()
             }
 
-            if(!dataSP.miembro.some(s=> s === miembro.id)){
-                dataSP.miembro.push(miembro.id)
-                dataSP.puntos.push(0)
+            if(!dataSP.sistema.some(s=> s.miembroID === miembro.id)){
+                dataSP.sistema.push({nombre: msg.author.tag, miembroID: miembro.id, puntos: 0})
 
                 const embPMi = new Discord.MessageEmbed()
                 .setAuthor(miembro.user.tag,miembro.user.displayAvatarURL({dynamic: true}))
@@ -4437,29 +4428,31 @@ client.on("messageCreate", async msg => {
                 return await dataSP.save()
             }
 
-            let num = dataSP.miembro.indexOf(miembro.id)
+            let posiscion
+            for(let i=0; i<dataSP.sistema.length; i++){
+                if(dataSP.sistema[i].miembroID === miembro.id){
+                    posiscion = i
+                }
+            }
 
             const embPMi = new Discord.MessageEmbed()
             .setAuthor(miembro.user.tag,miembro.user.displayAvatarURL({dynamic: true}))
-            .setDescription(`Tiene ${dataSP.emoji} **${dataSP.puntos[num]}** puntos.`)
+            .setDescription(`Tiene ${dataSP.emoji} **${dataSP.sistema[posiscion].puntos}** puntos.`)
             .setColor(msg.guild.me.displayHexColor)
             .setTimestamp()
             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPMi]})
         }else{
             let dataSP = await sPuntos.findOne({
-                serverID: msg.guildId
+                _id: msg.guildId
             })
 
             if(!dataSP){
                 let nuevaDataSP = new sPuntos({
+                    _id: msg.guildId,
                     serverName: msg.guild.name,
-                    serverID: msg.guildId,
                     emoji: "🟢",
-                    miembro: [],
-                    puntos: []
+                    sistema: [{nombre: msg.author.tag, miembroID: msg.author.id, puntos: 0}]
                 })
-                nuevaDataSP.miembro.push(msg.author.id)
-                nuevaDataSP.puntos.push(0)
 
                 const embPAu = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4471,9 +4464,8 @@ client.on("messageCreate", async msg => {
                 return await nuevaDataSP.save()
             }
 
-            if(!dataSP.miembro.some(s=> s === msg.author.id)){
-                dataSP.miembro.push(msg.author.id)
-                dataSP.puntos.push(0)
+            if(!dataSP.sistema.some(s=> s.miembroID === msg.author.id)){
+                dataSP.sistema.push({nombre: msg.author.tag, miembroID: msg.author.id, puntos: 0})
 
                 const embPAu = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4485,11 +4477,16 @@ client.on("messageCreate", async msg => {
                 return await dataSP.save()
             }
 
-            let num = dataSP.miembro.indexOf(msg.author.id)
+            let posiscion
+            for(let i=0; i<dataSP.sistema.length; i++){
+                if(dataSP.sistema[i].miembroID === msg.author.id){
+                    posiscion = i
+                }
+            }
 
             const embPAu = new Discord.MessageEmbed()
             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-            .setDescription(`Tienes ${dataSP.emoji} **${dataSP.puntos[num]}** puntos.`)
+            .setDescription(`Tienes ${dataSP.emoji} **${dataSP.sistema[posiscion].puntos}** puntos.`)
             .setColor(msg.guild.me.displayHexColor)
             .setTimestamp()
             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPAu]})
@@ -4497,7 +4494,6 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "addPuntos" || comando === "addpuntos" || comando === "addp"){
-        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -4524,7 +4520,7 @@ client.on("messageCreate", async msg => {
         .setTimestamp()
         if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
 
-        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+        let dataSP = await sPuntos.findOne({_id: msg.guildId})
 
         let mencionM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
 
@@ -4575,14 +4571,11 @@ client.on("messageCreate", async msg => {
 
             if(!dataSP){
                 nuevaDataSP = new sPuntos({
+                    _id: msg.guildId,
                     serverName: msg.guild.name,
-                    serverID: msg.guildId,
                     emoji: "🟢",
-                    miembro: [],
-                    puntos: []
+                    sistema: [{nombre: mencionM.user.tag, miembroID: mencionM.id, puntos: cantidad}]
                 })
-                nuevaDataSP.miembro.push(mencionM.id)
-                nuevaDataSP.puntos.push(cantidad)
                 
                 const embAddP = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4594,9 +4587,8 @@ client.on("messageCreate", async msg => {
                 return await nuevaDataSP.save()
             }
 
-            if(!dataSP.miembro.some(s=> s === mencionM.id)){
-                dataSP.miembro.push(mencionM.id)
-                dataSP.puntos.push(cantidad)
+            if(!dataSP.sistema.some(s=> s.miembroID === mencionM.id)){
+                dataSP.sistema.push({nombre: mencionM.user.tag, miembroID: mencionM.id, puntos: cantidad})
 
                 const embAddP = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4609,9 +4601,15 @@ client.on("messageCreate", async msg => {
                 return await dataSP.save()
             }
 
-            let num = dataSP.miembro.indexOf(mencionM.id)
+            let posiscion
+            for(let i=0; i<dataSP.sistema.length; i++){
+                if(dataSP.sistema[i].miembroID === mencionM.id){
+                    posiscion = i
+                }
+            }
 
-            dataSP.puntos[num] = dataSP.puntos[num] + cantidad
+            let cantidadMiem = dataSP.sistema[posiscion].puntos
+            dataSP.sistema[posiscion] = {nombre: mencionM.user.tag, miembroID: mencionM.id, puntos: cantidadMiem + cantidad}
 
             const embAddP = new Discord.MessageEmbed()
             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4626,7 +4624,6 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "removePuntos" || comando === "removepuntos" || comando === "removep"){
-        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
@@ -4653,7 +4650,7 @@ client.on("messageCreate", async msg => {
         .setTimestamp()
         if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
 
-        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+        let dataSP = await sPuntos.findOne({_id: msg.guildId})
 
         let mencionM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
 
@@ -4704,14 +4701,11 @@ client.on("messageCreate", async msg => {
 
             if(!dataSP){
                 nuevaDataSP = new sPuntos({
+                    _id: msg.guildId,
                     serverName: msg.guild.name,
-                    serverID: msg.guildId,
                     emoji: "🟢",
-                    miembro: [],
-                    puntos: []
+                    sistema: [{nombre: mencionM.user.tag, miembroID: mencionM.id, puntos: 0-cantidad}]
                 })
-                nuevaDataSP.miembro.push(mencionM.id)
-                nuevaDataSP.puntos.push(0-cantidad)
                 
                 const embAddP = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4723,9 +4717,8 @@ client.on("messageCreate", async msg => {
                 return await nuevaDataSP.save()
             }
 
-            if(!dataSP.miembro.some(s=> s === mencionM.id)){
-                dataSP.miembro.push(mencionM.id)
-                dataSP.puntos.push(0-cantidad)
+            if(!dataSP.sistema.some(s=> s.miembroID === mencionM.id)){
+                dataSP.sistema.push({nombre: mencionM.user.tag, miembroID: mencionM.id, puntos: 0-cantidad})
 
                 const embAddP = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4738,9 +4731,15 @@ client.on("messageCreate", async msg => {
                 return await dataSP.save()
             }
 
-            let num = dataSP.miembro.indexOf(mencionM.id)
+            let posiscion
+            for(let i=0; i<dataSP.sistema.length; i++){
+                if(dataSP.sistema[i].miembroID === mencionM.id){
+                    posiscion = i
+                }
+            }
 
-            dataSP.puntos[num] = dataSP.puntos[num] - cantidad
+            let cantidadMiem = dataSP.sistema[posiscion].puntos
+            dataSP.sistema[posiscion] = {nombre: mencionM.user.tag, miembroID: mencionM.id, puntos: cantidadMiem - cantidad}
 
             const embAddP = new Discord.MessageEmbed()
             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -4755,17 +4754,15 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "leaderboardP" || comando === "leaderboardp" || comando === "topP" || comando === "topp"){
-        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
-        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+        let dataSP = await sPuntos.findOne({_id: msg.guildId})
 
         if(!dataSP){
             nuevaDataSP = new sPuntos({
+                _id: msg.guildId,
                 serverName: msg.guild.name,
-                serverID: msg.guildId,
                 emoji: "🟢",
-                miembro: [],
-                puntos: []
+                sistema: [{nombre: msg.author.tag, miembroID: msg.autho.id, puntos: 0}]
             })
 
             const embed = new Discord.MessageEmbed()
@@ -4780,11 +4777,11 @@ client.on("messageCreate", async msg => {
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema usa el comando ${"``"}${prefijo}puntosInfo${"``"}.`)
         .setColor(msg.guild.me.displayHexColor)
-        if(dataSP.miembro.length <= 0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embed]})
+        if(dataSP.sistema.length <= 0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embed]})
 
         let sistPs = []
-        for(let i=0; i<dataSP.miembro.length; i++){
-            sistPs.push({miembro: `${dataSP.miembro[i]}`, puntos: dataSP.puntos[i]})
+        for(let i=0; i<dataSP.sistema.length; i++){
+            sistPs.push({miembro: `${dataSP.sistema[i].miembroID}`, puntos: dataSP.sistema[i].puntos})
         }
 
         let ordenPs = sistPs.sort((a,b)=> b.puntos - a.puntos)
@@ -4850,7 +4847,6 @@ client.on("messageCreate", async msg => {
     }
 
     if(comando === "setEmojiP" || comando === "setemojip" || comando === "setep"){
-        if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let emojis = msg.guild.emojis.cache.map(e=>e)
         let embRandom = Math.floor(Math.random()*emojis.length)
@@ -4893,15 +4889,14 @@ client.on("messageCreate", async msg => {
             })
         },40000)) 
 
-        let dataSP = await sPuntos.findOne({serverID: msg.guildId})
+        let dataSP = await sPuntos.findOne({_id: msg.guildId})
 
         if(!dataSP){
             nuevaDataSP = new sPuntos({
+                _id: msg.guildId,
                 serverName: msg.guild.name,
-                serverID: msg.guildId,
                 emoji: args[0],
-                miembro: [],
-                puntos: []
+                sistema: [{nombre: msg.author.tag, miembroID: msg.author.id, puntos: 0}]
             })
 
             const embSetE = new Discord.MessageEmbed()
@@ -4914,8 +4909,10 @@ client.on("messageCreate", async msg => {
         }
 
         await sPuntos.findOneAndUpdate({
+            _id: msg.guildId
+        },
+        {
             serverName: msg.guild.name,
-            serverID: msg.guildId,
             emoji: args[0]
         })
 
@@ -4925,6 +4922,251 @@ client.on("messageCreate", async msg => {
         .setColor(msg.guild.me.displayHexColor)
         .setTimestamp()
         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embSetE]})
+    }
+
+    if(comando.toLowerCase() === "updatesystemp"){
+        msg.channel.sendTyping()
+        const embErrP1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido: Administrador")
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        // let dataSP = await sPuntos.findOne({_id: msg.guildId})
+
+        let posiciones = 0
+        let cant = 0
+        for(let i=0; i<dB.length; i++){
+            if(!msg.guild.members.cache.get(dB[i].miembroID)){
+                console.log(Number(i-cant))
+                let sum = Number(i-cant)
+                dB.splice(sum,1)
+                posiciones = posiciones + 1
+                cant = cant + 1
+            }
+            
+            console.log("1. :",i)
+            // for(let e=0; e<dataSP.sistema.length; e++){
+            //     console.log("2. :",e)
+            //     if(!msg.guild.members.cache.get(dataSP.sistema[e].miembroID)){
+            //         dataSP.sistema.splice(e,1)
+            //     }
+            // }
+        }
+        // await dataSP.save()
+
+        const embUpdateSistemP = new Discord.MessageEmbed()
+        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+        .setTitle("✅ Sistema actualizado")
+        .setDescription(`Se han eliminado datos de **${posiciones.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
+        .setColor(msg.guild.me.displayHexColor)
+        .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+        setTimeout(()=>{
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUpdateSistemP]})
+        }, 400)
+
+        console.log(posiciones)
+        console.log(dB)
+    }
+
+    if(comando.toLowerCase() === "removesystempuser"){
+        msg.channel.sendTyping()
+        const embErrP1 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+        .setColor(ColorError)
+        .setFooter("Permiso requerido: Administrador")
+        .setTimestamp()
+        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+            msg.delete().catch(t=>{
+                return;
+            })
+            tm.delete().catch(t=>{
+                return;
+            })
+        },40000))
+
+        const embInfo = new Discord.MessageEmbed()
+        .setTitle("🔎 Comando removesystempuser")
+        .addFields(
+            {name: "Uso:", value: `${"``"}${prefijo}removesystempuser <Mención del miembro>${"``"}\n${"``"}${prefijo}removesystempuser <ID del miembro>${"``"}`},
+            {name: "Ejemplos:", value: `${prefijo}removesystempuser ${msg.author}\n${prefijo}removesystempuser ${msg.author.id}`}
+        )
+        .setColor(colorEmbInfo)
+        .setTimestamp()
+        if(!args[0]) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
+
+        let dataSP = await sPuntos.findOne({_id: msg.guildId})
+        let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
+
+        const embErrP2 = new Discord.MessageEmbed()
+        .setAuthor("❌ Error")
+        .setDescription(`El argumento proporcionado no se reconoce como un miembro del servidor, proporciona una mención a un miembro o la ID del miembro que quieres eliminar del sistema de puntos.`)
+        .setColor(ColorError)
+        .setTimestamp()
+        if(!miembro){
+            setTimeout(()=>{
+                return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(t=> setTimeout(()=>{
+                    msg.delete().catch(c=>{
+                        return;
+                    })
+                    t.delete().catch(c=>{
+                        return;
+                    })
+                }, 40000))
+            }, 400)
+        }
+
+        if(miembro){
+            if(msg.author.id === msg.guild.ownerId){
+                const embErr1 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`El miembro es un bot, un bot no puede estar en el sistema de puntos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(miembro.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                const embErr2 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`No te puedes eliminar a ti mismo del sistema de puntos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(miembro.id === msg.author.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                const embErr3 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`El miembro que proporcionaste no esta en el sistema de puntos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(!dataSP.sistema.some(s=> s.miembroID === miembro.id)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                let posicion 
+                for(let i=0; i<dataSP.sistema.length; i++){
+                    if(dataSP.sistema[i].miembroID === miembro.id){
+                        posicion = i
+                    }
+                }
+
+                dataSP.sistema.splice(posicion,1)
+                await dataSP.save()
+
+                const embRemoveUserSystem = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setTitle("🗑️ Miembro eliminado del sistema")
+                .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos.`)
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                setTimeout(()=>{
+                    msg.reply({allowedMentions: {repliedUser: false}, embeds: [embRemoveUserSystem]})
+                }, 400)
+            }else{
+                const embErr1 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`El miembro es un bot, un bot no puede estar en el sistema de puntos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(miembro.user.bot) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr1]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                const embErr2 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`No te puedes eliminar a ti mismo del sistema de puntos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(miembro.id === msg.author.id) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr2]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                const embErr3 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`El miembro proporcionado tiene un rol igual o mayor que tu rol mas alto por lo tanto no lo puedes eliminar de la base de datos del sistema.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(msg.member.roles.highest.comparePositionTo(miembro.roles.highest)<=0) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr3]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                const embErr4 = new Discord.MessageEmbed()
+                .setAuthor("❌ Error")
+                .setDescription(`El miembro que proporcionaste no esta en el sistema de puntos.`)
+                .setColor(ColorError)
+                .setTimestamp()
+                if(!dataSP.sistema.some(s=> s.miembroID === miembro.id)) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErr4]}).then(tm => setTimeout(()=>{
+                    msg.delete().catch(t=>{
+                        return;
+                    })
+                    tm.delete().catch(t=>{
+                        return;
+                    })
+                },40000))
+
+                let posicion 
+                for(let i=0; i<dataSP.sistema.length; i++){
+                    if(dataSP.sistema[i].miembroID === miembro.id){
+                        posicion = i
+                    }
+                }
+
+                dataSP.sistema.splice(posicion,1)
+                await dataSP.save()
+
+                const embRemoveUserSystem = new Discord.MessageEmbed()
+                .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                .setTitle("🗑️ Miembro eliminado del sistema")
+                .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos.`)
+                .setColor(msg.guild.me.displayHexColor)
+                .setTimestamp()
+                setTimeout(()=>{
+                    msg.reply({allowedMentions: {repliedUser: false}, embeds: [embRemoveUserSystem]})
+                }, 400)
+            }
+        }
     }
 
 
