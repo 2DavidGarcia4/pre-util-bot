@@ -93,13 +93,15 @@ client.on("ready",async () => {
     .setTimestamp()
     client.channels.cache.get("922546474896752651").send({embeds: [embReady]})
 
+    let svsp = client.guilds.cache.get("773249398431809586")
+
     const estado = [
         {
             name: `${client.guilds.cache.size.toLocaleString()} servidores.`,
             type: "WATCHING"
         },
         {
-            name: "ss.help",
+            name: "u!help",
             type: "LISTENING"
         },
         {
@@ -107,8 +109,12 @@ client.on("ready",async () => {
             type: "WATCHING"
         },
         {
-            name: "ss.invite",
+            name: "u!invite",
             type: "LISTENING"
+        },
+        {
+            name: `${svsp.name} mi servidor de origen`,
+            type: "WATCHING"
         }
     ]
 
@@ -180,7 +186,7 @@ client.on("messageCreate", async msg => {
 
     let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
     let num = dataPre.serverID.indexOf(msg.guildId)
-    let pref = dataPre.prefijo[num] ? dataPre.prefijo[num]: "ss."
+    let pref = dataPre.prefijo[num] ? dataPre.prefijo[num]: "u!"
 
 
     if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
@@ -203,7 +209,7 @@ client.on("messageCreate", async msg => {
 
     let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
     let num = dataPre.serverID.indexOf(msg.guildId)
-    let prefijo = dataPre.prefijo[num] ? dataPre.prefijo[num]: "ss."
+    let prefijo = dataPre.prefijo[num] ? dataPre.prefijo[num]: "u!"
 
 
     if(!msg.content.startsWith(prefijo)) return; 
