@@ -4373,7 +4373,7 @@ client.on("messageCreate", async msg => {
 
 
     // Sistema de puntos
-    if(comando.toLowerCase() === "puntosInfo"){
+    if(comando.toLowerCase() === "puntosinfo"){
         msg.channel.sendTyping()
         const embInfoP = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
