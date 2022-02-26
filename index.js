@@ -46,15 +46,11 @@ const interP = mongoose.model("Inter promo", interPromocion)
 
 // // Prefijo configurable
 const confPrefijo = new mongoose.Schema({
-    Nombre: {
+    _id: {
         type: String,
         required: true
     },
-    serverID: {
-        type: Array,
-        required: true
-    },
-    prefijo: {
+    servidores: {
         type: Array,
         required: true
     }
@@ -184,9 +180,19 @@ client.on("messageCreate", async msg =>{
 client.on("messageCreate", async msg => {
     if(msg.author.bot)return;
 
-    let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
-    let num = dataPre.serverID.indexOf(msg.guildId)
-    let pref = dataPre.prefijo[num] ? dataPre.prefijo[num]: "u!"
+    let dataPre = await mPrefix.findOne({_id: client.user.id})
+    let pref
+    if(dataPre.servidores.some(s=> s.id = msg.guildId)){
+        let posicion
+        for(let i=0; i<dataPre.servidores.length; i++){
+            if(dataPre.servidores[i].id === msg.guildId){
+                posicion = i
+            }
+        }
+        pref = dataPre.servidores[posicion].prefijo
+    }else{
+        pref = "u!"
+    }
 
 
     if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
@@ -207,9 +213,19 @@ client.on("messageCreate", async msg => {
 client.on("messageCreate", async msg => {
     if(msg.author.bot) return; 
 
-    let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
-    let num = dataPre.serverID.indexOf(msg.guildId)
-    let prefijo = dataPre.prefijo[num] ? dataPre.prefijo[num]: "u!"
+    let dataPre = await mPrefix.findOne({_id: client.user.id})
+    let prefijo
+    if(dataPre.servidores.some(s=> s.id = msg.guildId)){
+        let posicion
+        for(let i=0; i<dataPre.servidores.length; i++){
+            if(dataPre.servidores[i].id === msg.guildId){
+                posicion = i
+            }
+        }
+        prefijo = dataPre.servidores[posicion].prefijo
+    }else{
+        prefijo = "u!"
+    }
 
 
     if(!msg.content.startsWith(prefijo)) return; 
@@ -3339,11 +3355,10 @@ client.on("messageCreate", async msg => {
 
 
 
-        let dataPre = await mPrefix.findOne({Nombre: "Prefijos"})
+        let dataPre = await mPrefix.findOne({_id: client.user.id})
 
-        if(!dataPre.serverID.some(s=> s === msg.guildId)){
-            dataPre.serverID.push(msg.guildId)
-            dataPre.prefijo.push(args[0])
+        if(!dataPre.servidores.some(s=> s.id === msg.guildId)){
+            dataPre.servidores.push({nombre: msg.guild.name, id: msg.guildId, prefijo: args[0]})
 
             const embPrefix = new Discord.MessageEmbed()
             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
@@ -3354,8 +3369,13 @@ client.on("messageCreate", async msg => {
             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPrefix]})
             return await dataPre.save()
         }
-        let num = dataPre.serverID.indexOf(msg.guildId)
-        dataPre.prefijo[num] = args[0]
+        let posicion
+        for(let p=0; p<dataPre.servidores.length; p++){
+            if(dataPre.servidores[p].id === msg.guildId){
+                posicion = p
+            }
+        }
+        dataPre.servidores[posicion] = {nombre: msg.guild.name, id: msg.guildId, prefijo: args[0]}
 
         const embPrefix = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
