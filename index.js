@@ -272,11 +272,11 @@ client.on("messageCreate", async msg => {
         if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
         msg.channel.sendTyping()
         let presencia = {
-            "dnd": "<:nomolestar:904558124793475083> No molestar",
-            "idle": "<:ausente:904557543228059650> Ausente",
-            "undefined": "<:desconectado:904558485155495946> Desconectado",
-            "offline": "<:desconectado:904558485155495946> Desconectado",
-            "online": "<:online:904556872005222480> Conectado"
+            "dnd": "<:nomolestar:910277499865407539> No molestar",
+            "idle": "<:ausente:910277557516124180> Ausente",
+            "undefined": "<:desconectado:910277715293245541> Desconectado",
+            "offline": "<:desconectado:910277715293245541> Desconectado",
+            "online": "<:online:910277439928807434> Conectado"
         }
 
         let tyEstado = {
@@ -843,7 +843,7 @@ client.on("messageCreate", async msg => {
                 {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
                 {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                 {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
-                {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
                 {name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.map(f=> feat[f]).join(" **|** ")}`, inline: false},
                 {name: `\u200B`, value: `${imgs}`, inline: true},
             )
@@ -876,7 +876,7 @@ client.on("messageCreate", async msg => {
                     {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
                     {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                     {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
-                    {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                    {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
                     {name: `\u200B`, value: `${imgs}`, inline: true},
                 )
                 .setColor(msg.guild.me.displayHexColor)
@@ -907,7 +907,7 @@ client.on("messageCreate", async msg => {
                         {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
                         {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                         {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
-                        {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                        {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
                         {name: `\u200B`, value: `${imgs}`, inline: true},
                     )
                     .setColor(msg.guild.me.displayHexColor)
@@ -937,7 +937,7 @@ client.on("messageCreate", async msg => {
                             {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
                             {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                             {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
-                            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
                             {name: `\u200B`, value: `${imgs}`, inline: true},
                         )
                         .setColor(msg.guild.me.displayHexColor)
@@ -966,7 +966,7 @@ client.on("messageCreate", async msg => {
                             {name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true},
                             {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                             {name: `**Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
-                            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
+                            {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
                             {name: `\u200B`, value: `${imgs}`, inline: true},
                         )
                         .setColor(msg.guild.me.displayHexColor)
@@ -998,7 +998,9 @@ client.on("messageCreate", async msg => {
             .setURL(invURL)
         )
 
-        msg.reply({allowedMentions: {repliedUser: false}, embeds: [inv], components: [row]})
+        setTimeout(()=>{
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [inv], components: [row]})
+        }, 500)
     }
 
     // Generador de codigo QR
@@ -1047,7 +1049,7 @@ client.on("messageCreate", async msg => {
         const infBot = new Discord.MessageEmbed()
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL())
-        .setTitle(`<:sslogo:895014367920287754> ${client.user.username}`)
+        .setTitle(`<:util:947316902647189554> ${client.user.username}`)
         .setDescription(`Es un bot enfocado en facilitar tareas que requieren la interacción en otros servidores, como crear alianzas, promocionar contenido en servidores, también enfocado en la creación de un sistema de puntos que puede usar el dueño del servidor para determinar cuando un miembro de soporte se merece subir de rango de acuerdo con los puntos acumulados que tenga.`)
         .addField("⚙ **Sistemas:**", `📣 **Sistema de inter promoción:**\nFase semi final, para mas información utilice el comando ${"``"}${prefijo}interPInfo${"``"}.\n\n🟢 **Sistema de puntos:**\nFase beta, para mas información utilice el comando ${"``"}${prefijo}puntosInfo${"``"}.\n\n🤝 **Sistema de auto alianzas:**\nEn desarollo...`)      
         .setFooter(`Creador del bot ${client.users.cache.get(creadorID).tag}`,client.users.cache.get(creadorID).displayAvatarURL({dynamic: true}))
@@ -5384,7 +5386,7 @@ client.on("guildCreate", async gc => {
     )
     .setColor("GREEN")
     .setTimestamp()
-    client.channels.cache.get("838457311684853827").send({embeds: [embGC]})
+    client.channels.cache.get("940078302880743505").send({embeds: [embGC]})
 })
 
 // Registro de expulsion de servidor
@@ -5399,7 +5401,7 @@ client.on("guildDelete",async gd => {
     )
     .setColor("RED")
     .setTimestamp()
-    client.channels.cache.get("838457311684853827").send({embeds: [embGD]})
+    client.channels.cache.get("940078302880743505").send({embeds: [embGD]})
 
 })
 
