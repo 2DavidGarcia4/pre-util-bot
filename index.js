@@ -3062,26 +3062,11 @@ client.on("messageCreate", async msg => {
         msg.channel.sendTyping()
         const embErrP1 = new Discord.MessageEmbed()
         .setAuthor("❌ Error")
-        .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
-        .setColor(ColorError)
-        .setFooter("Requiero de uno de los siguientes permisos: Gestionar mensajes, Expulsar miembros o Banear miembros.")
-        .setTimestamp()
-        if(!msg.guild.me.permissions.has("MANAGE_MESSAGES" || "KICK_MEMBERS" || "BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
-            msg.delete().catch(t=>{
-                return;
-            })
-            tm.delete().catch(t=>{
-                return;
-            })
-        },40000))
-
-        const embErrP2 = new Discord.MessageEmbed()
-        .setAuthor("❌ Error")
         .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
         .setColor(ColorError)
         .setFooter("Requieres de uno de estos permisos: Gestionar mensajes, Expulsar miembros o Banear miembros.")
         .setTimestamp()
-        if(!msg.member.permissions.has("MANAGE_MESSAGES" || "KICK_MEMBERS" || "BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP2]}).then(tm => setTimeout(()=>{
+        if(!msg.member.permissions.has("MANAGE_MESSAGES") || !msg.member.permissions.has("KICK_MEMBERS") || !msg.member.permissions.has("BAN_MEMBERS")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
             msg.delete().catch(t=>{
                 return;
             })
@@ -4400,7 +4385,7 @@ client.on("messageCreate", async msg => {
         const embInfoP = new Discord.MessageEmbed()
         .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("🟢 ¿Qué es el sistema de Puntos?")
-        .setDescription(`Es un sistema creado con la intención de ayudar a los creadores de servidores a tener un registro de las acciones que han realizado los miembros del equipo de soporte del servidor.\n\n📑 **Comandos:**\n${"``"}${prefijo}puntos${"``"} **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n${"``"}${prefijo}addPuntos${"``"} **|** Agrega puntos a un miembro.\n${"``"}${prefijo}removePuntos${"``"} **|** Elimina puntos a un miembro.\n${"``"}${prefijo}leaderboardP${"``"} **|** Muestra una tabla con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n${"``"}${prefijo}setEmojiP${"``"} **|** Establece el icono o emoji de los puntos.\n\`\`${prefijo}updateSystemP\`\` **|** Actualiza la base de datos de tu servidor eliminando a todos los miembros que ya no estén en tu servidor de la base de datos del sistema de puntos.\n\`\`${prefijo}removeSystemPUser\`\` **|** Elimina del sistema de puntos a un miembro de tu servidor.`)
+        .setDescription(`Es un sistema creado con la intención de ayudar a los creadores de servidores a tener un registro de las acciones que han realizado los miembros del equipo de soporte del servidor.\n\n📑 **Comandos:**\n${"``"}${prefijo}puntos${"``"} **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n${"``"}${prefijo}addPuntos${"``"} **|** Agrega puntos a un miembro.\n${"``"}${prefijo}removePuntos${"``"} **|** Elimina puntos a un miembro.\n${"``"}${prefijo}leaderboardP${"``"} **|** Muestra una tabla con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n${"``"}${prefijo}setEmojiP${"``"} **|** Establece el icono o emoji de los puntos.\n\`\`${prefijo}removeSystemPUser\`\` **|** Elimina del sistema de puntos a un miembro de tu servidor.`)
         .setColor(colorEmb)
         .setTimestamp()
         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfoP]})
@@ -4952,59 +4937,59 @@ client.on("messageCreate", async msg => {
         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embSetE]})
     }
 
-    if(comando.toLowerCase() === "updatesystemp"){
-        msg.channel.sendTyping()
-        const embErrP1 = new Discord.MessageEmbed()
-        .setAuthor("❌ Error")
-        .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
-        .setColor(ColorError)
-        .setFooter("Permiso requerido: Administrador")
-        .setTimestamp()
-        if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
-            msg.delete().catch(t=>{
-                return;
-            })
-            tm.delete().catch(t=>{
-                return;
-            })
-        },40000))
+    // if(comando.toLowerCase() === "updatesystemp"){
+    //     msg.channel.sendTyping()
+    //     const embErrP1 = new Discord.MessageEmbed()
+    //     .setAuthor("❌ Error")
+    //     .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
+    //     .setColor(ColorError)
+    //     .setFooter("Permiso requerido: Administrador")
+    //     .setTimestamp()
+    //     if(!msg.member.permissions.has("ADMINISTRATOR")) return msg.reply({allowedMentions: {repliedUser: false}, embeds: [embErrP1]}).then(tm => setTimeout(()=>{
+    //         msg.delete().catch(t=>{
+    //             return;
+    //         })
+    //         tm.delete().catch(t=>{
+    //             return;
+    //         })
+    //     },40000))
 
-        // let dataSP = await sPuntos.findOne({_id: msg.guildId})
+    //     // let dataSP = await sPuntos.findOne({_id: msg.guildId})
 
-        let posiciones = 0
-        let cant = 0
-        for(let i=0; i<dB.length; i++){
-            if(!msg.guild.members.cache.get(dB[i].miembroID)){
-                console.log(Number(i-cant))
-                let sum = Number(i-cant)
-                dB.splice(sum,1)
-                posiciones = posiciones + 1
-                cant = cant + 1
-            }
+    //     let posiciones = 0
+    //     let cant = 0
+    //     for(let i=0; i<dB.length; i++){
+    //         if(!msg.guild.members.cache.get(dB[i].miembroID)){
+    //             console.log(Number(i-cant))
+    //             let sum = Number(i-cant)
+    //             dB.splice(sum,1)
+    //             posiciones = posiciones + 1
+    //             cant = cant + 1
+    //         }
             
-            console.log("1. :",i)
-            // for(let e=0; e<dataSP.sistema.length; e++){
-            //     console.log("2. :",e)
-            //     if(!msg.guild.members.cache.get(dataSP.sistema[e].miembroID)){
-            //         dataSP.sistema.splice(e,1)
-            //     }
-            // }
-        }
-        // await dataSP.save()
+    //         console.log("1. :",i)
+    //         // for(let e=0; e<dataSP.sistema.length; e++){
+    //         //     console.log("2. :",e)
+    //         //     if(!msg.guild.members.cache.get(dataSP.sistema[e].miembroID)){
+    //         //         dataSP.sistema.splice(e,1)
+    //         //     }
+    //         // }
+    //     }
+    //     // await dataSP.save()
 
-        const embUpdateSistemP = new Discord.MessageEmbed()
-        .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-        .setTitle("✅ Sistema actualizado")
-        .setDescription(`Se han eliminado datos de **${posiciones.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
-        .setColor(msg.guild.me.displayHexColor)
-        .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-        setTimeout(()=>{
-            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUpdateSistemP]})
-        }, 400)
+    //     const embUpdateSistemP = new Discord.MessageEmbed()
+    //     .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+    //     .setTitle("✅ Sistema actualizado")
+    //     .setDescription(`Se han eliminado datos de **${posiciones.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
+    //     .setColor(msg.guild.me.displayHexColor)
+    //     .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+    //     setTimeout(()=>{
+    //         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUpdateSistemP]})
+    //     }, 400)
 
-        console.log(posiciones)
-        console.log(dB)
-    }
+    //     console.log(posiciones)
+    //     console.log(dB)
+    // }
 
     if(comando.toLowerCase() === "removesystempuser"){
         msg.channel.sendTyping()
