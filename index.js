@@ -105,7 +105,7 @@ client.on("ready",async () => {
     console.log(client.user.username, "Hola, estoy listo")
     const embReady = new Discord.MessageEmbed()
     .setTitle(`${emojis.acierto} Estoy conectado`)
-    .setDescription(`Desde <:heroku:958814911243374602> Heroku pijamas.`)
+    .setDescription(`Desde <:heroku:958814911243374602> Heroku gacub.`)
     .setColor("00ff00")
     .setTimestamp()
     miServidor.channels.cache.get("940078303694442566").send({embeds: [embReady]})
@@ -155,7 +155,7 @@ client.on("ready",async () => {
 
 client.on("interactionCreate", async int => {
     if(int.isButton()){
-        if(int.customId === "advertencias"){
+        if(int.customId == "advertencias"){
             int.deferUpdate()
             let dataHis = await historiales.findOne({_id: client.user.id})
             let posicionVA
