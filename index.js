@@ -110,7 +110,7 @@ client.on("ready",async () => {
     .setTimestamp()
     miServidor.channels.cache.get("940078303694442566").send({embeds: [embReady]})
 
-    const estado = [
+    const estadosDia = [
         {
             name: `${client.guilds.cache.size.toLocaleString()} servidores.`,
             type: "WATCHING"
@@ -141,15 +141,29 @@ client.on("ready",async () => {
         },
     ]
 
-    const autoPresencia = () => {
-        let aleatorio = Math.floor(Math.random()*estado.length)
-        client.user.setPresence({
-            activities: [estado[aleatorio]]
-        })
+    const estadosNoche = [
+        {
+            name: `mis sueños, estoy durmiendo.`,
+            type: "WATCHING"
+        },
+        {
+            name: `a los miembros y durmiendo.`,
+            type: "LISTENING"
+        }
+    ]
+
+    function presencias () {
+        let tiempo = new Date()
+        if(tiempo.getHours() > 20 && tiempo.getHours() < 8){
+            client.user.setPresence({status: "idle", activities: [estadosNoche[Math.floor(Math.random()*estadosNoche.length)]]})
+        }else{
+            client.user.setPresence({status: "online", activities: [estadosDia[Math.floor(Math.random()*estadosDia.length)]]})
+        }
     }
-    autoPresencia()
+    presencias()
+
     setInterval(()=>{
-        autoPresencia()
+        presencias()
     }, 2*60000)
 })
 
@@ -9123,7 +9137,6 @@ client.on("messageCreate", async msg => {
         botDB.comandos.usos++
         let dataSP = await sPuntos.findOne({_id: msg.guildId}), puntos = 0
         let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f=> f.user.tag == args[0])
-
         if(miembro){
             let descripciones = [`El miembro proporcionado *(${miembro})* soy yo, yo no puedo usar el sistema de puntos.`, `El miembro proporcionado *(${miembro})* es un bot, los bots no pueden usar el sistema de puntos.`]
             let condicionales = [miembro.id == client.user.id, miembro.user.bot]
@@ -9228,7 +9241,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
                         .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **0** puntos.`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.displayAvatarURL({dynamic: true}))
+                        .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.user.displayAvatarURL({dynamic: true}))
                         .setTimestamp()
 
                         setTimeout(()=> {
@@ -9270,7 +9283,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,miembro.user.displayAvatarURL({dynamic: true}))
                     .setDescription(`${miembro} tiene ${emojis.puntos} **0** puntos.`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.displayAvatarURL({dynamic: true}))
+                    .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.user.displayAvatarURL({dynamic: true}))
                     .setTimestamp()
                     await nuevaDataSP.save()
 
