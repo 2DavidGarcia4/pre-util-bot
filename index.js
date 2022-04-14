@@ -147,7 +147,7 @@ client.on("ready",async () => {
             type: "WATCHING"
         },
         {
-            name: `a los miembros y durmiendo.`,
+            name: `a los usuarios y durmiendo.`,
             type: "LISTENING"
         }
     ]
@@ -9226,7 +9226,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,miembro.user.displayAvatarURL({dynamic: true}))
                         .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.displayAvatarURL({dynamic: true}))
+                        .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.user.displayAvatarURL({dynamic: true}))
                         .setTimestamp()
                         setTimeout(()=> {
                             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embPMi]})
