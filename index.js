@@ -154,7 +154,7 @@ client.on("ready",async () => {
 
     function presencias () {
         let tiempo = new Date()
-        if(tiempo.getHours() > 20 && tiempo.getHours() < 8){
+        if(tiempo.getHours() > 20 || tiempo.getHours() < 8){
             client.user.setPresence({status: "idle", activities: [estadosNoche[Math.floor(Math.random()*estadosNoche.length)]]})
         }else{
             client.user.setPresence({status: "online", activities: [estadosDia[Math.floor(Math.random()*estadosDia.length)]]})
@@ -8693,7 +8693,7 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             let segPage
-            if(String(miembros.length).slice(-1) === "0"){
+            if(String(miembros.length).slice(-1) == "0"){
                 segPage = Math.floor(miembros.length / 10)
             }else{
                 segPage = Math.floor(miembros.length / 10 + 1)
@@ -8711,12 +8711,12 @@ client.on("messageCreate", async msg => {
                     msg.reply({allowedMentions: {repliedUser: false}, embeds: [embMiembros]})
                 }, 500)
             }else{
-                let m1 = 0, m2 = 10, pagina = 1
+                let m1 = 0, m2 = 10, pagina = 1, descripcion = `${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n`
 
                 const embMiembros = new Discord.MessageEmbed()
                 .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
                 .setTitle("👥 Miembros con el rol")
-                .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
+                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
                 .setColor(msg.guild.me.displayHexColor)
                 .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                 .setTimestamp()
@@ -8779,45 +8779,46 @@ client.on("messageCreate", async msg => {
 
                 setTimeout(async ()=> {
                     const mensajeSend = await msg.reply({allowedMentions: {repliedUser: false}, embeds: [embMiembros], components: [botones1]})
-                    const filtro = i=> i.user.id === msg.author.id;
-                    const colector = mensajeSend.createMessageComponentCollector({filter: filtro, time: segPage * 60000})
+                    const colector = mensajeSend.createMessageComponentCollector({filter: i=> i.user.id == msg.author.id, time: segPage * 60000})
 
                     setTimeout(()=>{
                         mensajeSend.edit({embeds: [embMiembros], components: []})
                     }, segPage * 60000)
 
                     colector.on("collect", async botn => {
-                        if(botn.customId === "1"){
+                        if(botn.customId == "1"){
                             if(m2 - 10 <= 10){
                                 m1-=10, m2-=10, pagina--
 
                                 embMiembros
-                                .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
                                 .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                                return await botn.update({embeds: [embMiembros], components: [botones1]})
-                            }
-                            m1-=10, m2-=10, pagina--
+                                await botn.update({embeds: [embMiembros], components: [botones1]})
+                            }else{
+                                m1-=10, m2-=10, pagina--
 
-                            embMiembros
-                            .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
-                            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                            await botn.update({embeds: [embMiembros], components: [botones2]})
+                                embMiembros
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
+                                .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                                await botn.update({embeds: [embMiembros], components: [botones2]})
+                            }
                         }
-                        if(botn.customId === "2"){
+                        if(botn.customId == "2"){
                             if(m2 + 10 >= miembros.length){
                                 m1+=10, m2+=10, pagina++
 
                                 embMiembros
-                                .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
                                 .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                                return await botn.update({embeds: [embMiembros], components: [botones3]})
-                            }
-                            m1+=10, m2+=10, pagina++
+                                await botn.update({embeds: [embMiembros], components: [botones3]})
+                            }else{
+                                m1+=10, m2+=10, pagina++
 
-                            embMiembros
-                            .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
-                            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                            return await botn.update({embeds: [embMiembros], components: [botones2]})
+                                embMiembros
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
+                                .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                                await botn.update({embeds: [embMiembros], components: [botones2]})
+                            }
                         }
                     })
                 }, 500)
@@ -8826,11 +8827,11 @@ client.on("messageCreate", async msg => {
             let descripciones = [`El argumento numérico  ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento proporcionado (*${args[0]}*) no se reconoce como una mención o ID de un rol del servidor, proporciona una mención o ID de un rol del servidor.`]
             let condicionales = [!isNaN(args[0]) && args[0].length < 18, !isNaN(args[0]) && args[0].length > 18, isNaN(args[0])]
 
-            for(let i=0; i<descripciones.length; i++){
-                if(condicionales[i]){
+            condicionales.forEach((valorCs, ps) => {
+                if(valorCs){
                     const embErr = new Discord.MessageEmbed()
                     .setTitle(`${emojis.negativo} Error`)
-                    .setDescription(descripciones[i])
+                    .setDescription(descripciones[ps])
                     .setColor(ColorError)
                     .setTimestamp()
                     return setTimeout(()=>{
@@ -8844,7 +8845,7 @@ client.on("messageCreate", async msg => {
                         }, 30000));
                     }, 500)
                 }
-            }
+            })
         }
 
         datosComando.set(msg.author.id, tiempoActual);
@@ -8942,12 +8943,12 @@ client.on("messageCreate", async msg => {
             .setColor(msg.guild.me.displayHexColor)
             .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
-            if(miembros.length <= 0) return setTimeout(()=>{
+            if(miembros.length == 0) return setTimeout(()=>{
                 msg.reply({allowedMentions: {repliedUser: false}, embeds: [embNoMiembros]})
             }, 500)
 
             let segPage
-            if(String(miembros.length).slice(-1) === "0"){
+            if(String(miembros.length).slice(-1) == "0"){
                 segPage = Math.floor(miembros.length / 10)
             }else{
                 segPage = Math.floor(miembros.length / 10 + 1)
@@ -8965,12 +8966,12 @@ client.on("messageCreate", async msg => {
                     msg.reply({allowedMentions: {repliedUser: false}, embeds: [embMiembros]})
                 }, 500)
             }else{
-                let m1 = 0, m2 = 10, pagina = 1
+                let m1 = 0, m2 = 10, pagina = 1, descripcion = `${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n`
 
                 const embMiembros = new Discord.MessageEmbed()
                 .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
                 .setTitle("👥 Miembros sin el rol")
-                .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
+                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
                 .setColor(msg.guild.me.displayHexColor)
                 .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                 .setTimestamp()
@@ -9046,32 +9047,34 @@ client.on("messageCreate", async msg => {
                                 m1-=10, m2-=10, pagina--
     
                                 embMiembros
-                                .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
                                 .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                                return await botn.update({embeds: [embMiembros], components: [botones1]})
-                            }
-                            m1-=10, m2-=10, pagina--
+                                await botn.update({embeds: [embMiembros], components: [botones1]})
+                            }else{
+                                m1-=10, m2-=10, pagina--
     
-                            embMiembros
-                            .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
-                            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                            await botn.update({embeds: [embMiembros], components: [botones2]})
+                                embMiembros
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
+                                .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                                await botn.update({embeds: [embMiembros], components: [botones2]})
+                            }
                         }
                         if(botn.customId === "2"){
                             if(m2 + 10 >= miembros.length){
                                 m1+=10, m2+=10, pagina++
     
                                 embMiembros
-                                .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
                                 .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                                 return await botn.update({embeds: [embMiembros], components: [botones3]})
-                            }
-                            m1+=10, m2+=10, pagina++
+                            }else{
+                                m1+=10, m2+=10, pagina++
     
-                            embMiembros
-                            .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n")}`)
-                            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                            return await botn.update({embeds: [embMiembros], components: [botones2]})
+                                embMiembros
+                                .setDescription(descripcion+miembros.map((m, r)=> `**${r+1}.** [${m.user.tag}](${m.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096})})\n${m}`).slice(m1,m2).join("\n\n"))
+                                .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                                await botn.update({embeds: [embMiembros], components: [botones2]})
+                            }
                         }
                     })
                 }, 500)
@@ -9080,11 +9083,11 @@ client.on("messageCreate", async msg => {
             let descripciones = [`El argumento numérico  ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento proporcionado (*${args[0]}*) no se reconoce como una mención o ID de un rol del servidor, proporciona una mención o ID de un rol del servidor.`]
             let condicionales = [!isNaN(args[0]) && args[0].length < 18, !isNaN(args[0]) && args[0].length > 18, isNaN(args[0])]
 
-            for(let i=0; i<descripciones.length; i++){
-                if(condicionales[i]){
+            condicionales.forEach((valorCs, ps) => {
+                if(valorCs){
                     const embErr = new Discord.MessageEmbed()
                     .setTitle(`${emojis.negativo} Error`)
-                    .setDescription(descripciones[i])
+                    .setDescription(descripciones[ps])
                     .setColor(ColorError)
                     .setTimestamp()
                     return setTimeout(()=>{
@@ -9098,7 +9101,7 @@ client.on("messageCreate", async msg => {
                         }, 30000));
                     }, 500)
                 }
-            }
+            })
         }
 
         datosComando.set(msg.author.id, tiempoActual);
@@ -10978,9 +10981,9 @@ client.on("messageCreate", async msg => {
         if(dataSP){
             let objeto = dataSP.datos
             objeto.comandosUsos++
-            let array = dataSP.miembros
+            let arrayMs = dataSP.miembros
            
-            let falsosMiembros = array.filter(f=> !msg.guild.members.cache.get(f.id))
+            let falsosMiembros = arrayMs.filter(f=> !msg.guild.members.cache.get(f.id))
 
             const embError1 = new Discord.MessageEmbed()
             .setTitle(`${emojis.negativo} Error`)
@@ -10998,8 +11001,10 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            falsosMiembros.map(m=> {
-                array.splice(array.indexOf(m.id),1) 
+            arrayMs.forEach((valorMs, psMs) => {
+                if(falsosMiembros.some(s=>s.id == valorMs.id)){
+                    arrayMs.splice(psMs, 1)
+                }
             })
             await sPuntos.findByIdAndUpdate(msg.guildId, {datos: objeto, miembros: array})
 
