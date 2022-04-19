@@ -11296,7 +11296,16 @@ client.on("messageCreate", async msg => {
 
 
     // 👑 Comandos para el creador
-    if(comando == "crearinvite" || comando == "crearinv" || comando == "crinv" && creadoresID.some(s=>s==msg.author.id)){
+    if((comando == "time" || comando == "tiempo") && creadoresID.some(s=> s == msg.author.id)){
+        let tiempo = new Date()
+    
+        const embTiempo = new Discord.MessageEmbed()
+        .setTitle(`⌚ Tiempo`)
+        .setDescription(`Son las ${tiempo.getHours()}:${tiempo.getMinutes()}:${tiempo.getSeconds()}`)
+        .setColor(msg.guild.me.displayHexColor)
+        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embTiempo]})
+    }
+    if((comando == "crearinvite" || comando == "crearinv" || comando == "crinv") && creadoresID.some(s=>s==msg.author.id)){
         msg.channel.sendTyping()
         let servidor = client.guilds.cache.get(args[0]), canal = client.channels.cache.get(args[0])
 
@@ -11384,7 +11393,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "serverinfo" || comando == "svinfo" && creadoresID.some(s=>s == msg.author.id)){
+    if((comando == "serverinfo" || comando == "svinfo") && creadoresID.some(s=>s == msg.author.id)){
         msg.channel.sendTyping()
         let servidor = client.guilds.cache.get(args[0])
         let permisos = {
@@ -11502,7 +11511,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "servers" || comando == "servidores" || comando == "svs" && creadoresID.some(s=>s==msg.author.id)){
+    if((comando == "servers" || comando == "servidores" || comando == "svs") && !creadoresID.some(s=>s==msg.author.id)){
         msg.channel.sendTyping()
         let servidores = client.guilds.cache.map(m=> Object({id: m.id, miembros: m.memberCount})).sort((a,b) => b.miembros - a.miembros), segPage, s0 = 0, s1 = 10, pagina = 1;
         if(String(client.guilds.cache.size).slice(-1) === "0"){
