@@ -1,7 +1,5 @@
 const Discord = require("discord.js"), client = new Discord.Client({intents: 32767, ws:{properties:{$browser: "Discord Android"}}});
-
-const token = require("./config.json").tokenÚtil, ms = require("ms"), mongoose = require("mongoose"), isURL = require("isurl");
-
+const ms = require("ms"), mongoose = require("mongoose"), isURL = require("isurl");
 const creadorID = "717420870267830382", creadoresID = ["717420870267830382","825186118050775052"], colorEmb = "#2c889f", colorEmbInfo = "#2c889f", ColorError = "#ff0000", emojis = {negativo: "<a:negativo:856967325505159169>", acierto: "<a:afirmativo:856966728806432778>", puntos: "<:StaffPoint:957357854120116234>", lupa: "<:lupa:958820188457930892>"}, invitacion = "https://discord.com/api/oauth2/authorize?client_id=935707268090056734&permissions=1239568329975&scope=bot%20applications.commands", serverSuport = "https://discord.gg/G7GUD7eNCb"
 
 mongoose.connect("mongodb+srv://Music:oQJo4VnF3rXj615k@ssbot.jbt17.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",{
@@ -15,71 +13,33 @@ mongoose.connect("mongodb+srv://Music:oQJo4VnF3rXj615k@ssbot.jbt17.mongodb.net/m
 
 // Sistema de historial
 const esquemaHistoriales = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
-    sanciones: {
-        type: Object,
-        required: true
-    },
-    usuarios: {
-        type: Array,
-        required: true
-    }
+    _id: {type: String, required: true},
+    sanciones: {type: Object, required: true},
+    usuarios: {type: Array, required: true}
 })
 const historiales = mongoose.model("Historiales", esquemaHistoriales)
 
-
 // Prefijo configurable
 const confPrefijo = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
-    servidores: {
-        type: Array,
-        required: true
-    }
+    _id: {type: String, required: true},
+    servidores: {type: Array, required: true}
 })
 const mPrefix = mongoose.model("Prefijo", confPrefijo)
 
-
 // Sistema de puntos
 const puntosMongo = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
-    serverName: {
-        type: String,
-        required: true
-    },
-    datos: {
-        type: Object,
-        required: true
-    },
-    miembros: {
-        type: Object,
-        required: true
-    }
+    _id: {type: String, required: true},
+    serverName: {type: String, required: true},
+    datos: {type: Object, required: true},
+    miembros: {type: Object, required: true}
 })
 const sPuntos = mongoose.model("Sistema de puntos", puntosMongo) 
 
 // AFK DB
 const awayFromKeyboard = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    }, 
-    servidor: {
-        type: Object,
-        required: true
-    }, 
-    miembros: {
-        type: Array,
-        required: true
-    }
+    _id: {type: String, required: true}, 
+    servidor: {type: Object, required: true}, 
+    miembros: {type: Array, required: true}
 })
 const dbAFK = mongoose.model("AFK DB", awayFromKeyboard)
 
@@ -105,59 +65,104 @@ client.on("ready",async () => {
     console.log(client.user.username, "Hola, estoy listo")
     const embReady = new Discord.MessageEmbed()
     .setTitle(`${emojis.acierto} Estoy conectado`)
-    .setDescription(`Desde <:heroku:958814911243374602> Heroku gacub.`)
+    .setDescription(`Desde <:heroku:958814911243374602> Heroku gacub20ru.`)
     .setColor("00ff00")
     .setTimestamp()
     miServidor.channels.cache.get("940078303694442566").send({embeds: [embReady]})
 
-    const estadosDia = [
-        {
-            name: `${client.guilds.cache.size.toLocaleString()} servidores.`,
-            type: "WATCHING"
-        },
-        {
-            name: "u!help",
-            type: "LISTENING"
-        },
-        {
-            name: `${client.users.cache.size.toLocaleString()} usuarios.`,
-            type: "WATCHING"
-        },
-        {
-            name: "u!invite",
-            type: "LISTENING"
-        },
-        {
-            name: `${svsp.name} mi servidor de origen.`,
-            type: "WATCHING"
-        },
-        {
-            name: `moderar con mi hermanó ${hermano.username}`,
-            type: "PLAYING"
-        },
-        {
-            name: `mis 42 comandos.`,
-            type: "WATCHING"
-        },
-    ]
-
-    const estadosNoche = [
-        {
-            name: `mis sueños, estoy durmiendo.`,
-            type: "WATCHING"
-        },
-        {
-            name: `a los usuarios y durmiendo.`,
-            type: "LISTENING"
-        }
-    ]
 
     function presencias () {
-        let tiempo = new Date()
-        if(tiempo.getHours() > 20 || tiempo.getHours() < 8){
-            client.user.setPresence({status: "idle", activities: [estadosNoche[Math.floor(Math.random()*estadosNoche.length)]]})
+        let estadoId = 0
+        const estadosDia = [
+            {
+                id: 1,
+                estado: {
+                    name: `${client.guilds.cache.size.toLocaleString()} servidores.`,
+                    type: "WATCHING"
+                }
+            },
+            {
+                id: 2,
+                estado: {
+                    name: "u!help",
+                    type: "LISTENING"
+                }
+            },
+            {
+                id: 3,
+                estado: {
+                    name: `${client.users.cache.size.toLocaleString()} usuarios.`,
+                    type: "WATCHING"
+                }
+            },
+            {
+                id: 4,
+                estado: {
+                    name: "u!invite",
+                    type: "LISTENING"
+                }
+            },
+            {
+                id: 5,
+                estado: {
+                    name: `${svsp.name} mi servidor de origen.`,
+                    type: "WATCHING"
+                }
+            },
+            {
+                id: 6,
+                estado: {
+                    name: `moderar con mi hermanó ${hermano.username}`,
+                    type: "PLAYING"
+                }
+            },
+            {
+                id: 7,
+                estado: {
+                    name: `mis 42 comandos.`,
+                    type: "WATCHING"
+                }
+            },
+        ]
+    
+        const estadosNoche = [
+            {
+                id: 1,
+                estado: {
+                    name: `mis sueños, estoy durmiendo.`,
+                    type: "WATCHING"
+                }
+            },
+            {
+                id: 2,
+                estado: {
+                    name: `a los usuarios y durmiendo.`,
+                    type: "LISTENING"
+                }
+            }
+        ]
+
+        let tiempo = new Date(), bueltas = 1
+        if(tiempo.getHours()+5 > 20 || tiempo.getHours()+5 < 8){
+            let estadoRandom = estadosNoche[Math.floor(Math.random()*estadosNoche.length)]
+            for(let e=0; e<bueltas; e++){
+                if(estadoRandom.id==estadoId){
+                    estadoRandom = estadosNoche[Math.floor(Math.random()*estadosNoche.length)]
+                    bueltas++
+                }else{
+                    client.user.setPresence({status: "idle", activities: [estadosNoche[Math.floor(Math.random()*estadosNoche.length)].estado]})
+                }
+            }
         }else{
-            client.user.setPresence({status: "online", activities: [estadosDia[Math.floor(Math.random()*estadosDia.length)]]})
+            let estadoRandom = estadosDia[Math.floor(Math.random()*estadosDia.length)]
+            for(let e=0; e<bueltas; e++){
+                if(estadoRandom.id==estadoId){
+                    estadoRandom = estadosDia[Math.floor(Math.random()*estadosDia.length)]
+                    bueltas++
+                }else{
+                    client.user.setPresence({status: "idle", activities: [estadosDia[Math.floor(Math.random()*estadosDia.length)].estado]})
+                }
+            }
         }
     }
     presencias()
@@ -171,7 +176,7 @@ client.on("interactionCreate", async int => {
     if(int.isButton()){
         if(int.customId == "advertencias"){
             int.deferUpdate()
-            let dataHis = await historiales.findOne({_id: client.user.id})
+            let dataHis = await historiales.findById(client.user.id)
             let posicionVA
             for(let i in botDB.historial){
                 if(botDB.historial[i].mensajeID === int.message.id){
@@ -184,7 +189,7 @@ client.on("interactionCreate", async int => {
                     posicionUS = u
                 }
             }
-            console.log(botDB.historial[posicionVA])
+
             let miembro = int.guild.members.cache.get(botDB.historial[posicionVA].miembroID)
             let historial = []
             let descripcion = ""
@@ -1505,16 +1510,15 @@ client.on("interactionCreate", async int => {
     }
 })
 
-
+const cooldowns = new Map()
 client.on("messageCreate", async msg => {
-    if(msg.author.bot)return;
-
-    let dataAFK = await dbAFK.findOne({_id: msg.guildId}), dataPre = await mPrefix.findOne({_id: client.user.id}), pref
+    if(msg.author.bot) return; 
+    let dataPre = await mPrefix.findOne({_id: client.user.id}), dataAFK = await dbAFK.findById(msg.guildId), prefijo = " "
 
     if(dataPre.servidores.some(s=> s.id == msg.guildId)){
-        pref = dataPre.servidores.find(f=> f.id == msg.guildId).prefijo
+        prefijo = dataPre.servidores.find(f=> f.id == msg.guildId).prefijo
     }else{
-        pref = "u!"
+        prefijo = "u!"
     }
 
 
@@ -1584,7 +1588,6 @@ client.on("messageCreate", async msg => {
     }
 
 
-
     if(!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
     if(msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))){
         msg.channel.sendTyping()
@@ -1592,7 +1595,7 @@ client.on("messageCreate", async msg => {
         .setAuthor(msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL())
         .setTitle(`Hola, soy **${client.user.username}** un Bot multi fundacional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de inter promoción.`)
-        .setDescription(`Usa el comando \`\`${pref}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: ${"``"}${pref}${"``"}\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](https://discord.gg/fbE2sqA5kj)`)
+        .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: ${"``"}${prefijo}${"``"}\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](https://discord.gg/fbE2sqA5kj)`)
         .setColor(colorEmb)
         .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
         .setTimestamp()
@@ -1601,46 +1604,32 @@ client.on("messageCreate", async msg => {
             msg.reply({embeds: [emb]})
         }, 500)
     }    
-})
 
 
-const cooldowns = new Map()
-
-client.on("messageCreate", async msg => {
-    if(msg.author.bot) return; 
-    let dataPre = await mPrefix.findOne({_id: client.user.id}), prefijo
-
-    if(dataPre.servidores.some(s=> s.id == msg.guildId)){
-        prefijo = dataPre.servidores.find(f=> f.id == msg.guildId).prefijo
-    }else{
-        prefijo = "u!"
-    }
-
-
-    if(!msg.content.startsWith(prefijo) || !msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return; 
+    if(!msg.content.startsWith(prefijo)) return; 
     const args = msg.content.slice(prefijo.length).trim().split(/ +/g);
     const comando = args.shift().toLowerCase()
 
 
-    if(comando == "help"){
+    if(["help", "ayuda"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
 
-        const emb = new Discord.MessageEmbed()
+        const embHelp = new Discord.MessageEmbed()
         .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL())
-        .setTitle(`Hola, soy **${client.user.username}** un Bot multi fundacional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de inter promoción.`)
-        .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: ${"``"}${prefijo}${"``"}\b\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](https://discord.gg/fbE2sqA5kj)`)
+        .setTitle(`Hola, soy **${client.user.username}** un Bot multi fundacional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de puntos.`)
+        .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: \`\`${prefijo}\`\`\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](${serverSuport})`)
         .setColor(colorEmb)
-        .setFooter(client.user.username,client.user.displayAvatarURL({dynamic: true}))
+        .setFooter(client.user.username, client.user.displayAvatarURL({dynamic: true}))
         .setTimestamp()
         
         setTimeout(()=>{
-            msg.reply({embeds: [emb]})
+            msg.reply({embeds: [embHelp]})
         }, 500)
     }
 
-    if(comando == "comandos" || comando == "cmds"){
+    if(["comandos", "commands", "cmds"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embComandos = new Discord.MessageEmbed()
@@ -1729,11 +1718,11 @@ client.on("messageCreate", async msg => {
         }, 500)    
     }
 
-    // 🌐 Comandos generales
+    //? 🌐 Comandos generales
     if(comando == "afk"){
         msg.channel.sendTyping()
         botDB.comandos.usos++
-        let dataAFK = await dbAFK.findOne({_id: msg.guildId})
+        let dataAFK = await dbAFK.findById(msg.guildId)
 
         const embInfo = new Discord.MessageEmbed()
         .setTitle(`${emojis.lupa} Comando afk`)
@@ -1851,6 +1840,7 @@ client.on("messageCreate", async msg => {
     if(comando == "user"){
         msg.channel.sendTyping()
         botDB.comandos.usos++
+
         let plataforma = {
             "desktop": "💻 Escritorio/PC",
             "mobile": "📱 Móvil",
@@ -1889,16 +1879,16 @@ client.on("messageCreate", async msg => {
             "TEAM_USER": "👥"
         }
 
-        let actyvidadA 
-        if(msg.member.presence?.activities.length <= 0){
-            actyvidadA = "Sin texto de estado"
-        }
+        let actyvidadA = ""
+        
         if(msg.member.presence?.activities.length >=1){
             if(msg.member.presence?.activities[0].type === "CUSTOM"){
                 actyvidadA = `${msg.member.presence?.activities[0].emoji ? msg.member.presence?.activities[0].emoji: ""} ${msg.member.presence?.activities[0].state}`
             }else{
                 actyvidadA = `${tyEstado[msg.member.presence?.activities[0].type]} ${msg.member.presence?.activities[0].emoji ? msg.member.presence?.activities[0].emoji: ""} ${msg.member.presence?.activities[0].name}`
             }
+        }else{
+            actyvidadA = "*Sin texto de estado*"
         }
 
         let mBanner = await client.users.fetch(msg.author.id, {force: true})
@@ -1929,19 +1919,18 @@ client.on("messageCreate", async msg => {
 
         if(miembro){
             let actyvidad 
-            if(miembro.presence?.activities.length <= 0){
-                actyvidad = "*Sin texto de estado*"
-            }
+            
             if(miembro.presence?.activities.length >=1){
                 if(miembro.presence?.activities[0].type === "CUSTOM"){
                     actyvidad = `${miembro.presence?.activities[0].emoji ? miembro.presence?.activities[0].emoji: ""} ${miembro.presence?.activities[0].state}`
                 }else{
                     actyvidad = `${tyEstado[miembro.presence?.activities[0].type]} ${miembro.presence?.activities[0].emoji ? miembro.presence?.activities[0].emoji: ""} ${miembro.presence?.activities[0].name}`
                 }
+            }else{
+                actyvidad = "*Sin texto de estado*"
             }
 
             let miemBanner = await client.users.fetch(miembro.id, {force: true})
-
             const embUser = new Discord.MessageEmbed()
             .setAuthor(`Información de ${msg.member.nickname ? msg.member.nickname: msg.author.username} pedida por el`,msg.author.displayAvatarURL({dynamic: true}))
             .setThumbnail(miembro.user.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 4096}))
@@ -1961,7 +1950,7 @@ client.on("messageCreate", async msg => {
             .setColor(miembro.user.hexAccentColor ? miembro.user.hexAccentColor: msg.guild.me.displayHexColor)
             .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
-            if(miembro.id === msg.author.id) return setTimeout(()=>{
+            if(miembro.id == msg.author.id) return setTimeout(()=>{
                 msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
             }, 500)
             
@@ -1988,6 +1977,7 @@ client.on("messageCreate", async msg => {
                 setTimeout(()=>{
                     msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
                 }, 500)
+
             }else{
                 const embUser = new Discord.MessageEmbed()
                 .setAuthor(`Información de ${miembro.nickname ? miembro.nickname: miembro.user.username} pedida por ${msg.member.nickname ? msg.member.nickname: msg.author.tag}`,msg.author.displayAvatarURL({dynamic: true}))
@@ -2037,6 +2027,7 @@ client.on("messageCreate", async msg => {
                     }, 500)
                 }
             }
+
             await client.users.fetch(args[0], {force: true}).then(async usuario =>{
                 if(usuario.bot){
                     console.log(usuario.hexAccentColor)
@@ -2058,6 +2049,7 @@ client.on("messageCreate", async msg => {
                     setTimeout(()=>{
                         msg.reply({allowedMentions: {repliedUser: false}, embeds: [embUser]})
                     }, 500)
+
                 }else{
                     const embUser = new Discord.MessageEmbed()
                     .setAuthor(`Información de ${usuario.tag} pedida por ${msg.member.nickname ? msg.member.nickname: msg.author.username}`,msg.author.displayAvatarURL({dynamic: true}))
@@ -2101,20 +2093,11 @@ client.on("messageCreate", async msg => {
     if(comando == "stats"){
         msg.channel.sendTyping()
         botDB.comandos.usos++
-        let textCh = client.channels.cache.filter(ft=>ft.type==="GUILD_TEXT").size, voiseCH = client.channels.cache.filter(fv=>fv.type==="GUILD_VOICE").size, cateCh = client.channels.cache.filter(fc=>fc.type==="GUILD_CATEGORY").size
+        let textCh = client.channels.cache.filter(ft=>ft.type=="GUILD_TEXT").size, voiseCH = client.channels.cache.filter(fv=>fv.type=="GUILD_VOICE").size, cateCh = client.channels.cache.filter(fc=>fc.type=="GUILD_CATEGORY").size
 
-        let ping
-        if(client.ws.ping <= 60){
-            ping = "<:30ms:917227036890791936>"
-        }
-        if(client.ws.ping > 60 && client.ws.ping < 120){
-            ping = "<:60ms:917227058399162429>"
-        }
-        if(client.ws.ping > 120){
-            ping = "<:150ms:917227075243503626>"
-        }
+        let ping = client.ws.ping<=60 ? "<:30ms:917227036890791936>": client.ws.ping>60 && client.ws.ping<120 ? "<:60ms:917227058399162429>": client.ws.ping>120 ?  "<:150ms:917227075243503626>": "*error*"
 
-        const embed = new Discord.MessageEmbed()
+        const embStats = new Discord.MessageEmbed()
         .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
         .setTitle("<:grafica:958856872981585981> Estadisticas")
         .addFields(
@@ -2131,7 +2114,7 @@ client.on("messageCreate", async msg => {
         .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
         .setTimestamp()
         setTimeout(()=>{
-            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embed]})
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embStats]})
         }, 500)
     }
 
@@ -2143,7 +2126,7 @@ client.on("messageCreate", async msg => {
         const embInfo = new Discord.MessageEmbed()
         .setAuthor(`${emojis.lupa} Comando jumbo`)
         .addFields(
-            {name: "Uso:", value: `${"``"}${prefijo}jumbo <Emoji>${"``"}`},
+            {name: "Uso:", value: `\`\`${prefijo}jumbo <Emoji>\`\``},
             {name: "Ejemplo:", value: `${prefijo}jumbo ${emojisSV[emR]}`},
             {name: "Alias:", value: `\`\`jumbo\`\``},
             {name: "Descripción:", value: `Da una imagen ampliada del emoji proporcionado.`}
@@ -2209,7 +2192,7 @@ client.on("messageCreate", async msg => {
             const embEmojis = new Discord.MessageEmbed()
             .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
             .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
-            .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(0,10).join("\n\n")}`)
+            .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(0,10).join("\n\n")}`)
             .setColor(msg.guild.me.displayHexColor)
             .setFooter(`Pagina - 1/1`,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
@@ -2225,12 +2208,12 @@ client.on("messageCreate", async msg => {
                 segPage = Math.floor(emojis.size / 10 + 1)
             }
 
-            let em1 = 0, em2 = 10, pagina = 1
+            let em1 = 0, em2 = 10, pagina = 1, descripcion = `Emojis: **${emojis.size}**\n\n`
 
             const embEmojis = new Discord.MessageEmbed()
             .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
             .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
-            .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
+            .setDescription(descripcion+emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n"))
             .setColor(msg.guild.me.displayHexColor)
             .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
@@ -2306,47 +2289,51 @@ client.on("messageCreate", async msg => {
                             em1-=10, em2-=10, pagina--
     
                             embEmojis
-                            .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
+                            .setDescription(descripcion+emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n"))
                             .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                            return await botn.update({embeds: [embEmojis], components: [botones1]})
-                        }
-                        em1-=10, em2-=10, pagina--
+                            await botn.update({embeds: [embEmojis], components: [botones1]})
+
+                        }else{
+                            em1-=10, em2-=10, pagina--
     
-                        embEmojis
-                        .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
-                        .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                        await botn.update({embeds: [embEmojis], components: [botones2]})
+                            embEmojis
+                            .setDescription(descripcion+emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n"))
+                            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                            await botn.update({embeds: [embEmojis], components: [botones2]})
+                        }
                     }
                     if(botn.customId === "2"){
                         if(em2 + 10 >= emojis.size){
                             em1+=10, em2+=10, pagina++
     
                             embEmojis
-                            .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
+                            .setDescription(descripcion+emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n"))
                             .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                             return await botn.update({embeds: [embEmojis], components: [botones3]})
-                        }
-                        em1+=10, em2+=10, pagina++
+                        
+                        }else{
+                            em1+=10, em2+=10, pagina++
     
-                        embEmojis
-                        .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n${"``"}${en}${"``"}\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n")}`)
-                        .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
-                        return await botn.update({embeds: [embEmojis], components: [botones2]})
+                            embEmojis
+                            .setDescription(descripcion+emojis.map(e=>e).map((en, e)=>`**${e+1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado": "Normal"}`).slice(em1,em2).join("\n\n"))
+                            .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
+                            return await botn.update({embeds: [embEmojis], components: [botones2]})
+                        }
                     }
                 })
             }, 500)
         }
     }
 
-    if(comando == "stikers"){
+    if(["stickers", "pegatinas"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let stikers = msg.guild.stickers.cache
 
         const embNoStikers = new Discord.MessageEmbed()
         .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-        .setTitle(`<:sticker:920136186687795262> Stikers del servidor`)
-        .setDescription(`*Este servidor no tiene stikers propios.*`)
+        .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
+        .setDescription(`*Este servidor no tiene stickers propios.*`)
         .setColor(msg.guild.me.displayHexColor)
         .setTimestamp()
         if(stikers.size <= 0) return setTimeout(()=>{
@@ -2356,8 +2343,8 @@ client.on("messageCreate", async msg => {
         if(stikers.size <= 10){
             const embStikers = new Discord.MessageEmbed()
             .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-            .setTitle(`<:sticker:920136186687795262> Stikers del servidor`)
-            .setDescription(`Stikers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(0,10).join("\n\n")}`)
+            .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
+            .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(0,10).join("\n\n")}`)
             .setColor(msg.guild.me.displayHexColor)
             .setFooter(`Pagina - 1/1`,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
@@ -2377,8 +2364,8 @@ client.on("messageCreate", async msg => {
 
             const embEmojis = new Discord.MessageEmbed()
             .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
-            .setTitle(`<:sticker:920136186687795262> Stikers del servidor`)
-            .setDescription(`Stikers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
+            .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
+            .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
             .setColor(msg.guild.me.displayHexColor)
             .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
             .setTimestamp()
@@ -2454,14 +2441,14 @@ client.on("messageCreate", async msg => {
                             em1-=10, em2-=10, pagina--
     
                             embEmojis
-                            .setDescription(`Stikers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
+                            .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
                             .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                             return await botn.update({embeds: [embEmojis], components: [botones1]})
                         }
                         em1-=10, em2-=10, pagina--
     
                         embEmojis
-                        .setDescription(`Stikers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
+                        .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
                         .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                         await botn.update({embeds: [embEmojis], components: [botones2]})
                     }
@@ -2470,14 +2457,14 @@ client.on("messageCreate", async msg => {
                             em1+=10, em2+=10, pagina++
     
                             embEmojis
-                            .setDescription(`Stikers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
+                            .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
                             .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                             return await botn.update({embeds: [embEmojis], components: [botones3]})
                         }
                         em1+=10, em2+=10, pagina++
     
                         embEmojis
-                        .setDescription(`Stikers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
+                        .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e=>e).map((en, e)=>`**${e+1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1,em2).join("\n\n")}`)
                         .setFooter(`Pagina - ${pagina}/${segPage}`,msg.guild.iconURL({dynamic: true}))
                         return await botn.update({embeds: [embEmojis], components: [botones2]})
                     }
@@ -2550,8 +2537,8 @@ client.on("messageCreate", async msg => {
                 msg.reply({allowedMentions: {repliedUser: false}, embeds: [embAva]})
             }, 500)
         }else{
-            let descripciones = [`El argumento numérico  ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento proporcionado (*${args[0]}*) no se reconoce como una mención, ID o etiqueta de un miembro del servidor, proporciona una mención, ID o etiqueta valida.`, `El argumento proporcionado *(${args[0]})* tiene las caracteristicas de una **ID**, es numérico, contiene **18** caracteres pero no coresponde con la **ID** de ningun miembro del servidor.`]
-            let condicionales = [!isNaN(args[0]) && args[0].length < 18, !isNaN(args[0]) && args[0].length > 18, isNaN(args[0]), args[0].length == 18]
+            let descripciones = [`El argumento numérico ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento proporcionado (*${args[0]}*) no se reconoce como una mención, ID o etiqueta de un miembro del servidor, proporciona una mención, ID o etiqueta valida.`]
+            let condicionales = [!isNaN(args[0]) && args[0].length < 18, !isNaN(args[0]) && args[0].length > 18, isNaN(args[0])]
 
             for(let i=0; i<descripciones.length; i++){
                 if(condicionales[i]){
@@ -2605,7 +2592,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "server" || comando === "servidor"){
+    if(["server", "servidor"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let feat = {
@@ -2661,38 +2648,11 @@ client.on("messageCreate", async msg => {
             "ONLY_MENTIONS": "Solo menciones"
         }
 
-        let imgs 
+        let imgs = []
         
-        if(msg.guild.bannerURL() && msg.guild.discoverySplashURL() && msg.guild.splashURL()){
-            imgs = `[Banner](${msg.guild.bannerURL({size: 4096, format: "png"})}) | [Splash](${msg.guild.splashURL({size: 4096, format: "png"})}) | [Discovery](${msg.guild.discoverySplashURL({size: 4096, format: "png"})})`
-        }else{
-            if(msg.guild.splashURL() && msg.guild.discoverySplashURL()){
-                imgs = `[Splash](${msg.guild.splashURL({size: 4096, format: "png"})}) | [Discovery](${msg.guild.discoverySplashURL({size: 4096, format: "png"})})`
-            }else{
-                if(msg.guild.bannerURL() && msg.guild.splashURL()){
-                    imgs = `[Banner](${msg.guild.bannerURL({size: 4096, format: "png"})}) | [Splash](${msg.guild.splashURL({size: 4096, format: "png"})})`
-                }else{
-                    if(msg.guild.bannerURL() && msg.guild.discoverySplashURL()){
-                        imgs = `[Banner](${msg.guild.bannerURL({size: 4096, format: "png"})}) | [Discovery](${msg.guild.discoverySplashURL({size: 4096, format: "png"})})`
-                    }else{
-                        if(msg.guild.bannerURL()){
-                            imgs = `[Banner](${msg.guild.bannerURL({size: 4096, format: "png"})})`
-                        }else{
-                            if(msg.guild.splashURL()){
-                                imgs = `[Splash](${msg.guild.splashURL({size: 4096, format: "png"})})`
-                            }else{
-                                if(msg.guild.discoverySplashURL()){
-                                    imgs = `[Discovery](${msg.guild.discoverySplashURL({size: 4096, format: "png"})})`
-                                }else{
-                                    imgs = "\u200B"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+        msg.guild.bannerURL() ? imgs.push(`[Banner](${msg.guild.bannerURL({size: 4096, format: "png"})})`): ""
+        msg.guild.discoverySplashURL() ? imgs.push(`[Splash](${msg.guild.splashURL({size: 4096, format: "png"})})`): ""
+        msg.guild.splashURL() ? imgs.push(`[Discovery](${msg.guild.discoverySplashURL({size: 4096, format: "png"})})`): ""
 
         let mgmc = msg.guild.members.cache
         let enlinea = mgmc.filter(fm => fm.presence?.status === "online" ).size
@@ -2703,13 +2663,17 @@ client.on("messageCreate", async msg => {
 
         let chText = msg.guild.channels.cache.filter(t=>t.type==="GUILD_TEXT").size, chVoize = msg.guild.channels.cache.filter(v=>v.type==="GUILD_VOICE").size, chCategorie = msg.guild.channels.cache.filter(c=>c.type==="GUILD_CATEGORY").size
 
+        const embServer = new Discord.MessageEmbed()
+        .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
+        .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+        .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
+        .setTitle("<a:Info:926972188018479164> Informacion del servidor")
+        .setColor(msg.guild.me.displayHexColor)
+        .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
+        .setTimestamp()
+
         if(msg.guild.features.length >= 1 && msg.guild.me.permissions.has(["BAN_MEMBERS","MANAGE_GUILD"])){
-            const embServer = new Discord.MessageEmbed()
-            .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
-            .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-            .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
-            .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-            .addFields(
+            embServer.addFields(
                 {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
                 {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
                 {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
@@ -2729,23 +2693,11 @@ client.on("messageCreate", async msg => {
                 {name: `<:menu:947318717371527178> **Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
                 {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
                 {name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.map(f=> feat[f]).join(" **|** ")}`, inline: false},
-                {name: `\u200B`, value: `${imgs}`, inline: true},
             )
-            .setColor(msg.guild.me.displayHexColor)
-            .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-            .setTimestamp()
-            setTimeout(()=>{
-                msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
-            }, 500)
 
         }else{
             if(msg.guild.me.permissions.has(["BAN_MEMBERS","MANAGE_GUILD"])){        
-                const embServer = new Discord.MessageEmbed()
-                .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
-                .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
-                .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-                .addFields(
+                embServer.addFields(
                     {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
                     {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
                     {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
@@ -2764,23 +2716,11 @@ client.on("messageCreate", async msg => {
                     {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                     {name: `<:menu:947318717371527178> **Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
                     {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
-                    {name: `\u200B`, value: `${imgs}`, inline: true},
                 )
-                .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                .setTimestamp()
-                setTimeout(()=>{
-                    msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
-                }, 500)
 
             }else{
                 if(msg.guild.me.permissions.has("BAN_MEMBERS")){
-                    const embServer = new Discord.MessageEmbed()
-                    .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
-                    .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                    .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
-                    .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-                    .addFields(
+                    embServer.addFields(
                         {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
                         {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
                         {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
@@ -2798,22 +2738,11 @@ client.on("messageCreate", async msg => {
                         {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                         {name: `<:menu:947318717371527178> **Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
                         {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
-                        {name: `\u200B`, value: `${imgs}`, inline: true},
                     )
-                    .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                    .setTimestamp()
-                    setTimeout(()=>{
-                        msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
-                    }, 500)
+
                 }else{
                     if(msg.guild.me.permissions.has("MANAGE_GUILD")){
-                        const embServer = new Discord.MessageEmbed()
-                        .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
-                        .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                        .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
-                        .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-                        .addFields(
+                        embServer.addFields(
                             {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
                             {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
                             {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
@@ -2831,22 +2760,10 @@ client.on("messageCreate", async msg => {
                             {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                             {name: `<:menu:947318717371527178> **Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
                             {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
-                            {name: `\u200B`, value: `${imgs}`, inline: true},
                         )
-                        .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                        .setTimestamp()
-                        setTimeout(()=>{
-                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
-                        }, 500)
 
                     }else{
-                        const embServer = new Discord.MessageEmbed()
-                        .setThumbnail(msg.guild.iconURL({dynamic: true, format: "png"||"gif", size: 4096}))
-                        .setAuthor(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                        .setImage(msg.guild.bannerURL({format: "png", size: 4096}))
-                        .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-                        .addFields(
+                        embServer.addFields(
                             {name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description: "Sin descripción"}`},
                             {name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true},
                             {name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true},
@@ -2863,18 +2780,15 @@ client.on("messageCreate", async msg => {
                             {name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true},
                             {name: `<:menu:947318717371527178> **Canales:** ${(chText+chVoize+chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true},
                             {name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u=> !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea+ausente+nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true},
-                            {name: `\u200B`, value: `${imgs}`, inline: true},
                         )
-                        .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
-                        .setTimestamp()
-                        setTimeout(()=>{
-                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
-                        }, 500)
                     }
                 }
             }
         }
+        imgs.length>=1 ? embServer.fields.push({name: `\u200B`, value: `${imgs.join(" | ")}`, inline: true}): ""
+        setTimeout(()=>{
+            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embServer]})
+        }, 500)
     }
     
     if(comando == "invite"){
@@ -2902,7 +2816,7 @@ client.on("messageCreate", async msg => {
 
     }
 
-    if(comando == "qrcode" || comando === "qr"){
+    if(["qrcode", "qr"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let urQR = `http://api.qrserver.com/v1/create-qr-code/?data=${args[0]}&size=600x600`
@@ -2913,7 +2827,7 @@ client.on("messageCreate", async msg => {
                 const embInfo = new Discord.MessageEmbed()
                 .setTitle(`${emojis.lupa} Comando qrcode`)
                 .addFields(
-                    {name: "Uso:", value: `${"``"}${prefijo}qrcode <URL o link>${"``"}`},
+                    {name: "Uso:", value: `\`\`${prefijo}qrcode <URL o link>\`\``},
                     {name: "Ejemplo:", value: `${prefijo}qrcode ${(await msg.guild.invites.fetch()).map(mi => mi.url).slice(0,1)}`},
                     {name: "Alias:", value: `\`\`qrcode\`\`, \`\`qr\`\``},
                     {name: "Descripción:", value: `Crea un código QR de el enlace o URL proporcionada.`}
@@ -2927,7 +2841,7 @@ client.on("messageCreate", async msg => {
                 const embInfo = new Discord.MessageEmbed()
                 .setTitle(`${emojis.lupa} Comando qrcode`)
                 .addFields(
-                    {name: "Uso:", value: `${"``"}${prefijo}qrcode <URL o link>${"``"}`},
+                    {name: "Uso:", value: `\`\`${prefijo}qrcode <URL o link>\`\``},
                     {name: "Ejemplo", value: `${prefijo}qrcode https://discord.gg/yKfWU4uykc`},
                     {name: "Alias:", value: `\`\`${prefijo}qrcode\`\`, \`\`${prefijo}qr\`\``},
                     {name: "Descripción:", value: `Crea un código QR de el enlace o URL proporcionada.`}
@@ -2973,7 +2887,7 @@ client.on("messageCreate", async msg => {
         }, 500)
     }
 
-    if(comando == "reportbug" || comando == "reportarerror" || comando == "repbug"){
+    if(["reportbug", "reportarerror", "repbug"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
 
@@ -2991,7 +2905,7 @@ client.on("messageCreate", async msg => {
             msg.reply({allowedMentions: {repliedUser: false}, embeds: [embInfo]})
         }, 500)
 
-        let canalReportes = client.guilds.cache.get("940034044819828767").channels.cache.get("950962633580896276")
+        let canalReportes = client.channels.cache.get("950962633580896276")
 
         const embAdvertencia = new Discord.MessageEmbed()
         .setTitle(`<:advertencia:929204500739268608> Advertencia`)
@@ -3099,8 +3013,8 @@ client.on("messageCreate", async msg => {
 
 
 
-    // 👮 Comandos de moderacion
-    if(comando == "record" || comando == "historial"){
+    //* 👮 Comandos de moderacion
+    if(["record", "historial"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataHis = await historiales.findOne({_id: client.user.id})
@@ -3524,7 +3438,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "deleterecord" || comando == "eliminarregistro"){
+    if(["deleterecord", "eliminarregistro"].some(s=> comando==s)){
         botDB.comandos.usos++
         msg.channel.sendTyping()
 
@@ -4448,7 +4362,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "warn" || comando == "advertir"){
+    if(["warn", "advertir"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataHis = await historiales.findOne({_id: client.user.id})
@@ -4746,7 +4660,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "mute" || comando == "aislar"){
+    if(["mute", "aislar"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataHis = await historiales.findOne({_id: client.user.id})
@@ -5351,7 +5265,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "mutelist" || comando == "aislados"){
+    if(["mutelist", "aislados"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let aislados = msg.guild.members.cache.filter(f=> f.isCommunicationDisabled())
@@ -5498,7 +5412,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "kick" || comando == "expulsar"){
+    if(["kick", "expulsar"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataHis = await historiales.findOne({_id: client.user.id})
@@ -5938,7 +5852,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "ban" || comando == "prohibir"){
+    if(["ban", "prohibir"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataHis = await historiales.findOne({_id: client.user.id})
@@ -6653,7 +6567,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "clear" || comando == "cl" || comando == "delete" || comando == "eliminar"){
+    if(["clear", "cl", "delete", "eliminar"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let condicionalesP = [!msg.member.permissions.has("MANAGE_MESSAGES"), !msg.guild.me.permissions.has("MANAGE_MESSAGES")]
@@ -6848,7 +6762,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "banlist" || comando == "blist"){
+    if(["banlist", "blist"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embErrP1 = new Discord.MessageEmbed()
@@ -7026,7 +6940,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "dmsend" || comando == "dm" || comando == "md" && msg.author.id == creadorID){
+    if(["dmsend", "md", "md"].some(s=> comando==s) && msg.author.id == creadorID){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embErrP1 = new Discord.MessageEmbed()
@@ -7189,11 +7103,11 @@ client.on("messageCreate", async msg => {
     
 
 
-    // 💎 Comandos de administracion
+    //* 💎 Comandos de administracion
     if(comando == "setprefix"){
         msg.channel.sendTyping()
         botDB.comandos.usos++
-        let dataPre = await mPrefix.findOne({_id: client.user.id})
+        let dataPre = await mPrefix.findById(client.user.id)
         const embErrP1 = new Discord.MessageEmbed()
         .setTitle(`${emojis.negativo} Error`)
         .setDescription(`No tienes los permisos suficientes para ejecutar el comando, solo un administrador del servidor puede ejecutar el comando.`)
@@ -7339,7 +7253,7 @@ client.on("messageCreate", async msg => {
         }, 4*60000)
     }
 
-    if(comando == "setslowmode" || comando == "setslow" || comando == "slowmode"){
+    if(["setslowmode", "setslow", "slowmode"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embErrP1 = new Discord.MessageEmbed()
@@ -7479,7 +7393,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "addrol" || comando == "addr"){
+    if(["addrol", "adddr"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
@@ -7860,7 +7774,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "removerol" || comando == "remover" || comando == "rmr"){
+    if(["removerol", "remover", "rmr"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
@@ -8241,7 +8155,7 @@ client.on("messageCreate", async msg => {
         }   
     }
 
-    if(comando == "createchannel" || comando == "createcha"  || comando == "crech"){
+    if(["createchannel", "createcha", "crech"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let categoriasGMS = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_CATEGORY").map(mc => mc.id)
@@ -8332,7 +8246,6 @@ client.on("messageCreate", async msg => {
         
         let tipoCanal = ""
         
-        
         if(args[0]){
             if(args[1]){
                 if(isNaN(args[1])){
@@ -8351,6 +8264,8 @@ client.on("messageCreate", async msg => {
                             })
                         }, 30000))
                     }, 500)
+                    console.log(args[0])
+                    console.log(args[1])
     
                     if(args[2]){
                         let descripciones = [`El argumento numérico  ingresado *(${args[2]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El argumento numérico  ingresado *(${args[2]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`,`El tercer argumento proporcionado (*${args[2]}*) no es una ID de una categoría valido ya que no es numérico, proporciona una ID valida.`]
@@ -8387,6 +8302,27 @@ client.on("messageCreate", async msg => {
                         }
     
                         msg.guild.channels.create(`${args[0]}`,{type: `${tipoCanal}`, parent: `${args[2]}`}).then(cc=> setTimeout(()=>{
+                            const embCreateCha = new Discord.MessageEmbed()
+                            .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
+                            .setTitle(`${emojis.acierto} Canal creado`)
+                            .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent: "*Sin categoría*"}`)
+                            .setColor("GREEN")
+                            .setTimestamp()
+                            msg.reply({allowedMentions: {repliedUser: false}, embeds: [embCreateCha]})
+                        }, 300))
+                        
+                    }else{
+                        if(args[1].toLowerCase() == "texto"){
+                            tipoCanal = "GUILD_TEXT"
+                        }else{
+                            if(args[1].toLowerCase() == "voz"){
+                                tipoCanal = "GUILD_VOICE"
+                            }else{
+                                tipoCanal = "GUILD_TEXT"
+                            }
+                        }
+    
+                        msg.guild.channels.create(`${args[0]}`,{type: `${tipoCanal}`, parent: `${msg.channel.parentId}`}).then(cc=> setTimeout(()=>{
                             const embCreateCha = new Discord.MessageEmbed()
                             .setAuthor(msg.author.tag,msg.author.displayAvatarURL({dynamic: true}))
                             .setTitle(`${emojis.acierto} Canal creado`)
@@ -8466,7 +8402,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "deletechannel" || comando == "deletecha" || comando == "delch"){
+    if(["deletechannel", "deletecha", "delch"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let canalesAlDel = msg.guild.channels.cache.filter(fc => fc.type === "GUILD_TEXT" ).map(mc => mc)
@@ -8599,7 +8535,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "memberswithrole" || comando == "memberswr" || comando == "miembrosconelrol" || comando == "mcer"){
+    if(["memberswithrole", "memberswr", "miembrosconelrol", "mcer"].some(s=> comando==s)){
         botDB.comandos.usos++
         let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
         msg.channel.sendTyping()
@@ -8854,7 +8790,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "memberswithouttherole" || comando == "mwtr" || comando == "miembrossinelrol" || comando == "mser"){
+    if(["memberswithouttherole", "mwtr", "miembrossinelrol", "mser"].some(s=> comando==s)){
         botDB.comandos.usos++
         let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
         msg.channel.sendTyping()
@@ -9112,7 +9048,7 @@ client.on("messageCreate", async msg => {
 
 
     // 🟢 Sistema de puntos
-    if(comando == "pointsinfo" || comando == "pointsysteminfo" || comando == "pssysteminfo" || comando == "puntosinfo"){
+    if(["pointsinfo", "pointsysteminfo", "pssysteminfo", "puntosinfo"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataSP = await sPuntos.findOne({_id: msg.guildId})
@@ -9135,7 +9071,7 @@ client.on("messageCreate", async msg => {
         }, 500)
     }
 
-    if(comando == "points" || comando == "puntos" || comando == "ps"){
+    if(["points", "puntos", "ps"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataSP = await sPuntos.findOne({_id: msg.guildId}), puntos = 0
@@ -9226,7 +9162,7 @@ client.on("messageCreate", async msg => {
                         }
             
                         const embPMi = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,miembro.user.displayAvatarURL({dynamic: true}))
+                        .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, msg.author.displayAvatarURL({dynamic: true}))
                         .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                         .setColor(msg.guild.me.displayHexColor)
                         .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.user.displayAvatarURL({dynamic: true}))
@@ -9241,7 +9177,7 @@ client.on("messageCreate", async msg => {
                         await sPuntos.findByIdAndUpdate(msg.guildId, {datos: objeto, miembros: array})
         
                         const embPMi = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+                        .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, msg.author.displayAvatarURL({dynamic: true}))
                         .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **0** puntos.`)
                         .setColor(msg.guild.me.displayHexColor)
                         .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.user.displayAvatarURL({dynamic: true}))
@@ -9263,7 +9199,7 @@ client.on("messageCreate", async msg => {
                     })
     
                     const embPMi = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,miembro.user.displayAvatarURL({dynamic: true}))
+                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, miembro.user.displayAvatarURL({dynamic: true}))
                     .setDescription(`Tienes ${emojis.puntos} **0** puntos.`)
                     .setColor(msg.guild.me.displayHexColor)
                     .setFooter(msg.guild.name, msg.guild.iconURL({dynamic: true}))
@@ -9283,7 +9219,7 @@ client.on("messageCreate", async msg => {
                     })
 
                     const embPMi = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,miembro.user.displayAvatarURL({dynamic: true}))
+                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, msg.author.displayAvatarURL({dynamic: true}))
                     .setDescription(`${miembro} tiene ${emojis.puntos} **0** puntos.`)
                     .setColor(msg.guild.me.displayHexColor)
                     .setFooter(miembro.nickname ? miembro.nickname: miembro.user.username, miembro.user.displayAvatarURL({dynamic: true}))
@@ -9325,7 +9261,7 @@ client.on("messageCreate", async msg => {
                     }
         
                     const embPAu = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, msg.author.displayAvatarURL({dynamic: true}))
                     .setDescription(`Tienes ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                     .setColor(msg.guild.me.displayHexColor)
                     .setFooter(msg.guild.name, msg.guild.iconURL({dynamic: true}))
@@ -9340,7 +9276,7 @@ client.on("messageCreate", async msg => {
                     await sPuntos.findByIdAndUpdate(msg.guildId, {datos: objeto, miembros: array})
     
                     const embPAu = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+                    .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, msg.author.displayAvatarURL({dynamic: true}))
                     .setDescription(`Tienes ${dataSP.datos.emoji} **0** puntos.`)
                     .setColor(msg.guild.me.displayHexColor)
                     .setFooter(msg.guild.name, msg.guild.iconURL({dynamic: true}))
@@ -9360,7 +9296,7 @@ client.on("messageCreate", async msg => {
                 })
 
                 const embPAu = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username,msg.author.displayAvatarURL({dynamic: true}))
+                .setAuthor(msg.member.nickname ? msg.member.nickname: msg.author.username, msg.author.displayAvatarURL({dynamic: true}))
                 .setDescription(`Tienes ${emojis.puntos} **0** puntos.`)
                 .setColor(msg.guild.me.displayHexColor)
                 .setFooter(msg.guild.name,msg.guild.iconURL({dynamic: true}))
@@ -9374,7 +9310,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "setstaffrole" || comando == "establecerrolstaff" || comando == "setstaffr"){
+    if(["setstaffrole" ,"establecerrolstaff" ,"setstaffr"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let roles = msg.guild.roles.cache.map(m=> m)
@@ -9546,7 +9482,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "deletestaffrole" || comando == "eliminarrolstaff" || comando == "deletestaffr"){
+    if(["deletestaffrole", "eliminarrolstaff", "deletestaffr"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let roles = msg.guild.roles.cache.map(m=> m)
@@ -9701,7 +9637,7 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "añadirpuntos" || comando == "addpoints" || comando == "addp"){
+    if(["añadirpuntos", "addpoints", "addp"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embErrP1 = new Discord.MessageEmbed()
@@ -9728,7 +9664,7 @@ client.on("messageCreate", async msg => {
         const datosComando = cooldowns.get("addpoints"), tiempoActual = Date.now()
 
         if(datosComando.has(msg.author.id)){
-            const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+            const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
             .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *addpoints*")
             .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
             .setColor("BLUE")
@@ -10134,10 +10070,10 @@ client.on("messageCreate", async msg => {
         datosComando.set(msg.author.id, tiempoActual)
         setTimeout(()=>{
             datosComando.delete(msg.author.id)
-        }, 60000)
+        }, 10000)
     }
 
-    if(comando == "quitarpuntos" || comando == "removepoints" || comando == "removep"){
+    if(["quitarpuntos", "removepoints", "removep"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embErrP1 = new Discord.MessageEmbed()
@@ -10164,7 +10100,7 @@ client.on("messageCreate", async msg => {
         const tiempoActual = Date.now(), datosComando = cooldowns.get("removepoints")
 
         if(datosComando.has(msg.author.id)){
-            const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+            const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
             .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removepoints*")
             .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
             .setColor("BLUE")
@@ -10569,10 +10505,10 @@ client.on("messageCreate", async msg => {
         datosComando.set(msg.author.id, tiempoActual)
         setTimeout(()=>{
             datosComando.delete(msg.author.id)
-        }, 60000)
+        }, 10000)
     }
 
-    if(comando == "pointsleaderboard" || comando == "toppoints" || comando == "topp"){
+    if(["pointsleaderboard", "toppoints", "topp"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataSP = await sPuntos.findOne({_id: msg.guildId})
@@ -10775,11 +10711,11 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "setemojipoints" || comando == "setemojip" || comando == "setep"){
+    if(["setemojipoints", "setemojip", "setep"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         let dataSP = await sPuntos.findOne({_id: msg.guildId})
-        let emojis = msg.guild.emojis.cache.map(e=>e)
+        let emojisR = msg.guild.emojis.cache.map(e=>e)
 
         const embErrP1 = new Discord.MessageEmbed()
         .setTitle(`${emojis.negativo} Error`)
@@ -10826,7 +10762,7 @@ client.on("messageCreate", async msg => {
         .setTitle(`${emojis.lupa} Comando setemojipoints`)
         .addFields(
             {name: "Uso:", value: `\`\`${prefijo}setemojipoints <Emoji a establecer>\`\``},
-            {name: "Ejemplo:", value: `${prefijo}setemojipoints ${emojis[Math.floor(Math.random()*emojis.length)]}`},
+            {name: "Ejemplo:", value: `${prefijo}setemojipoints ${emojisR[Math.floor(Math.random()*emojisR.length)]}`},
             {name: "Alias: **3**", value: `\`\`setemojipoints\`\`, \`\`setemojip\`\`, \`\`setep\`\`, `},
             {name: "Descripción:", value: `Establece un emoji como símbolo para el sistema de puntos.`}
         )
@@ -10837,7 +10773,7 @@ client.on("messageCreate", async msg => {
         }, 500)
 
         let descripciones = [`No puedes establecer números como símbolo del sistema de puntos.`, `El argumento proporcionado *(${args[0]})* no es un emoji.`, `El argumento proporcionado *(${args[0]})* es un emoji de un servidor el cual no estoy por lo tanto no puedes establecerlo como símbolo del sistema.`]
-        let condicionales = [!isNaN(args[0]), !/\p{Emoji}/gu.test(args[0]), !msg.guild.emojis.cache.find(f=> f.id == args[0].split(":")[2].split(">")[0])]
+        let condicionales = [!isNaN(args[0]), !/\p{Emoji}/gu.test(args[0]), ["<", ">"].some(s=> args[0].includes(s)) ? !msg.guild.emojis.cache.find(f=> f.id == args[0].split(":")[2].split(">")[0]): false]
 
         for(let i=0; i<descripciones.length; i++){
             if(condicionales[i]){
@@ -10900,11 +10836,11 @@ client.on("messageCreate", async msg => {
         }, 60000)
     }
 
-    if(comando == "pointsystemstatus" || comando == "pointstatus" || comando == "psystemstatus" || comando == "pss"){
+    if(["pointsystemstatus", "pointstatus", "psystemstatus", "pss"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
 
-        let dataSP = await sPuntos.findOne({_id: msg.guildId})
+        let dataSP = await sPuntos.findById(msg.guildId)
 
         if(dataSP){
             let objeto = dataSP.datos
@@ -10956,7 +10892,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if(comando == "updatepointssystem" || comando == "updatepsystem" || comando == "updateps"){
+    if(["updatepointssystem", "updatepsystem", "updateps"].some(s=> comando==s)){
         msg.channel.sendTyping()
         botDB.comandos.usos++
         const embErrP1 = new Discord.MessageEmbed()
@@ -11511,7 +11447,7 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    if((comando == "servers" || comando == "servidores" || comando == "svs") && !creadoresID.some(s=>s==msg.author.id)){
+    if((comando == "servers" || comando == "servidores" || comando == "svs") && creadoresID.some(s=>s==msg.author.id)){
         msg.channel.sendTyping()
         let servidores = client.guilds.cache.map(m=> Object({id: m.id, miembros: m.memberCount})).sort((a,b) => b.miembros - a.miembros), segPage, s0 = 0, s1 = 10, pagina = 1;
         if(String(client.guilds.cache.size).slice(-1) === "0"){
@@ -11765,17 +11701,13 @@ client.on("guildDelete",async gd => {
 
 })
 
-client.on("warn", warn => {
-    console.log(warn)
-})
-
 process.on("unhandledRejection", err => {
     const embErr = new Discord.MessageEmbed()
     .setTitle(`${emojis.negativo} Ocurio un error`)
     .setDescription(`\`\`\`js\n${err}\`\`\``)
     .setColor("ff0000")
     .setTimestamp()
-    client.channels.cache.get("960294374258933821").send({embeds: [embErr]})
+    // client.channels.cache.get("960294374258933821").send({embeds: [embErr]})
     console.error(err)
 })
 
@@ -11785,8 +11717,8 @@ client.on("shardError", async err => {
     .setDescription(`\`\`\`js\n${err}\`\`\``)
     .setColor("ff0000")
     .setTimestamp()
-    client.channels.cache.get("960294374258933821").send({embeds: [embErr]})
+    // client.channels.cache.get("960294374258933821").send({embeds: [embErr]})
     console.error(err)
 })
 
-client.login(token);
+client.login(require("./config.json").tokenÚtil);
