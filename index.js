@@ -2326,8 +2326,6 @@ client.on("messageCreate", async msg => {
             }
 
             let erroresP = [
-                { condicion: args[0] && !miembro && !isNaN(args[0]) && args[0].length < 18, descripcion: `El argumento numérico  ingresado (*${args[0]}*) no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.` },
-                { condicion: args[0] && !miembro && !isNaN(args[0]) && args[0].length > 18, descripcion: `El argumento numérico  ingresado (*${args[0]}*) no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.` },
                 { condicion: args[0] && !miembro && isNaN(args[0]), descripcion: `El argumento proporcionado (*${args[0]}*) no se reconoce como una mención, ID o etiqueta de un miembro del servidor o usuario externo, proporciona una mención, ID o etiqueta valida.` },
                 // {condicion: "", descripcion: ``},
             ]
