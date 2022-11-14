@@ -65,7 +65,7 @@ client.on("ready", async () => {
     console.log(client.user.username, "Hola, estoy listo")
     const embReady = new Discord.MessageEmbed()
     .setTitle(`${emojis.acierto} Estoy conectado`)
-    .setDescription(`Desde <:heroku:958814911243374602> Heroku ||server||.`)
+    .setDescription(`Desde Northflank ||server||.`)
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
