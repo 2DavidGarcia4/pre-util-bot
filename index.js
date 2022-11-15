@@ -1,10 +1,11 @@
-const Discord = require("discord.js"), client = new Discord.Client({ intents: 32767, ws: { properties: { $browser: "Discord Android" } } });
+const { Client, EmbedBuilder, Collection, ButtonBuilder, ActionRowBuilder, AttachmentBuilder, SelectMenuBuilder, version } = require("discord.js")
+const client = new Client({ intents: 32767, ws: { properties: { $browser: "Discord Android" } } });
 const ms = require("ms"), mongoose = require("mongoose"), { SlashCommandBuilder, ContextMenuCommandBuilder } = require("@discordjs/builders"), Canvas = require("canvas"), isURL = require("isurl");
 const creadorID = "717420870267830382", creadoresID = ["717420870267830382", "825186118050775052"], colorEmb = "#2c889f", colorEmbInfo = "#2c889f", ColorError = "#ff0000", emojis = { negativo: "<a:negativo:856967325505159169>", acierto: "<a:afirmativo:856966728806432778>", puntos: "<:StaffPoint:957357854120116234>", lupa: "<:lupa:958820188457930892>" }, invitacion = "https://discord.com/api/oauth2/authorize?client_id=935707268090056734&permissions=1239568329975&scope=bot%20applications.commands", serverSuport = "https://discord.gg/G7GUD7eNCb", webPage = "https://util-bot.netlify.app/"
-const { token} = require('./config')
+const { token, mongoUrl } = require('./config')
 Canvas.registerFont("./tipo.otf", { family: "MADE TOMMY" });
 
-mongoose.connect("mongodb+srv://Music:oQJo4VnF3rXj615k@ssbot.jbt17.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", {
+mongoose.connect(mongoUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
@@ -64,16 +65,16 @@ let botDB = {
 client.on("ready", async () => {
     let miServidor = client.guilds.cache.get("940034044819828767"), hermano = client.users.cache.get("843185929002025030"), svsp = client.guilds.cache.get("773249398431809586")
     console.log(client.user.username, "Hola, estoy listo")
-    const embReady = new Discord.MessageEmbed()
+    const embReady = new EmbedBuilder()
     .setTitle(`${emojis.acierto} Estoy conectado`)
     .setDescription(`Desde Northflank ||server||.`)
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
-    canalLogStart.sendTyping()
-    setTimeout(()=> {
-        canalLogStart.send({ embeds: [embReady] })
-    }, 1000)
+    // canalLogStart.sendTyping()
+    // setTimeout(()=> {
+    //     canalLogStart.send({ embeds: [embReady] })
+    // }, 1000)
 
 
     function presencias() {
@@ -263,7 +264,7 @@ function erroresInt(tipo = false, errores = false) {
         }
 
         for (error of errores) {
-            const embError = new Discord.MessageEmbed()
+            const embError = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(error.descripcion)
                 .setColor(ColorError)
@@ -283,13 +284,13 @@ client.on("interactionCreate", async int => {
         if (int.commandName == "help") {
             botDB.comandos.usos++
             let dataPre = await prefijosDB.findById(client.user.id), prefijo = dataPre.servidores.some(s => s.id == int.guildId) ? dataPre.servidores.find(f => f.id == int.guildId).prefijo : "u!"
-            const embHelp = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embHelp = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setThumbnail(client.user.displayAvatarURL())
                 .setTitle(`Hola, soy **${client.user.username}** un Bot multi funcional`)
                 .setDescription(`Tengo comandos informativos, comandos de moderación, comandos de administración y sistemas como el sistema de puntos.\nMi prefijo en este servidor es: \`\`${prefijo}\`\`\nPara conocer mis comandos utiliza el comando \`\`${prefijo}comandos\`\`.\nPor ahora solo están disponibles **12** comandos de barra diagonal, si tienes alguna duda, sugerencia puedes entrar a mi [servidor de soporte](${serverSuport}) para resolver tus dudas o hacer una sugerencia.`)
                 .setColor(colorEmb)
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
 
             int.deferReply().then(()=> {
@@ -310,12 +311,12 @@ client.on("interactionCreate", async int => {
             }
 
             int.deferReply()
-            const embInfoP = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embInfoP = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.puntos} ¿Qué es el sistema de Puntos?`)
                 .setDescription(`Es un sistema creado con la intención de ayudar a los dueños y administradores de servidores a tener una mejor forma de administrar las acciones de lo demás miembros del staff y determinar con mayor facilidad cuando un miembro del staff se merece un acenso.\n\n📑 **Comandos:** *10*\n\`\`/points\`\` **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n\`\`/add-points\`\` **|** Agrega puntos a un miembro.\n\`\`/remove-points\`\` **|** Elimina puntos a un miembro.\n\`\`/set-staff-role\`\` **|** Establece un rol del staff o personal del servidor.\n\`\`/delete-staff-role\`\` **|** Elimina un rol establecido como rol del staff del servidor.\n\`\`/set-emoji-points\`\` **|** Establece un símbolo o emoji personalizado para el sistema de puntos.\n\`\`/remove-system-user\`\` **|** Elimina a un miembro del sistema de puntos del servidor.\n\`\`/points-leaderboard\`\` **|** Muestra una tabla de clasificaciones con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n\`\`/point-system-status\`\` **|** Muestra el estado del sistema en el servidor.\n\`\`/update-points-system\`\` **|** Actualiza el sistema de puntos en el servidor eliminando del sistema a todos los usuarios que se han ido del servidor.`)
                 .setColor(colorEmb)
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
                 await int.editReply({ embeds: [embInfoP] })
@@ -345,11 +346,11 @@ client.on("interactionCreate", async int => {
             }
             if (miembro) {
                 puntos = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
-                const embPuntos = new Discord.MessageEmbed()
-                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                const embPuntos = new EmbedBuilder()
+                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setDescription(`${miembro.id == int.user.id ? "Tienes" : `${miembro} tiene`} ${dataSP ? dataSP.datos.emoji : emojis.puntos} **${puntos.toLocaleString()}** puntos.`)
                     .setColor(int.guild.me.displayHexColor)
-                    .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL({ dynamic: true }) : miembro.user.displayAvatarURL({ dynamic: true }) })
+                    .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                     .setTimestamp()
                 setTimeout(async () => {
                     await int.editReply({ embeds: [embPuntos] })
@@ -357,11 +358,11 @@ client.on("interactionCreate", async int => {
 
             } else {
                 puntos = dataSP ? dataSP.miembros.some(s => s.id == int.user.id) ? dataSP.miembros.find(f => f.id == int.user.id).puntos : 0 : 0
-                const embPuntos = new Discord.MessageEmbed()
-                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                const embPuntos = new EmbedBuilder()
+                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setDescription(`Tienes ${dataSP ? dataSP.datos.emoji : emojis.puntos} **${puntos.toLocaleString()}** puntos.`)
                     .setColor(int.guild.me.displayHexColor)
-                    .setFooter(int.guild.name, int.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: int.guild.name, iconURL: int.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(async () => {
                     await int.editReply({ embeds: [embPuntos] })
@@ -386,12 +387,12 @@ client.on("interactionCreate", async int => {
             if (erroresInt(int, erroresP)) return;
 
             if (!cooldowns.has("/add-points")) {
-                cooldowns.set("/add-points", new Discord.Collection())
+                cooldowns.set("/add-points", new Collection())
             }
             const datosComando = cooldowns.get("/add-points"), tiempoActual = Date.now()
 
             if (datosComando.has(int.user.id)) {
-                const tiempoUltimo = datosComando.get(int.user.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(int.user.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */add-points*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -407,12 +408,12 @@ client.on("interactionCreate", async int => {
 
                 array.some(s => s.id == miembro.id) ? array.find(f => f.id == miembro.id).puntos += cantidad : array.push({ id: miembro.id, nombre: miembro.user.tag, puntos: cantidad })
                 await puntosDB.findByIdAndUpdate(int.guildId, { datos: objeto, miembros: array })
-                const embAddPoints = new Discord.MessageEmbed()
-                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                const embAddPoints = new EmbedBuilder()
+                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setTitle(`${emojis.acierto} Puntos agregados al miembro`)
                     .setDescription(`Se ${int.user.id == miembro.id ? "te" : "le"} han agregado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${int.user.id == miembro.id ? "." : `a **${miembro}**.`}`)
                     .setColor("GREEN")
-                    .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL({ dynamic: true }) : miembro.user.displayAvatarURL({ dynamic: true }) })
+                    .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                     .setTimestamp()
                 setTimeout(async () => {
                     await int.editReply({ embeds: [embAddPoints] })
@@ -427,12 +428,12 @@ client.on("interactionCreate", async int => {
                 })
                 await nuevaDataSP.save()
 
-                const embAddPoints = new Discord.MessageEmbed()
-                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                const embAddPoints = new EmbedBuilder()
+                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setTitle(`${emojis.acierto} Puntos agregados al miembro`)
                     .setDescription(`Se ${int.user.id == miembro.id ? "te" : "le"} han agregado ${emojis.puntos} **${cantidad.toLocaleString()}** puntos ${int.user.id == miembro.id ? "." : `a **${miembro}**.`}`)
                     .setColor("GREEN")
-                    .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL({ dynamic: true }) : miembro.user.displayAvatarURL({ dynamic: true }) })
+                    .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                     .setTimestamp()
                 setTimeout(async () => {
                     await int.editReply({ embeds: [embAddPoints] })
@@ -462,12 +463,12 @@ client.on("interactionCreate", async int => {
             if (erroresInt(int, erroresP)) return;
 
             if (!cooldowns.has("/remove-points")) {
-                cooldowns.set("/remove-points", new Discord.Collection())
+                cooldowns.set("/remove-points", new Collection())
             }
             const datosComando = cooldowns.get("/remove-points"), tiempoActual = Date.now()
 
             if (datosComando.has(int.user.id)) {
-                const tiempoUltimo = datosComando.get(int.user.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(int.user.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */remove-points*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -493,12 +494,12 @@ client.on("interactionCreate", async int => {
                 })
                 await nuevaDataSP.save()
             }
-            const embAddPoints = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embAddPoints = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.negativo} Puntos del miembro eliminados`)
                 .setDescription(`Se ${int.user.id == miembro.id ? "te" : "le"} han eliminado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${int.user.id == miembro.id ? "." : `a **${miembro}**.`}`)
                 .setColor("RED")
-                .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL({ dynamic: true }) : miembro.user.displayAvatarURL({ dynamic: true }) })
+                .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                 .setTimestamp()
             setTimeout(async () => {
                 await int.editReply({ embeds: [embAddPoints] })
@@ -523,12 +524,12 @@ client.on("interactionCreate", async int => {
             if (erroresInt(int, erroresP)) return;
 
             if (!cooldowns.has("/set-staff-role")) {
-                cooldowns.set("/set-staff-role", new Discord.Collection())
+                cooldowns.set("/set-staff-role", new Collection())
             }
             const datosComando = cooldowns.get("/set-staff-role"), tiempoActual = Date.now()
 
             if (datosComando.has(int.user.id)) {
-                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */set-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -552,12 +553,12 @@ client.on("interactionCreate", async int => {
             }
 
             int.deferReply()
-            const embStaffRol = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embStaffRol = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Rol del personal establecido`)
                 .setDescription(`El rol ${rol} ha sido establecido como rol del personal del servidor en el sistema de puntos.`)
                 .setColor("GREEN")
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
                 await int.editReply({ embeds: [embStaffRol] })
@@ -584,12 +585,12 @@ client.on("interactionCreate", async int => {
             if (erroresInt(int, erroresP)) return;
 
             if (!cooldowns.has("/delete-staff-role")) {
-                cooldowns.set("/delete-staff-role", new Discord.Collection())
+                cooldowns.set("/delete-staff-role", new Collection())
             }
             const datosComando = cooldowns.get("/delete-staff-role"), tiempoActual = Date.now()
 
             if (datosComando.has(int.user.id)) {
-                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */delete-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -613,12 +614,12 @@ client.on("interactionCreate", async int => {
             }
 
             int.deferReply()
-            const embStaffRol = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embStaffRol = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.negativo} Se ha eliminado un rol`)
                 .setDescription(`Se ha eliminado el rol ${rol} anterior mente establecido en el sistema como un rol del personal del servidor.`)
                 .setColor("RED")
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
                 await int.editReply({ embeds: [embStaffRol] })
@@ -643,12 +644,12 @@ client.on("interactionCreate", async int => {
             if (erroresInt(int, erroresP)) return;
 
             if (!cooldowns.has("/delete-staff-role")) {
-                cooldowns.set("/delete-staff-role", new Discord.Collection())
+                cooldowns.set("/delete-staff-role", new Collection())
             }
             const datosComando = cooldowns.get("/delete-staff-role"), tiempoActual = Date.now()
 
             if (datosComando.has(int.user.id)) {
-                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */delete-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -673,12 +674,12 @@ client.on("interactionCreate", async int => {
             }
 
             int.deferReply()
-            const embSetEmoji = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embSetEmoji = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Símbolo establecido`)
                 .setDescription(`El emoji ${emoji} se a establecido como símbolo del sistema de puntos.`)
                 .setColor("GREEN")
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
                 await int.editReply({ embeds: [embSetEmoji] })
@@ -707,12 +708,12 @@ client.on("interactionCreate", async int => {
             if (erroresInt(int, erroresP)) return;
 
             if (!cooldowns.has("/delete-staff-role")) {
-                cooldowns.set("/delete-staff-role", new Discord.Collection())
+                cooldowns.set("/delete-staff-role", new Collection())
             }
             const datosComando = cooldowns.get("/delete-staff-role"), tiempoActual = Date.now()
 
             if (datosComando.has(int.user.id)) {
-                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */delete-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -726,13 +727,13 @@ client.on("interactionCreate", async int => {
             arrayM.splice(arrayM.findIndex(f => f.id == miembro.id), 1)
             await puntosDB.findByIdAndUpdate(int.guildId, { datos: objeto, miembros: arrayM })
 
-            const embRemoveUserSystem = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embRemoveUserSystem = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle("🗑️ Miembro eliminado del sistema")
                 .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos en el cual tenia ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                 .setColor(int.guild.me.displayHexColor)
                 .setTimestamp()
-                .setFooter({ text: miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                .setFooter({ text: miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.displayAvatarURL() })
             setTimeout(async () => {
                 await int.editReply({ embeds: [embRemoveUserSystem] })
             }, 500)
@@ -775,11 +776,11 @@ client.on("interactionCreate", async int => {
 
                 int.deferReply()
                 if (segPage <= 1) {
-                    const embTopP = new Discord.MessageEmbed()
-                        .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                    const embTopP = new EmbedBuilder()
+                        .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                         .setDescription(descripcion + top.slice(0, 10).join("\n\n"))
                         .setColor(int.guild.me.displayHexColor)
-                        .setFooter({ text: `Pagina - 1/${segPage}`, iconURL: int.guild.iconURL({ dynamic: true }) })
+                        .setFooter({ text: `Pagina - 1/${segPage}`, iconURL: int.guild.iconURL() })
                         .setTimestamp()
                     setTimeout(async () => {
                         await int.editReply({ embeds: [embTopP] })
@@ -787,17 +788,17 @@ client.on("interactionCreate", async int => {
                 } else {
                     let cps1 = 0, cps2 = 10, pagina = 1
 
-                    const embTopP = new Discord.MessageEmbed()
-                        .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                    const embTopP = new EmbedBuilder()
+                        .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                         .setDescription(descripcion + top.slice(cps1, cps2).join("\n\n"))
                         .setColor(int.guild.me.displayHexColor)
-                        .setFooter({ text: `Pagina - ${pagina}/${segPage}`, iconURL: int.guild.iconURL({ dynamic: true }) })
+                        .setFooter({ text: `Pagina - ${pagina}/${segPage}`, iconURL: int.guild.iconURL() })
                         .setTimestamp()
 
-                    const botones1 = new Discord.MessageActionRow()
+                    const botones1 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -805,7 +806,7 @@ client.on("interactionCreate", async int => {
                                     .setDisabled(true)
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -813,17 +814,17 @@ client.on("interactionCreate", async int => {
                             ]
                         )
 
-                    const botones2 = new Discord.MessageActionRow()
+                    const botones2 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -831,17 +832,17 @@ client.on("interactionCreate", async int => {
                             ]
                         )
 
-                    const botones3 = new Discord.MessageActionRow()
+                    const botones3 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -866,14 +867,14 @@ client.on("interactionCreate", async int => {
 
                                             embTopP
                                                 .setDescription(descripcion + topC.slice(ttp1, ttp2).join("\n\n"))
-                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL({ dynamic: true }))
+                                                .setFooter({text: `Pagina ${pagina}/${segPage}`, iconURL: int.guild.iconURL()})
                                             await bt.update({ embeds: [embTopP], components: [botones2] })
                                         } else {
                                             ttp1 -= 10, ttp2 -= 10, pagina--
 
                                             embTopP
                                                 .setDescription(descripcion + topC.slice(ttp1, ttp2).join("\n\n"))
-                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL({ dynamic: true }))
+                                                .setFooter({text: `Pagina ${pagina}/${segPage}`, iconURL: int.guild.iconURL()})
                                             await bt.update({ embeds: [embTopP], components: [botones1] })
                                         }
                                     }
@@ -883,20 +884,20 @@ client.on("interactionCreate", async int => {
 
                                             embTopP
                                                 .setDescription(descripcion + topC.slice(ttp1, ttp2).join("\n\n"))
-                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL({ dynamic: true }))
+                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL())
                                             await bt.update({ embeds: [embTopP], components: [botones3] })
                                         } else {
                                             ttp1 += 10, ttp2 += 10, pagina++
 
                                             embTopP
                                                 .setDescription(descripcion + topC.slice(ttp1, ttp2).join("\n\n"))
-                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL({ dynamic: true }))
+                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL())
                                             await bt.update({ embeds: [embTopP], components: [botones1] })
                                         }
                                     }
                                 })
                             }).catch(ct => {
-                                const embError = new Discord.MessageEmbed()
+                                const embError = new EmbedBuilder()
                                     .setTitle(`${emojiError} Error`)
                                     .setDescription(`Lo ciento ha ocurrido un error y no se cual es el motivo.`)
                                     .setColor(colorErr)
@@ -907,11 +908,11 @@ client.on("interactionCreate", async int => {
                 }
 
             } else {
-                const embSinRegistro = new Discord.MessageEmbed()
-                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+                const embSinRegistro = new EmbedBuilder()
+                    .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema utiliza el comando \`\`/points-info\`\`.`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                    .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                     .setTimestamp()
                 setTimeout(async () => {
                     await int.editReply({ embeds: [embSinRegistro] })
@@ -934,8 +935,8 @@ client.on("interactionCreate", async int => {
             let totalPuntos = dataSP.datos.puntosAgregados + dataSP.datos.puntosEliminados
 
             int.deferReply()
-            const embPointsSystem = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embPointsSystem = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`<:status:957353077650886716> Estado del sistema de puntos`)
                 .addFields(
                     { name: `👥 **Miembros que han utilizado el sistema:**`, value: `**${dataSP.miembros.length.toLocaleString()}**`, inline: true },
@@ -946,7 +947,7 @@ client.on("interactionCreate", async int => {
                     // {name: ``, value: ``, inline: true},
                 )
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
             setTimeout(async () => {
                 await int.editReply({ embeds: [embPointsSystem] })
             }, 500)
@@ -972,12 +973,12 @@ client.on("interactionCreate", async int => {
             await puntosDB.findByIdAndUpdate(int.guildId, { datos: objeto, miembros: arrayMs })
 
             int.deferReply()
-            const embUpdateSistemP = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embUpdateSistemP = new EmbedBuilder()
+                .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Sistema actualizado`)
                 .setDescription(`Se han eliminado datos de **${falsosMiembros.length.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(() => {
                 int.editReply({ embeds: [embUpdateSistemP] })
@@ -1061,11 +1062,11 @@ client.on("interactionCreate", async int => {
             }
 
             let totalPag = historial.length
-            const embHistorial = new Discord.MessageEmbed()
-                .setAuthor({ name: int.member.nickname ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL({ dynamic: true }) })
+            const embHistorial = new EmbedBuilder()
+                .setAuthor({ name: int.member.nickname ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`<:advertencia:929204500739268608> Advertencias`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1076,10 +1077,10 @@ client.on("interactionCreate", async int => {
                     console.log("No se pudo editar el mensaje.")
                 })
             } else {
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -1087,7 +1088,7 @@ client.on("interactionCreate", async int => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -1115,7 +1116,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -1127,7 +1128,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1141,7 +1142,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -1153,7 +1154,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1242,11 +1243,11 @@ client.on("interactionCreate", async int => {
             }
 
             let totalPag = historial.length
-            const embHistorial = new Discord.MessageEmbed()
-                .setAuthor(int.member.nickname ? int.member.nickname : int.user.username, int.user.displayAvatarURL({ dynamic: true }))
+            const embHistorial = new EmbedBuilder()
+                .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`<:aislacion:947965052772814848> Aislamientos`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1257,10 +1258,10 @@ client.on("interactionCreate", async int => {
                     console.log("No se pudo editar el mensaje.")
                 })
             } else {
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -1268,7 +1269,7 @@ client.on("interactionCreate", async int => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -1296,7 +1297,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -1308,7 +1309,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1322,7 +1323,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -1334,7 +1335,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1423,11 +1424,11 @@ client.on("interactionCreate", async int => {
             }
 
             let totalPag = historial.length
-            const embHistorial = new Discord.MessageEmbed()
-                .setAuthor(int.member.nickname ? int.member.nickname : int.user.username, int.user.displayAvatarURL({ dynamic: true }))
+            const embHistorial = new EmbedBuilder()
+                .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`<:salir12:879519859694776360> Expulsiones`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1438,10 +1439,10 @@ client.on("interactionCreate", async int => {
                     console.log("No se pudo editar el mensaje.")
                 })
             } else {
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -1449,7 +1450,7 @@ client.on("interactionCreate", async int => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -1477,7 +1478,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -1488,7 +1489,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1502,7 +1503,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -1513,7 +1514,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1601,11 +1602,11 @@ client.on("interactionCreate", async int => {
             }
 
             let totalPag = historial.length
-            const embHistorial = new Discord.MessageEmbed()
-                .setAuthor(int.member.nickname ? int.member.nickname : int.user.username, int.user.displayAvatarURL({ dynamic: true }))
+            const embHistorial = new EmbedBuilder()
+                .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`⛔ Baneos`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL({ dynamic: true }))
+                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1616,10 +1617,10 @@ client.on("interactionCreate", async int => {
                     console.log("No se pudo editar el mensaje.")
                 })
             } else {
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -1627,7 +1628,7 @@ client.on("interactionCreate", async int => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -1655,7 +1656,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -1666,7 +1667,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1680,7 +1681,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -1691,7 +1692,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                                    .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1731,7 +1732,7 @@ client.on("interactionCreate", async int => {
 
                     if (opciones.some(s => int.member.roles.cache.has(s.rolID))) {
                         if (int.member.roles.cache.has(opcion.rolID)) {
-                            const embYaTienesElRol = new Discord.MessageEmbed()
+                            const embYaTienesElRol = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Ya tienes el rol`)
                                 .setDescription(`Ya tienes el rol **<@&${opcion.rolID}>**.`)
                                 .setColor(ColorError)
@@ -1739,7 +1740,7 @@ client.on("interactionCreate", async int => {
 
                         } else {
                             let rolesEliminar = opciones.filter(f => f.rolID != opcion.rolID && int.member.roles.cache.some(s => s.id == f.rolID)).map(m => m.rolID)
-                            const embTienesUnRol = new Discord.MessageEmbed()
+                            const embTienesUnRol = new EmbedBuilder()
                                 .setTitle(`🔁 Cambio de roles`)
                                 .setDescription(`Se te ${rolesEliminar.length == 1 ? "ha removido el rol" : "han removido los roles"} ${rolesEliminar.map(m => `**<@&${m}>**`).join(`, `)} y se te ha agregado el rol **<@&${opcion.rolID}>** ya que no puedes tener **2** o mas roles de colores.`)
                                 .setColor(int.guild.me.displayHexColor)
@@ -1749,7 +1750,7 @@ client.on("interactionCreate", async int => {
                         }
 
                     } else {
-                        const embRolAgregado = new Discord.MessageEmbed()
+                        const embRolAgregado = new EmbedBuilder()
                             .setTitle(`${emojis.acierto} Rol agregado`)
                             .setDescription(`Se te ha agregado el rol **<@&${opcion.rolID}>**.`)
                             .setColor("#00ff00")
@@ -1805,9 +1806,9 @@ client.on("guildMemberAdd", async gma => {
     const avatar = await Canvas.loadImage(gma.user.displayAvatarURL({format: "jpg", size: 2048}))
     context.drawImage(avatar, 360, 20, 280, 280);
 
-    const finalImg = new Discord.MessageAttachment(canvas.toBuffer(), "imagen.png")
+    const finalImg = new AttachmentBuilder(canvas.toBuffer(), "imagen.png")
 
-    let embBienvenida = new Discord.MessageEmbed()
+    let embBienvenida = new EmbedBuilder()
     .setAuthor({name: client.user.tag, iconURL: client.user.displayAvatarURL({dynamic: true})})
     .setImage(`attachment://imagen.png`)
     .setTitle("👋 ¡Bienvenido/a!")
@@ -1837,7 +1838,7 @@ function erroresMsg(tipo = false, errores = false) {
         }
 
         for (error of errores) {
-            const embError = new Discord.MessageEmbed()
+            const embError = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(error.descripcion)
                 .setColor(ColorError)
@@ -1874,12 +1875,12 @@ client.on("messageCreate", async msg => {
     if (dataAFK) {
         if (dataAFK.miembros.some(s => s.id == msg.author.id)) {
             msg.channel.sendTyping()
-            const embRemoveAFK = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+            const embRemoveAFK = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("💤 Estado AFK removido")
                 .setDescription(`${msg.author} tu estado AFK se a removido.`)
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter(msg.guild.name, msg.guild.iconURL())
                 .setTimestamp()
 
             if (dataAFK.miembros.find(f => f.id == msg.author.id).apodo == msg.author.username) {
@@ -1924,7 +1925,7 @@ client.on("messageCreate", async msg => {
         for (let i in dataAFK.miembros) {
             if (msg.mentions.members.some(s => s.id === dataAFK.miembros[i].id)) {
                 msg.channel.sendTyping()
-                const embAvisoAFK = new Discord.MessageEmbed()
+                const embAvisoAFK = new EmbedBuilder()
                     .setTitle("💤 AFK")
                     .setDescription(`<@${dataAFK.miembros[i].id}> se encuentra AFK desde <t:${dataAFK.miembros[i].tiempo}:R> por la razón \`\`${dataAFK.miembros[i].razon}\`\``)
                     .setColor(msg.guild.me.displayHexColor)
@@ -1943,13 +1944,13 @@ client.on("messageCreate", async msg => {
     }
     if (msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))) {
         msg.channel.sendTyping()
-        const emb = new Discord.MessageEmbed()
-            .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true })})
+        const emb = new EmbedBuilder()
+            .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
             .setThumbnail(client.user.displayAvatarURL())
             .setTitle(`Hola, soy **${client.user.username}** un Bot multi fundacional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de inter promoción.`)
             .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: ${"``"}${prefijo}${"``"}\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](${serverSuport})`)
             .setColor(colorEmb)
-            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+            .setFooter(msg.guild.name, msg.guild.iconURL())
             .setTimestamp()
 
         setTimeout(() => {
@@ -1961,7 +1962,7 @@ client.on("messageCreate", async msg => {
         // Boost/mejoras
         let msgTypes = ["USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1", "USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2", "USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3"]
         if (msgTypes.concat("USER_PREMIUM_GUILD_SUBSCRIPTION").some(s => msg.type == s)) {
-            const embBoost = new Discord.MessageEmbed()
+            const embBoost = new EmbedBuilder()
                 .setTitle(`<a:BoostAnimado:931289485700911184> Nueva mejora ${msgTypes.some(s => msg.type == s) ? "y nuevo nivel" : ""}`)
                 .setDescription(`¡**Gracias** ${msg.author} por la mejora!${msgTypes.some(s => msg.type == s) ? `, por tu mejora el servidor alcanzo el nivel **${msgTypes.findIndex(f => msg.type == f) + 1}**` : ""}`)
                 .setColor(msg.member.displayHexColor)
@@ -1998,13 +1999,13 @@ client.on("messageCreate", async msg => {
         msg.channel.sendTyping()
         botDB.comandos.usos++
 
-        const embHelp = new Discord.MessageEmbed()
-            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+        const embHelp = new EmbedBuilder()
+            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
             .setThumbnail(client.user.displayAvatarURL())
             .setTitle(`Hola, soy **${client.user.username}** un Bot multi funcional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de puntos.`)
             .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: \`\`${prefijo}\`\`\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](${serverSuport})`)
             .setColor(colorEmb)
-            .setFooter(client.user.username, client.user.displayAvatarURL({ dynamic: true }))
+            .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
 
         setTimeout(() => {
@@ -2015,19 +2016,19 @@ client.on("messageCreate", async msg => {
     if (["comandos", "commands", "cmds"].some(s => comando == s)) {
         msg.channel.sendTyping()
         botDB.comandos.usos++
-        const embComandos = new Discord.MessageEmbed()
-            .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+        const embComandos = new EmbedBuilder()
+            .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL() })
             .setTitle("📑 Comandos")
             .setDescription(`Un **comando** es una orden/instrucción que les das al Bot y a la que el Bot responde de cierta forma de acuerdo a la orden o nombre del comando.`)
             .addField(`🌎 **Comandos generales:** *14*`, `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`)
-            .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true }) })
+            .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
             .setColor(colorEmb)
             .setTimestamp()
 
 
-        const menuComandos = new Discord.MessageActionRow()
+        const menuComandos = new ActionRowBuilder()
             .addComponents(
-                new Discord.MessageSelectMenu()
+                new SelectMenuBuilder()
                     .setCustomId("1")
                     .setPlaceholder("📑 Selecciona un menu para ver los comandos de el.")
                     .addOptions([
@@ -2115,7 +2116,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let dataAFK = await afkDB.findById(msg.guildId)
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando afk`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}afk <Razón>\`\`` },
@@ -2136,12 +2137,12 @@ client.on("messageCreate", async msg => {
                             return;
                         })
                     }
-                    const embAFK = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embAFK = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter(msg.guild.name, msg.guild.iconURL())
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAFK] })
@@ -2159,12 +2160,12 @@ client.on("messageCreate", async msg => {
                         })
                     }
 
-                    const embAFK = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embAFK = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter(msg.guild.name, msg.guild.iconURL())
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAFK] })
@@ -2189,12 +2190,12 @@ client.on("messageCreate", async msg => {
                         miembros: [{ id: msg.author.id, tag: msg.author.tag, apodo: msg.member.nickname, razon: args.join(" ") ? args.join(" ") : "*No ha proporcionado una razón*", tiempo: Math.floor(Date.now() / 1000) }]
                     })
 
-                    const embAFK = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embAFK = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAFK] })
@@ -2213,12 +2214,12 @@ client.on("messageCreate", async msg => {
                         miembros: [{ id: msg.author.id, tag: msg.author.tag, apodo: msg.author.username, razon: args.join(" ") ? args.join(" ") : "*No ha proporcionado una razón*", tiempo: Math.floor(Date.now() / 1000) }]
                     })
 
-                    const embAFK = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embAFK = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAFK] })
@@ -2269,7 +2270,7 @@ client.on("messageCreate", async msg => {
             }
 
             let alias = ["user", "usuario", "userinfo"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}userinfo <Usuario>\`\`` },
@@ -2298,8 +2299,8 @@ client.on("messageCreate", async msg => {
             }
 
             let bannerUser = miembro ? miembro.id == msg.author.id ? await client.users.fetch(msg.author.id, { force: true }) : await client.users.fetch(miembro.id, { force: true }) : await client.users.fetch(msg.author.id, { force: true })
-            const embMiembro = new Discord.MessageEmbed()
-                .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu información ${msg.member.nickname ? msg.member.nickname : msg.author.username}` : `Información de ${miembro.nickname ? miembro.nickname : miembro.user.username} pedida por ${msg.member.nickname ? msg.member.nickname : msg.author.username}` : `Tu información ${msg.member.nickname ? msg.member.nickname : msg.author.username}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+            const embMiembro = new EmbedBuilder()
+                .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu información ${msg.member.nickname ? msg.member.nickname : msg.author.username}` : `Información de ${miembro.nickname ? miembro.nickname : miembro.user.username} pedida por ${msg.member.nickname ? msg.member.nickname : msg.author.username}` : `Tu información ${msg.member.nickname ? msg.member.nickname : msg.author.username}`, iconURL: msg.author.displayAvatarURL() })
                 .setThumbnail(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                 .setImage(bannerUser.bannerURL({ dynamic: true, format: "jpg" || "gif", size: 4096 }))
                 .setDescription(miembro ? miembro.id == msg.author.id ? `👤 Tu: ${msg.author}` : miembro.user.bot ? `🤖 Bot: ${miembro}` : `👤 Miembro: ${miembro}` : `👤 Tu: ${msg.author}`)
@@ -2316,7 +2317,7 @@ client.on("messageCreate", async msg => {
                     { name: "🔍 **Estado:**", value: `${presencia[miemPresence?.status]}\n${actyvidad}`, inline: true },
                 )
                 .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.me.displayHexColor)
-                .setFooter(miembro ? miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true }) } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL({ dynamic: true }) } : { text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true }) })
+                .setFooter(miembro ? miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() } : { text: msg.guild.name, iconURL: msg.guild.iconURL() })
                 .setTimestamp()
             miembro ? miembro.user.bot ? embMiembro.fields.splice(6, 1) : null : null
             miembro ? miembro.id != msg.author.id && !miembro.user.bot ? "hola" : embMiembro.fields.length == 9 ? embMiembro.fields.splice(6, 1) : embMiembro.fields.splice(7, 1) : embMiembro.fields.length == 9 ? embMiembro.fields.splice(6, 1) : embMiembro.fields.splice(7, 1)
@@ -2336,8 +2337,8 @@ client.on("messageCreate", async msg => {
             if (args[0] && !miembro) {
                 await client.users.fetch(args[0], { force: true }).then(async usuario => {
                     console.log(usuario.hexAccentColo)
-                    const embUser = new Discord.MessageEmbed()
-                        .setAuthor({ name: `Información de ${usuario.tag} pedida por ${msg.member.nickname ? msg.member.nickname : msg.author.username}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+                    const embUser = new EmbedBuilder()
+                        .setAuthor({ name: `Información de ${usuario.tag} pedida por ${msg.member.nickname ? msg.member.nickname : msg.author.username}`, iconURL: msg.author.displayAvatarURL() })
                         .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setImage(usuario.bannerURL({ dynamic: true, format: "jpg" || "gif", size: 4096 }))
                         .setDescription(usuario.bot ? `🤖 Bot externo: ${usuario}` : `👤 Usuario externo: ${usuario}`)
@@ -2349,14 +2350,14 @@ client.on("messageCreate", async msg => {
                             { name: "⛔ **Baneado:**", value: `${(await msg.guild.bans.fetch()).find(f => f.user.id === usuario.id) ? `__Si, por la razón:__ *${(await msg.guild.bans.fetch()).find(f => f.user.id === usuario.id).reason}*` : "*No*"}`, inline: true },
                         )
                         .setColor(usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.me.displayHexColor)
-                        .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true }) })
+                        .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embUser] })
                     }, 500)
 
                 }).catch(c => {
-                    const embErrU1 = new Discord.MessageEmbed()
+                    const embErrU1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El argumento proporcionado (*${args[0]}*) no es una ID valida aun que este conformado por 18 caracteres numericos no coresponde con la ID de ningun usuario de Discord.`)
                         .setColor(ColorError)
@@ -2378,8 +2379,8 @@ client.on("messageCreate", async msg => {
 
             let ping = client.ws.ping <= 60 ? "<:30ms:917227036890791936>" : client.ws.ping > 60 && client.ws.ping < 120 ? "<:60ms:917227058399162429>" : client.ws.ping > 120 ? "<:150ms:917227075243503626>" : "*error*"
 
-            const embStats = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+            const embStats = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("<:grafica:958856872981585981> Estadisticas")
                 .addFields(
                     { name: "<:wer:920166217086537739> **Servidores:**", value: `${client.guilds.cache.size.toLocaleString()}`, inline: true },
@@ -2392,7 +2393,7 @@ client.on("messageCreate", async msg => {
                     { name: ` **Canales: ${(textCh + voiseCH + cateCh).toLocaleString()}**`, value: `<:canaldetexto:904812801925738557> ${textCh.toLocaleString()} texto\n <:canaldevoz:904812835295596544> ${voiseCH.toLocaleString()} voz\n<:carpeta:920494540111093780> ${cateCh.toLocaleString()} categorías`, inline: true },
                 )
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
             setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embStats] })
@@ -2404,8 +2405,8 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let emojisSV = msg.guild.emojis.cache.map(e => e)
             let emR = Math.floor(Math.random() * emojisSV.length)
-            const embInfo = new Discord.MessageEmbed()
-                .setAuthor(`${emojis.lupa} Comando jumbo`)
+            const embInfo = new EmbedBuilder()
+                .setAuthor({name: `${emojis.lupa} Comando jumbo`})
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}jumbo <Emoji>\`\`` },
                     { name: "Ejemplo:", value: `${prefijo}jumbo ${emojisSV[emR]}` },
@@ -2424,7 +2425,7 @@ client.on("messageCreate", async msg => {
             let descripciones = [`El argumento proporcionado \`\`${args[0]}\`\` no es un emoji.`, `El emoji proporcionado es un emoji publico, no puedo darte una imagen ampliada de el, proporciona un emoji de este servidor o de otro servidor.`, `No he podido encontrar ese emoji, puede ser por que no estoy en el servidor de origen de ese emoji.`]
             for (let e = 0; e < condicionales.length; e++) {
                 if (condicionales[e]) {
-                    const embErrEmojis = new Discord.MessageEmbed()
+                    const embErrEmojis = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripciones[e])
                         .setColor(ColorError)
@@ -2442,12 +2443,12 @@ client.on("messageCreate", async msg => {
                 }
             }
 
-            const embJumbo = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+            const embJumbo = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setImage(emoji.url)
                 .setDescription(`[**${emoji.name}**](${emoji.url})`)
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
             setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embJumbo] })
@@ -2459,8 +2460,8 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let emojisAl = ["😃", "😄", "😅", "🤣", "😊", "🤪", "😐", "😝", "🤑", "😡"], emojRandom = Math.floor(Math.random() * emojisAl.length), emojis = msg.guild.emojis.cache
 
-            const embNoEmojis = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+            const embNoEmojis = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                 .setDescription(`*Este servidor no tiene emojis propios.*`)
                 .setColor(msg.guild.me.displayHexColor)
@@ -2470,12 +2471,12 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (msg.guild.emojis.cache.size <= 10) {
-                const embEmojis = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embEmojis = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                     .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(0, 10).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - 1/1`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter(`Pagina - 1/1`, msg.guild.iconURL())
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEmojis] })
@@ -2491,18 +2492,18 @@ client.on("messageCreate", async msg => {
 
                 let em1 = 0, em2 = 10, pagina = 1, descripcion = `Emojis: **${emojis.size}**\n\n`
 
-                const embEmojis = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embEmojis = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -2510,7 +2511,7 @@ client.on("messageCreate", async msg => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -2534,7 +2535,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -2546,7 +2547,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2560,7 +2561,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -2572,7 +2573,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2590,8 +2591,8 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let stikers = msg.guild.stickers.cache
 
-            const embNoStikers = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+            const embNoStikers = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
                 .setDescription(`*Este servidor no tiene stickers propios.*`)
                 .setColor(msg.guild.me.displayHexColor)
@@ -2601,12 +2602,12 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (stikers.size <= 10) {
-                const embStikers = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embStikers = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(0, 10).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - 1/1`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: `Pagina - 1/1`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embStikers] })
@@ -2622,18 +2623,18 @@ client.on("messageCreate", async msg => {
 
                 let em1 = 0, em2 = 10, pagina = 1
 
-                const embEmojis = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embEmojis = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -2641,7 +2642,7 @@ client.on("messageCreate", async msg => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -2665,7 +2666,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -2676,7 +2677,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2690,7 +2691,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -2701,7 +2702,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2718,25 +2719,25 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
 
-            const embBotsLists = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+            const embBotsLists = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("🤖 Bots lists")
                 .setDescription(`[<:topgg:934246215342772234> Top.gg](https://top.gg/bot/841531159778426910)\n[<:CDBotList:934253710446559242> CDBotList](https://www.cdbotlist.xyz/bots/841531159778426910)`)
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
-            const botones = new Discord.MessageActionRow()
+            const botones = new ActionRowBuilder()
                 .addComponents(
                     [
-                        new Discord.MessageButton()
+                        new ButtonBuilder()
                             .setLabel("Top.gg")
                             .setEmoji("<:topgg:934246215342772234>")
                             .setStyle("LINK")
                             .setURL("https://top.gg/bot/841531159778426910")
                     ],
                     [
-                        new Discord.MessageButton()
+                        new ButtonBuilder()
                             .setLabel("CDBotList")
                             .setEmoji("<:CDBotList:934253710446559242>")
                             .setStyle("LINK")
@@ -2752,7 +2753,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let alias = ["avatar", "icon", "icono"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}avatar <Usuario o servidor>\`\`` },
@@ -2776,13 +2777,13 @@ client.on("messageCreate", async msg => {
             ]
             if (erroresMsg(msg, erroresP)) return;
 
-            const embAvatar = new Discord.MessageEmbed()
-                .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu avatar ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : `Avatar de ${miembro.nickname ? miembro.nickname : miembro.user.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? `Avatar del servidor pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : `Tu avatar ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+            const embAvatar = new EmbedBuilder()
+                .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu avatar ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : `Avatar de ${miembro.nickname ? miembro.nickname : miembro.user.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? `Avatar del servidor pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : `Tu avatar ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
                 .setTitle("Avatar")
                 .setURL(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                 .setImage(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                 .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.me.displayHexColor)
-                .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
                 .setTimestamp()
             if (args[0] ? ["server", "servidor", "guild", "sv"].some(s => args[0] == s) || miembro ? true : false : true) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAvatar] })
@@ -2790,7 +2791,7 @@ client.on("messageCreate", async msg => {
 
             if (args[0] && !["server", "servidor", "guild", "sv"].some(s => args[0] == s) && !miembro) {
                 await client.users.fetch(args[0], { force: true }).then(usuario => {
-                    embAvatar.author = { name: `Avatar de ${usuario.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) }
+                    embAvatar.author = { name: `Avatar de ${usuario.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL() }
                     embAvatar.url = usuario.displayAvatarURL({ dynamic: true, format: "png", size: 4096 })
                     embAvatar.image = { url: usuario.displayAvatarURL({ dynamic: true, format: "png", size: 4096 }) }
                     embAvatar.color = usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.me.displayHexColor
@@ -2799,7 +2800,7 @@ client.on("messageCreate", async msg => {
                     }, 500)
 
                 }).catch(c => {
-                    const embErrU1 = new Discord.MessageEmbed()
+                    const embErrU1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El argumento proporcionado (${args[0]}) no es una ID valida aun que este conformado por 18 caracteres numericos no coresponde con la ID de ningun usuario de Discord.`)
                         .setColor(ColorError)
@@ -2885,13 +2886,13 @@ client.on("messageCreate", async msg => {
 
             let chText = msg.guild.channels.cache.filter(t => t.type === "GUILD_TEXT").size, chVoize = msg.guild.channels.cache.filter(v => v.type === "GUILD_VOICE").size, chCategorie = msg.guild.channels.cache.filter(c => c.type === "GUILD_CATEGORY").size
 
-            const embServer = new Discord.MessageEmbed()
+            const embServer = new EmbedBuilder()
                 .setThumbnail(msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                .setAuthor(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setAuthor({name: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setImage(msg.guild.bannerURL({ format: "png", size: 4096 }))
                 .setTitle("<a:Info:926972188018479164> Informacion del servidor")
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
             if (msg.guild.features.length >= 1 && msg.guild.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
@@ -3017,15 +3018,15 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
 
-            const inv = new Discord.MessageEmbed()
-                .setAuthor(`hola ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, msg.author.displayAvatarURL({ dynamic: true }))
+            const inv = new EmbedBuilder()
+                .setAuthor({name: `hola ${msg.member.nickname || msg.author.tag}`, iconURL: msg.author.displayAvatarURL()})
                 .setDescription(`[__**Invítame**__](${invitacion}) a tu servidor.`)
                 .setColor(colorEmb)
                 .setTimestamp()
 
-            const row = new Discord.MessageActionRow()
+            const row = new ActionRowBuilder()
                 .addComponents(
-                    new Discord.MessageButton()
+                    new ButtonBuilder()
                         .setLabel("Invítame")
                         .setEmoji("🔗")
                         .setStyle("LINK")
@@ -3046,7 +3047,7 @@ client.on("messageCreate", async msg => {
 
             if (!args[0]) {
                 if (msg.guild.me.permissions.has("MANAGE_GUILD")) {
-                    const embInfo = new Discord.MessageEmbed()
+                    const embInfo = new EmbedBuilder()
                         .setTitle(`${emojis.lupa} Comando qrcode`)
                         .addFields(
                             { name: "Uso:", value: `\`\`${prefijo}qrcode <URL o link>\`\`` },
@@ -3060,7 +3061,7 @@ client.on("messageCreate", async msg => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
                     }, 500)
                 } else {
-                    const embInfo = new Discord.MessageEmbed()
+                    const embInfo = new EmbedBuilder()
                         .setTitle(`${emojis.lupa} Comando qrcode`)
                         .addFields(
                             { name: "Uso:", value: `\`\`${prefijo}qrcode <URL o link>\`\`` },
@@ -3076,7 +3077,7 @@ client.on("messageCreate", async msg => {
                 }
             }
 
-            const embErr1 = new Discord.MessageEmbed()
+            const embErr1 = new EmbedBuilder()
             .setTitle(`${emojis.negativo} Error`)
             .setDescription(`El argumento proporcionado no es un enlace.`)
             .setColor(ColorError)
@@ -3085,7 +3086,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr1] })
             }, 500)
 
-            const embErr2 = new Discord.MessageEmbed()
+            const embErr2 = new EmbedBuilder()
             .setTitle(`${emojis.negativo} Error`)
             .setDescription(`El enlace proporcionado no es valido.`)
             .setColor(ColorError)
@@ -3094,13 +3095,13 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr2] })
             }, 500)
 
-            const attachment = new Discord.MessageAttachment(urQR, `imagen.png`)
+            const attachment = new AttachmentBuilder(urQR, `imagen.png`)
 
-            const embQR = new Discord.MessageEmbed()
-                .setAuthor(`Codigo QR creado por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, msg.author.displayAvatarURL({ dynamic: true }))
+            const embQR = new EmbedBuilder()
+                .setAuthor({name: `Codigo QR creado por ${msg.member.nickname || msg.author.tag}`, iconURL: msg.author.displayAvatarURL()})
                 .setImage(`attachment://imagen.png`)
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
             setTimeout(() => {
@@ -3113,7 +3114,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando reportbug`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}reportbug <Reporte>\`\`` },
@@ -3129,37 +3130,37 @@ client.on("messageCreate", async msg => {
 
             let canalReportes = client.channels.cache.get("950962633580896276")
 
-            const embAdvertencia = new Discord.MessageEmbed()
+            const embAdvertencia = new EmbedBuilder()
                 .setTitle(`<:advertencia:929204500739268608> Advertencia`)
                 .setDescription(`¿Estás seguro/a ${msg.author} de enviar tu reporte?\n\n<:report:959201948169564210> **Reporte:**\n${args.join(" ")}`)
                 .setColor("YELLOW")
 
-            const embConfirmar = new Discord.MessageEmbed()
+            const embConfirmar = new EmbedBuilder()
                 .setTitle(`${emojis.acierto} Reporte enviado`)
                 .setDescription(`Tu reporte ha sido enviado a mi [servidor](${serverSuport}) de soporte para que le eche un vistazo mi creador y arregle el problema, gracias por reportar.`)
                 .setColor("GREEN")
 
-            const embCancelar = new Discord.MessageEmbed()
+            const embCancelar = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Reporte cancelado`)
                 .setDescription(`Has cancelado tu reporte, no dudes en reportar cualquier fallo, es muy importante para mi que muestren mis errores a mi creador.`)
                 .setColor("RED")
 
-            const embAccionCancelada = new Discord.MessageEmbed()
+            const embAccionCancelada = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Acción cancelada`)
                 .setDescription(`Se ha cancelado la acción por que has demorado mucho en responder.`)
                 .setColor("RED")
 
-            const botones = new Discord.MessageActionRow()
+            const botones = new ActionRowBuilder()
                 .addComponents(
                     [
-                        new Discord.MessageButton()
+                        new ButtonBuilder()
                             .setCustomId("confirmar")
                             .setEmoji(emojis.acierto)
                             .setLabel("Confirmar")
                             .setStyle("SUCCESS")
                     ],
                     [
-                        new Discord.MessageButton()
+                        new ButtonBuilder()
                             .setCustomId("cancelar")
                             .setEmoji(emojis.negativo)
                             .setLabel("Cancelar")
@@ -3180,8 +3181,8 @@ client.on("messageCreate", async msg => {
                 colector.on("collect", async cll => {
                     if (cll.customId == "confirmar") {
                         cll.update({ embeds: [embConfirmar], components: [] }).then(tb => {
-                            const embReporte = new Discord.MessageEmbed()
-                                .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embReporte = new EmbedBuilder()
+                                .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                 .setThumbnail(msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                                 .setTitle(`<:report:959201948169564210> Nuevo reporte`)
                                 .addFields(
@@ -3190,7 +3191,7 @@ client.on("messageCreate", async msg => {
                                     { name: `📄 **Reporte:**`, value: `${args.join(" ")}`, inline: true },
                                 )
                                 .setColor(msg.guild.me.displayHexColor)
-                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             canalReportes.send({ embeds: [embReporte] })
                             interuptor = false
@@ -3209,22 +3210,22 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let creador = client.users.cache.get(creadorID)
 
-            const infBot = new Discord.MessageEmbed()
-                .setAuthor({ name: msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+            const infBot = new EmbedBuilder()
+                .setAuthor({ name: msg.author.username, iconURL: msg.author.displayAvatarURL() })
                 .setThumbnail(client.user.displayAvatarURL())
                 .setTitle(`<:util:947316902647189554> ${client.user.username}`)
                 .setDescription(`Soy un bot enfocado en serte de lo mas útil posible en tu servidor contando con comandos de moderación, administración, comandos de sistemas que te pueden ser de gran utilidad en tu servidor, *si tienes alguna duda o necesitas información adicional sobre mi pueden entrar en mi [servidor](${serverSuport}) de soporte, para conocer mis términos de servicio en mi [pagina](${webPage}) web*.\n📅 Creado <t:${Math.floor(client.user.createdAt / 1000)}:R> por ${client.users.cache.get(creadorID).tag}\n`)
                 .addFields(
                     { name: `\u200B`, value: `<:status:957353077650886716> **Sistema:**`, inline: false },
                     { name: `<:node:958824377166737428> **Node:**`, value: `${process.version}`, inline: true },
-                    { name: `<:discordjs:958825301624881162> **Discord.js:**`, value: `v${Discord.version}`, inline: true },
+                    { name: `<:discordjs:958825301624881162> **Discord.js:**`, value: `v${version}`, inline: true },
                     { name: `<:mongoDB:958817120769151046> **Mongoose:**`, value: `v${mongoose.version}`, inline: true },
                     { name: `<:host:958828608389009429> **Host:**`, value: `<:heroku:958814911243374602> Heroku`, inline: true },
                     { name: `<:memoria:958829662644109352> **Memoria:**`, value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2)} MB`, inline: true },
                     { name: `\u200B`, value: `\u200B`, inline: false },
                     { name: `<a:gears_loading:958170921590489148> **Sistemas:**`, value: `${emojis.puntos} **Sistema de puntos:**\nFase final *(puede tener cambios)*, para mas información sobre el sistema utiliza el comando \`\`${prefijo}pointsinfo\`\`.\n\n${emojis.alianza} **Sistema de auto alianzas:**\nFace beta *(pueden haber errores)*, para mas información sobre el sistema utiliza el comando \`\`${prefijo}alliancesinfo\`\``, inline: true },
                 )
-                .setFooter({ text: `Creador: ${creador.tag}`, iconURL: creador.displayAvatarURL({ dynamic: true }) })
+                .setFooter({ text: `Creador: ${creador.tag}`, iconURL: creador.displayAvatarURL() })
                 .setColor(colorEmb)
                 .setTimestamp()
             setTimeout(() => {
@@ -3247,7 +3248,7 @@ client.on("messageCreate", async msg => {
             if (erroresMsg(msg, erroresP)) return;
 
             let alias = ["invites", "invs", "invitaciones"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}invites <Miembro>\`\`` },
@@ -3269,12 +3270,12 @@ client.on("messageCreate", async msg => {
 
             let descripcion = (miembro ? miembro.id == msg.author.id ? `Has creado **${tabla.length.toLocaleString()}** ` : `El miembro ${miembro} ha creado **${tabla.length.toLocaleString()}** ` : `Has creado **${tabla.length.toLocaleString()}** `) + (tabla.length == 1 ? "invitación la cual es la siguiente.\n\n" : "invitaciones las cuales son las siguientes.\n\n")
             if (tabla.length <= 10) {
-                const embInviteaciones = new Discord.MessageEmbed()
-                    .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+                const embInviteaciones = new EmbedBuilder()
+                    .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                     .setTitle(`✉️ Invitaciones`)
                     .setDescription(descripcion + tabla.slice(0, 10).join("\n\n"))
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter({ text: `Pagina - 1/1`, iconURL: miembro ? miembro.id == msg.author.id ? msg.guild.iconURL({ dynamic: true }) : miembro.displayAvatarURL({ dynamic: true }) : msg.guild.iconURL({ dynamic: true }) })
+                    .setFooter({ text: `Pagina - 1/1`, iconURL: miembro ? miembro.id == msg.author.id ? msg.guild.iconURL() : miembro.displayAvatarURL() : msg.guild.iconURL() })
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInviteaciones] })
@@ -3290,25 +3291,25 @@ client.on("messageCreate", async msg => {
 
                 let in1 = 0, in2 = 10, pagina = 1
 
-                const embInviteaciones = new Discord.MessageEmbed()
-                    .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+                const embInviteaciones = new EmbedBuilder()
+                    .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                     .setTitle(`✉️ Invitaciones`)
                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter({ text: `Pagina - 1/1`, iconURL: miembro ? miembro.id == msg.author.id ? msg.guild.iconURL({ dynamic: true }) : msg.author.displayAvatarURL({ dynamic: true }) : msg.guild.iconURL({ dynamic: true }) })
+                    .setFooter({ text: `Pagina - 1/1`, iconURL: miembro ? miembro.id == msg.author.id ? msg.guild.iconURL() : msg.author.displayAvatarURL() : msg.guild.iconURL() })
                     .setTimestamp()
 
-                const botones = new Discord.MessageActionRow()
+                const botones = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("SECONDARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -3331,7 +3332,7 @@ client.on("messageCreate", async msg => {
                                 in1 -= 10, in2 -= 10, pagina--
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -3342,7 +3343,7 @@ client.on("messageCreate", async msg => {
                                 in1 -= 10, in2 -= 10, pagina--
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -3355,7 +3356,7 @@ client.on("messageCreate", async msg => {
                                 in1 += 10, in2 += 10, pagina++
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -3368,7 +3369,7 @@ client.on("messageCreate", async msg => {
 
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -3386,7 +3387,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
 
             let alias = ["inviteinfo", "invinfo"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}inviteinfo <Invitación>\`\`` },
@@ -3402,7 +3403,7 @@ client.on("messageCreate", async msg => {
 
             await client.fetchInvite(`${args[0]}`).then(invite => {
                 // console.log(invite.guild.name)
-                const embInviteInfo = new Discord.MessageEmbed()
+                const embInviteInfo = new EmbedBuilder()
                     .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 }) })
                     .setTitle(`<a:Info:926972188018479164> Información de invitación`)
                     // .setDescription(`Invitación creada por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 1024})}), ID: \`\`${invite.inviterId}\`\``} en el canal **${invite.guild.id==msg.guildId ? invite.channel : invite.channel.name}** ${invite.guild.id==msg.guildId ? "*en este servidor.*" : `en el servidor **${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount-invite.presenceCount).toLocaleString()}** desconectados.`}`)
@@ -3413,7 +3414,7 @@ client.on("messageCreate", async msg => {
                         // {name: ``, value: ``},
                     )
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter({ text: invite.guild.name, iconURL: invite.guild.iconURL({ dynamic: true }) })
+                    .setFooter({ text: invite.guild.name, iconURL: invite.guild.iconURL() })
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInviteInfo] })
@@ -3422,7 +3423,7 @@ client.on("messageCreate", async msg => {
 
             }).catch(ci => {
                 console.log("catch")
-                const embError = new Discord.MessageEmbed()
+                const embError = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El argumento proporcionado *(${args[0]})* no es un código o URL de una invitación valida.`)
                     .setColor(ColorError)
@@ -3444,7 +3445,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
 
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -3461,7 +3462,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando record`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}record <Mencion del miembro>\`\`\n\`\`${prefijo}record <ID del miembro>\`\`\n\`\`${prefijo}record <Etiqueta del miembro>\`\`` },
@@ -3475,26 +3476,26 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let botones1 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")])
-            let botones2 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")])
-            let botones3 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
-            let botones4 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones1 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")])
+            let botones2 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")])
+            let botones3 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
+            let botones4 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
-            let botones5 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")])
-            let botones6 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
-            let botones7 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones5 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")])
+            let botones6 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
+            let botones7 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
-            let botones8 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
-            let botones9 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
-            let botones10 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones8 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
+            let botones9 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones10 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
-            let botones11 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
-            let botones12 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones11 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")])
+            let botones12 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
-            let botones13 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones13 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
-            let botones14 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
-            let botones15 = new Discord.MessageActionRow().addComponents([new Discord.MessageButton().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new Discord.MessageButton().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new Discord.MessageButton().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new Discord.MessageButton().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones14 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
+            let botones15 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
             let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args.join(" "))
 
@@ -3532,12 +3533,12 @@ client.on("messageCreate", async msg => {
 
                             if ((advert + aislam + expuls + baneos) <= 0) {
                                 if ((adv + ais + exp + ban) <= 0) {
-                                    const embHistorial = new Discord.MessageEmbed()
-                                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                    const embHistorial = new EmbedBuilder()
+                                        .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                         .setTitle("<:historial:949522609266110485> Historial")
                                         .setDescription(`*${miembro} no tienes sanciones en ningun servidor de los **${dataHis.usuarios[posicionUS].servidores.length}** servidores en donde antes si tenias sanciones.*`)
                                         .setColor(colorEmb)
-                                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                         .setTimestamp()
                                     setTimeout(() => {
                                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embHistorial] })
@@ -3552,12 +3553,12 @@ client.on("messageCreate", async msg => {
                                         }
                                     }
 
-                                    const embHistorial = new Discord.MessageEmbed()
-                                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                    const embHistorial = new EmbedBuilder()
+                                        .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                         .setTitle("<:historial:949522609266110485> Historial")
                                         .setDescription(`*${miembro} no tienes sanciones en este servidor.*\n\nEn los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores que tengo registro sobre ti tienes un total de **${adv}** advertencias, **${ais}** aislamientos, **${exp}** expulsiones y **${ban}** baneos.`)
                                         .setColor(colorEmb)
-                                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                         .setTimestamp()
 
                                     setTimeout(() => {
@@ -3583,12 +3584,12 @@ client.on("messageCreate", async msg => {
                                     }
                                 }
 
-                                const embHistorial = new Discord.MessageEmbed()
-                                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embHistorial = new EmbedBuilder()
+                                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle("<:historial:949522609266110485> Historial")
                                     .setDescription(`${miembro} tienes **${advert}** advertencias, **${aislam}** aislamientos, **${expuls}** expulsiones y **${baneos}** baneos.\n\nEn los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores que tengo registro sobre ti tienes un total de **${adv}** advertencias, **${ais}** aislamientos, **${exp}** expulsiones y **${ban}** baneos.`)
                                     .setColor(colorEmb)
-                                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                     .setTimestamp()
 
                                 setTimeout(() => {
@@ -3606,12 +3607,12 @@ client.on("messageCreate", async msg => {
                             }
                         } else {
                             if ((adv + ais + exp + ban) <= 0) {
-                                const embHistorial = new Discord.MessageEmbed()
-                                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embHistorial = new EmbedBuilder()
+                                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle("<:historial:949522609266110485> Historial")
                                     .setDescription(`*${miembro} no tienes sanciones en ningun servidor de los **${dataHis.usuarios[posicionUS].servidores.length}** servidores en donde antes si tenias sanciones.*`)
                                     .setColor(colorEmb)
-                                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                     .setTimestamp()
                                 setTimeout(() => {
                                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embHistorial] })
@@ -3626,12 +3627,12 @@ client.on("messageCreate", async msg => {
                                     }
                                 }
 
-                                const embHistorial = new Discord.MessageEmbed()
-                                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embHistorial = new EmbedBuilder()
+                                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle("<:historial:949522609266110485> Historial")
                                     .setDescription(`*${miembro} no tienes historial de sanciones en este servidor.*\n\nEn los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores que tengo registro sobre ti tienes un total de **${adv}** advertencias, **${ais}** aislamientos, **${exp}** expulsiones y **${ban}** baneos.`)
                                     .setColor(colorEmb)
-                                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                     .setTimestamp()
 
                                 setTimeout(() => {
@@ -3649,19 +3650,19 @@ client.on("messageCreate", async msg => {
                             }
                         }
                     } else {
-                        const embHistorial = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embHistorial = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("<:historial:949522609266110485> Historial")
                             .setDescription(`*${miembro} no tienes historial de sanciones.*`)
                             .setColor(colorEmb)
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embHistorial] })
                         }, 500)
                     }
                 } else {
-                    const embErr1 = new Discord.MessageEmbed()
+                    const embErr1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El miembro proporcionado ${miembro} es un bot, los bots no pueden tener historial de sanciones.`)
                         .setColor(ColorError)
@@ -3709,12 +3710,12 @@ client.on("messageCreate", async msg => {
 
                             if ((advert + aislam + expuls + baneos) <= 0) {
                                 if ((adv + ais + exp + ban) <= 0) {
-                                    const embHistorial = new Discord.MessageEmbed()
-                                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                    const embHistorial = new EmbedBuilder()
+                                        .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                         .setTitle("<:historial:949522609266110485> Historial")
                                         .setDescription(`*El miembro ${miembro} no tiene sanciones en ningun servidor de los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores en donde antes si tenia sanciones.*`)
                                         .setColor(colorEmb)
-                                        .setFooter(miembro.nickname ? miembro.nickname : miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                                        .setFooter({text: miembro.nickname || miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                                         .setTimestamp()
                                     setTimeout(() => {
                                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embHistorial] })
@@ -3728,12 +3729,12 @@ client.on("messageCreate", async msg => {
                                             botones = valorBotones[i]
                                         }
                                     }
-                                    const embHistorial = new Discord.MessageEmbed()
-                                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                    const embHistorial = new EmbedBuilder()
+                                        .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                         .setTitle("<:historial:949522609266110485> Historial")
                                         .setDescription(`*El miembro ${miembro} no tiene sanciones en este servidor.*\n\nEn los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores que tengo registro sobre el miembro tiene un total de **${adv}** advertencias, **${ais}** aislamientos, **${exp}** expulsiones y **${ban}** baneos.`)
                                         .setColor(colorEmb)
-                                        .setFooter(miembro.nickname ? miembro.nickname : miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                                        .setFooter({text: miembro.nickname || miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                                         .setTimestamp()
 
                                     setTimeout(() => {
@@ -3759,12 +3760,12 @@ client.on("messageCreate", async msg => {
                                     }
                                 }
 
-                                const embHistorial = new Discord.MessageEmbed()
-                                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embHistorial = new EmbedBuilder()
+                                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle("<:historial:949522609266110485> Historial")
                                     .setDescription(`El miembro ${miembro} tiene en este servidor **${advert}** advertencias, **${aislam}** aislamientos, **${expuls}** expulsiones y **${baneos}** baneos.\n\nEn los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores que tengo registro sobre el miembro tiene un total de **${adv}** advertencias, **${ais}** aislamientos, **${exp}** expulsiones y **${ban}** baneos.`)
                                     .setColor(colorEmb)
-                                    .setFooter(miembro.nickname ? miembro.nickname : miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter({text: miembro.nickname || miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                                     .setTimestamp()
 
                                 setTimeout(() => {
@@ -3782,12 +3783,12 @@ client.on("messageCreate", async msg => {
                             }
                         } else {
                             if ((adv + ais + exp + ban) <= 0) {
-                                const embHistorial = new Discord.MessageEmbed()
-                                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embHistorial = new EmbedBuilder()
+                                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle("<:historial:949522609266110485> Historial")
                                     .setDescription(`*El miembro ${miembro} no tiene sanciones en ningun servidor de los **${dataHis.usuarios[posicionUS].servidores.length}** servidores en donde antes si tenia sanciones.*`)
                                     .setColor(colorEmb)
-                                    .setFooter(miembro.nickname ? miembro.nickname : miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter({text: miembro.nickname || miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                                     .setTimestamp()
                                 setTimeout(() => {
                                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embHistorial] })
@@ -3802,12 +3803,12 @@ client.on("messageCreate", async msg => {
                                     }
                                 }
 
-                                const embHistorial = new Discord.MessageEmbed()
-                                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embHistorial = new EmbedBuilder()
+                                    .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle("<:historial:949522609266110485> Historial")
                                     .setDescription(`*El miembro ${miembro} no tiene historial de sanciones en este servidor.*\n\nEn los **${dataHis.usuarios[posicionUS].servidores.filter(f => f.advertencias.length > 0 || f.aislamientos.length > 0 || f.expulsiones.length > 0 || f.baneos.length > 0).length}** servidores que tengo registro sobre el miembro tiene un total de **${adv}** advertencias, **${ais}** aislamientos, **${exp}** expulsiones y **${ban}** baneos.`)
                                     .setColor(colorEmb)
-                                    .setFooter(miembro.nickname ? miembro.nickname : miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                                    .setFooter({text: miembro.nickname || miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                                     .setTimestamp()
 
                                 setTimeout(() => {
@@ -3825,12 +3826,12 @@ client.on("messageCreate", async msg => {
                             }
                         }
                     } else {
-                        const embHistorial = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embHistorial = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("<:historial:949522609266110485> Historial")
                             .setDescription(`*El miembro ${miembro} no tiene historial de sanciones.*`)
                             .setColor(colorEmb)
-                            .setFooter(miembro.nickname ? miembro.nickname : miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                            .setFooter({text: miembro.nickname || miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                             .setTimestamp()
                         setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embHistorial] })
@@ -3843,7 +3844,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -3870,7 +3871,7 @@ client.on("messageCreate", async msg => {
             let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args.join(" ")) || false, sancion = args[1]
 
             let alias = ["deleterecord", "delrecord", "eliminarregistro", "delregistro"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando deleterecord`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}deleterecord <Miembro> <Tipo de sanción> <Cantidad de sanciones a eliminar>\`\`` },
@@ -3917,10 +3918,10 @@ client.on("messageCreate", async msg => {
             ]
             if (erroresMsg(msg, erroresP2)) return;
 
-            const embDeleteHis = new Discord.MessageEmbed()
-                .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+            const embDeleteHis = new EmbedBuilder()
+                .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                 .setColor("GREEN")
-                .setFooter(miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true }) } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL({ dynamic: true }) })
+                .setFooter(miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() })
                 .setTimestamp()
 
             if (["warns", "advertencias"].some(s => s == args[1].toLowerCase())) {
@@ -3984,7 +3985,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            const embErr1 = new Discord.MessageEmbed()
+            const embErr1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -4004,7 +4005,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (!cooldowns.has("warn")) {
-                cooldowns.set("warn", new Discord.Collection())
+                cooldowns.set("warn", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -4015,7 +4016,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando warn")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -4033,7 +4034,7 @@ client.on("messageCreate", async msg => {
             }
 
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando warn`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}warn <Mencion del miembro> <Razón>\`\`\n\`\`${prefijo}warn <ID del miembro> <Razón>\`\`\n\`\`${prefijo}warn <Tag/etiqueta del miembro> <Razón>\`\`` },
@@ -4057,7 +4058,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -4078,7 +4079,7 @@ client.on("messageCreate", async msg => {
 
             if (miembro) {
                 if (msg.author.id === msg.guild.ownerId) {
-                    const embErr0 = new Discord.MessageEmbed()
+                    const embErr0 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No he podido enviar la advertencia al usuario, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -4089,7 +4090,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[i])
                                 .setColor(ColorError)
@@ -4107,24 +4108,24 @@ client.on("messageCreate", async msg => {
                         }
                     }
 
-                    const embMencion = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMencion = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<:advertencia:929204500739268608> Miembro advertido")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#E5DA00")
-                        .setFooter(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                        .setFooter({text: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embMencion] })
                     }, 500)
 
-                    const embMDMencion = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                    const embMDMencion = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<:advertencia:929204500739268608> Has sido advertido")
                         .setDescription(`📝 **Por la razón:**\n${razon}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
                         .setColor("#E5DA00")
-                        .setFooter(`En el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(tm => setTimeout(() => {
@@ -4174,7 +4175,7 @@ client.on("messageCreate", async msg => {
                     await dataHis.save()
 
                 } else {
-                    const embErr0 = new Discord.MessageEmbed()
+                    const embErr0 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No he podido enviar la advertencia al usuario, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -4185,7 +4186,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[i])
                                 .setColor(ColorError)
@@ -4204,24 +4205,24 @@ client.on("messageCreate", async msg => {
                     }
 
 
-                    const embMencion = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMencion = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<:advertencia:929204500739268608> Miembro advertido")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#E5DA00")
-                        .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                        .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embMencion] })
                     }, 500)
 
-                    const embMDMencion = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                    const embMDMencion = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<:advertencia:929204500739268608> Has sido advertido")
                         .setDescription(`📝 **Por la razón:**\n${razon}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
                         .setColor("#E5DA00")
-                        .setFooter(`En el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(tm => setTimeout(() => {
@@ -4286,7 +4287,7 @@ client.on("messageCreate", async msg => {
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
-                    const embErrMiembro = new Discord.MessageEmbed()
+                    const embErrMiembro = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
@@ -4306,7 +4307,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (!cooldowns.has("mute")) {
-                cooldowns.set("mute", new Discord.Collection())
+                cooldowns.set("mute", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -4317,7 +4318,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando mute")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -4331,7 +4332,7 @@ client.on("messageCreate", async msg => {
             }
 
             let tiempos = ["1m", "5m", "10m", "30m", "1h", "2h", "4h", "8h", "16h", "1d", "2d", "4d", "10d", "20d"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando mute`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}mute <Mencion del miembro> <Tiempo del aislamiento> <Razón>\`\`\n\`\`${prefijo}mute <ID del miembro> <Tiempo del aislamiento> <Razón>\`\`\n\`\`${prefijo}mute <Etiqueta del miembro> <Tiempo del aislamiento> <Razón>\`\`` },
@@ -4355,7 +4356,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -4376,7 +4377,7 @@ client.on("messageCreate", async msg => {
 
             if (miembro) {
                 if (msg.author.id === msg.guild.ownerId) {
-                    const embErr0 = new Discord.MessageEmbed()
+                    const embErr0 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No he podido enviar al miembro la razón por la que fue aislado, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -4387,7 +4388,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[i])
                                 .setColor(ColorError)
@@ -4405,7 +4406,7 @@ client.on("messageCreate", async msg => {
                         }
                     }
 
-                    const embErr1 = new Discord.MessageEmbed()
+                    const embErr1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No proporcionaste bien el tiempo el cual durara el miembro aislado.\n\n**Ejemplos:**\n10 minutos = **10m**\n2 horas = **2h**\n5 días = **5d**`)
                         .setColor(ColorError)
@@ -4426,7 +4427,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones2.length; i++) {
                         if (condicionales2[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones2[i])
                                 .setColor(ColorError)
@@ -4444,13 +4445,13 @@ client.on("messageCreate", async msg => {
                         }
                     }
 
-                    const embMencion = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMencion = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<:aislacion:947965052772814848> Miembro aislado/a")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n⏱️ **Aislado/a por:** ${tiempo}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#0283F6")
-                        .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                        .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                         .setTimestamp()
                     miembro.timeout(ms(tiempo), `Miembro aislado/a temporalmente por: ${msg.author.tag} durante ${tiempo} por la razón: ${razon}`).then(ta => {
                         setTimeout(() => {
@@ -4458,12 +4459,12 @@ client.on("messageCreate", async msg => {
                         }, 500)
                     })
 
-                    const embMDMencion = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                    const embMDMencion = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<:aislacion:947965052772814848> Has sido aislado/a")
                         .setDescription(`⏱️ **Aislado/a por:** ${tiempo}\n\n📝 **Por la razón:**\n${razon}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
                         .setColor("#0283F6")
-                        .setFooter(`En el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(tm => setTimeout(() => {
@@ -4510,7 +4511,7 @@ client.on("messageCreate", async msg => {
                     await dataHis.save()
 
                 } else {
-                    const embErr0 = new Discord.MessageEmbed()
+                    const embErr0 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No he podido enviar al miembro la razón por la que fue aislado, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -4521,7 +4522,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[i])
                                 .setColor(ColorError)
@@ -4539,7 +4540,7 @@ client.on("messageCreate", async msg => {
                         }
                     }
 
-                    const embErr1 = new Discord.MessageEmbed()
+                    const embErr1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No proporcionaste bien el tiempo el cual durara el miembro aislado.\n\n**Ejemplos:**\n10 minutos = **10m**\n2 horas = **2h**\n5 días = **5d**`)
                         .setColor(ColorError)
@@ -4560,7 +4561,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones2.length; i++) {
                         if (condicionales2[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones2[i])
                                 .setColor(ColorError)
@@ -4579,13 +4580,13 @@ client.on("messageCreate", async msg => {
                     }
 
 
-                    const embMencion = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMencion = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<:aislacion:947965052772814848> Miembro aislado/a")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n⏱️ **Aislado/a por:** ${tiempo}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#0283F6")
-                        .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                        .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                         .setTimestamp()
                     miembro.timeout(ms(tiempo), `Miembro aislado/a temporalmente por: ${msg.author.tag} durante ${tiempo} por la razón: ${razon}`).then(ta => {
                         setTimeout(() => {
@@ -4593,12 +4594,12 @@ client.on("messageCreate", async msg => {
                         }, 500)
                     })
 
-                    const embMDMencion = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                    const embMDMencion = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<:aislacion:947965052772814848> Has sido aislado/a")
                         .setDescription(`⏱️ **Aislado/a por:** ${tiempo}\n\n📝 **Por la razón:**\n${razon}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
                         .setColor("#0283F6")
-                        .setFooter(`En el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(tm => setTimeout(() => {
@@ -4660,7 +4661,7 @@ client.on("messageCreate", async msg => {
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
-                    const embErrMiembro = new Discord.MessageEmbed()
+                    const embErrMiembro = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
@@ -4680,7 +4681,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (!cooldowns.has("unmute")) {
-                cooldowns.set("unmute", new Discord.Collection())
+                cooldowns.set("unmute", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -4691,7 +4692,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando unmute")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -4709,7 +4710,7 @@ client.on("messageCreate", async msg => {
             }
 
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando unmute`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}unmute <Mencion del miembro>\`\`\n\`\`${prefijo}unmute <ID del miembro>\`\`\n\`\`${prefijo}unmute <Etiqueta del miembro>\`\`` },
@@ -4731,7 +4732,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -4752,7 +4753,7 @@ client.on("messageCreate", async msg => {
 
             if (miembro) {
                 if (msg.author.id === msg.guild.ownerId) {
-                    const embErr0 = new Discord.MessageEmbed()
+                    const embErr0 = new EmbedBuilder()
                         .setTitle("<a:negativo:856967325505159169> Error")
                         .setDescription(`No he podido enviar al miembro el mensaje de notificación por su eliminación del aislamiento, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -4763,7 +4764,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[i])
                                 .setColor(ColorError)
@@ -4781,13 +4782,13 @@ client.on("messageCreate", async msg => {
                         }
                     }
 
-                    const embMencion = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMencion = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<a:afirmativo:856966728806432778> Aislamiento temporal eliminado del miembro")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("GREEN")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.timeout(null, `Aislamiento temporal eliminado del miembro por: ${msg.author.tag}`).then(ta => {
                         setTimeout(() => {
@@ -4795,12 +4796,12 @@ client.on("messageCreate", async msg => {
                         }, 500)
                     })
 
-                    const embMDMencion = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                    const embMDMencion = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<a:afirmativo:856966728806432778> Tu aislamiento temporal ha sido eliminado")
                         .setDescription(`👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
                         .setColor("GREEN")
-                        .setFooter(`En el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(tm => setTimeout(() => {
@@ -4811,7 +4812,7 @@ client.on("messageCreate", async msg => {
                     })
 
                 } else {
-                    const embErr0 = new Discord.MessageEmbed()
+                    const embErr0 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No he podido enviar al miembro el mensaje de notificación por su eliminación del aislamiento, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -4822,7 +4823,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[i])
                                 .setColor(ColorError)
@@ -4841,13 +4842,13 @@ client.on("messageCreate", async msg => {
                     }
 
 
-                    const embMencion = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMencion = new EmbedBuilder()
+                        .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<a:afirmativo:856966728806432778> Aislamiento temporal eliminado del miembro")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("GREEN")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.timeout(null, `Aislamiento temporal eliminado del miembro por: ${msg.author.tag}`).then(ta => {
                         setTimeout(() => {
@@ -4855,12 +4856,12 @@ client.on("messageCreate", async msg => {
                         }, 500)
                     })
 
-                    const embMDMencion = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                    const embMDMencion = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<a:afirmativo:856966728806432778> Tu aislamiento temporal ha sido eliminado")
                         .setDescription(`👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
                         .setColor("GREEN")
-                        .setFooter(`En el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(tm => setTimeout(() => {
@@ -4884,8 +4885,8 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let aislados = msg.guild.members.cache.filter(f => f.isCommunicationDisabled())
 
-            const embMuteList = new Discord.MessageEmbed()
-                .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+            const embMuteList = new EmbedBuilder()
+                .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("<:aislacion:947965052772814848> Miembros aislados")
                 .setDescription(`*No hay miembros aislados en este servidor.*`)
                 .setColor("#0083FF")
@@ -4895,12 +4896,12 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (aislados.size <= 10) {
-                const embMuteList = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embMuteList = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("<:aislacion:947965052772814848> Miembros aislados")
-                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL({ dynamic: true })}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).join("\n")}`)
+                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).join("\n")}`)
                     .setColor("#0083FF")
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embMuteList] })
@@ -4915,18 +4916,18 @@ client.on("messageCreate", async msg => {
 
                 let ai1 = 0, ai2 = 10, pagina = 1
 
-                const embMuteList = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embMuteList = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("<:aislacion:947965052772814848> Miembros aislados")
-                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL({ dynamic: true })}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
+                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
                     .setColor("#0083FF")
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
-                const botones1 = new Discord.MessageActionRow()
+                const botones1 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -4934,7 +4935,7 @@ client.on("messageCreate", async msg => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -4942,17 +4943,17 @@ client.on("messageCreate", async msg => {
                         ]
                     )
 
-                const botones2 = new Discord.MessageActionRow()
+                const botones2 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("PRIMARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -4960,17 +4961,17 @@ client.on("messageCreate", async msg => {
                         ]
                     )
 
-                const botones3 = new Discord.MessageActionRow()
+                const botones3 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("PRIMARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -4994,15 +4995,15 @@ client.on("messageCreate", async msg => {
                                 ai1 -= 10, ai2 -= 10, pagina--
 
                                 embMuteList
-                                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL({ dynamic: true })}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 return await botn.update({ embeds: [embMuteList], components: [botones1] })
                             }
                             ai1 -= 10, ai2 -= 10, pagina--
 
                             embMuteList
-                                .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL({ dynamic: true })}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
+                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                             await botn.update({ embeds: [embMuteList], components: [botones2] })
                         }
                         if (botn.customId === "2") {
@@ -5010,15 +5011,15 @@ client.on("messageCreate", async msg => {
                                 ai1 += 10, ai2 += 10, pagina++
 
                                 embMuteList
-                                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL({ dynamic: true })}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 return await botn.update({ embeds: [embMuteList], components: [botones3] })
                             }
                             ai1 += 10, ai2 += 10, pagina++
 
                             embMuteList
-                                .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL({ dynamic: true })}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
+                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                             return await botn.update({ embeds: [embMuteList], components: [botones2] })
                         }
                     })
@@ -5034,7 +5035,7 @@ client.on("messageCreate", async msg => {
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
-                    const embErrMiembro = new Discord.MessageEmbed()
+                    const embErrMiembro = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
@@ -5054,7 +5055,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (!cooldowns.has("kick")) {
-                cooldowns.set("kick", new Discord.Collection())
+                cooldowns.set("kick", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -5065,7 +5066,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando kick")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -5082,7 +5083,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
             .setTitle(`${emojis.lupa} Comando kick`)
             .addFields(
                 { name: "Uso:", value: `\`\`${prefijo}kick <Mencion del miembro> <Razón>\`\`\n\`\`${prefijo}kick <ID del miembro> <Razón>\`\`\n\`\`${prefijo}kick <Etiqueta del miembro> <Razón>\`\`` },
@@ -5106,7 +5107,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -5132,7 +5133,7 @@ client.on("messageCreate", async msg => {
 
                     for (let o = 0; o < descripcionesOw.length; o++) {
                         if (condicionalesOw[o]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripcionesOw[o])
                                 .setColor(ColorError)
@@ -5157,7 +5158,7 @@ client.on("messageCreate", async msg => {
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
-                                const embErrMiembro = new Discord.MessageEmbed()
+                                const embErrMiembro = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesB[o])
                                     .setColor(ColorError)
@@ -5175,20 +5176,20 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embedKickB = new Discord.MessageEmbed()
-                            .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embedKickB = new EmbedBuilder()
+                            .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                             .setTitle("<:salir12:879519859694776360> Bot expulsado")
                             .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#F78701")
-                            .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                            .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                             .setTimestamp()
                         miembro.kick(`Bot expulsado por: ${msg.author.tag} el ${msg.createdAt.toLocaleDateString()} por la razón: ${razon}`).then(k => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embedKickB] })
                         })
 
                     } else {
-                        const embErr0 = new Discord.MessageEmbed()
+                        const embErr0 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`No he podido enviar la razón al miembro por la que fue expulsado, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                             .setColor(ColorError)
@@ -5199,7 +5200,7 @@ client.on("messageCreate", async msg => {
 
                         for (let o = 0; o < descripcionesU.length; o++) {
                             if (condicionalesU[o]) {
-                                const embErrMiembro = new Discord.MessageEmbed()
+                                const embErrMiembro = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesU[o])
                                     .setColor(ColorError)
@@ -5217,21 +5218,21 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embedKickM = new Discord.MessageEmbed()
-                            .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embedKickM = new EmbedBuilder()
+                            .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("<:salir12:879519859694776360> Miembro expulsado")
                             .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                             .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#F78701")
-                            .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                            .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                             .setTimestamp()
 
-                        const embedKickMD = new Discord.MessageEmbed()
-                            .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                        const embedKickMD = new EmbedBuilder()
+                            .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                             .setTitle("<:salir12:879519859694776360> Has sido expulsado")
                             .setDescription(`📝 **Por la razón:** ${razon}\n\n👮 **Por el moderador:** ${msg.author}\n**ID:** ${msg.author.id}`)
                             .setColor("#F78701")
-                            .setFooter(`Del el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: `Del el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         miembro.send({ embeds: [embedKickMD] }).catch(e => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr0] }).then(e => setTimeout(() => {
@@ -5288,7 +5289,7 @@ client.on("messageCreate", async msg => {
 
                     for (let o = 0; o < descripcionesP.length; o++) {
                         if (condicionalesNor[o]) {
-                            const embErrMiembro = new Discord.MessageEmbed()
+                            const embErrMiembro = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripcionesNor[o])
                                 .setColor(ColorError)
@@ -5312,7 +5313,7 @@ client.on("messageCreate", async msg => {
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
-                                const embErrMiembro = new Discord.MessageEmbed()
+                                const embErrMiembro = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesB[o])
                                     .setColor(ColorError)
@@ -5330,13 +5331,13 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embedMencion = new Discord.MessageEmbed()
-                            .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embedMencion = new EmbedBuilder()
+                            .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                             .setTitle("<:salir12:879519859694776360> Bot expulsado")
                             .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#F78701")
-                            .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                            .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                             .setTimestamp()
                         miembro.kick(`Bot expulsado por: ${msg.author.tag} el ${msg.createdAt.toLocaleDateString()} por la razón: ${razon}`).then(k => {
                             setTimeout(() => {
@@ -5345,7 +5346,7 @@ client.on("messageCreate", async msg => {
                         })
 
                     } else {
-                        const embErr0 = new Discord.MessageEmbed()
+                        const embErr0 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No he podido enviar la razón al miembro por la que fue expulsado, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                         .setColor(ColorError)
@@ -5356,7 +5357,7 @@ client.on("messageCreate", async msg => {
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
-                                const embErrMiembro = new Discord.MessageEmbed()
+                                const embErrMiembro = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesB[o])
                                     .setColor(ColorError)
@@ -5374,7 +5375,7 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embErrb3 = new Discord.MessageEmbed()
+                        const embErrb3 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No has proporcionado la razón por la que expulsaras a ese miembro, proporciona la razón.`)
                         .setColor(ColorError)
@@ -5390,21 +5391,21 @@ client.on("messageCreate", async msg => {
                             }, 30000))
                         }, 500)
 
-                        const embedKickM = new Discord.MessageEmbed()
-                        .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL({ dynamic: true })})
+                        const embedKickM = new EmbedBuilder()
+                        .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<:salir12:879519859694776360> Miembro expulsado")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#F78701")
-                        .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL({ dynamic: true })})
+                        .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                         .setTimestamp()
 
-                        const embedKickMDM = new Discord.MessageEmbed()
-                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL({ dynamic: true })})
+                        const embedKickMDM = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<:salir12:879519859694776360> Has sido expulsado")
                         .setDescription(`📝 **Por la razón:** ${razon}\n\n👮 **Por el moderador:** ${msg.author}\n**ID:** ${msg.author.id}`)
                         .setColor("#F78701")
-                        .setFooter({text: `Del el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL({ dynamic: true })})
+                        .setFooter({text: `Del el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                         miembro.send({ embeds: [embedKickMDM] }).catch(e => {
                             setTimeout(() => {
@@ -5474,7 +5475,7 @@ client.on("messageCreate", async msg => {
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
-                    const embErrMiembro = new Discord.MessageEmbed()
+                    const embErrMiembro = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
@@ -5494,7 +5495,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (!cooldowns.has("ban")) {
-                cooldowns.set("ban", new Discord.Collection())
+                cooldowns.set("ban", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -5505,7 +5506,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando ban")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -5522,7 +5523,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
             .setAuthor({name: `${emojis.lupa} Comanod ban`})
             .addFields(
                 { name: "Uso:", value: `\`\`${prefijo}ban <Mencion del miembro> <Razón>\`\`\n\`\`${prefijo}ban <ID del miembro o usuario externo> <Razón>\`\`\n\`\`${prefijo}ban <Etiqueta del miembro> <Razón>\`\`` },
@@ -5546,7 +5547,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripcionesB.length; i++) {
                         if (condicionalesB[i]) {
-                            const embErr = new Discord.MessageEmbed()
+                            const embErr = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripcionesB[i])
                                 .setColor(ColorError)
@@ -5570,7 +5571,7 @@ client.on("messageCreate", async msg => {
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
-                                const embErrMiembro = new Discord.MessageEmbed()
+                                const embErrMiembro = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesB[o])
                                     .setColor(ColorError)
@@ -5588,13 +5589,13 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embBaneo = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embBaneo = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                             .setTitle("⛔ Bot baneado")
                             .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#ff0000")
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         miembro.ban({ reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             setTimeout(() => {
@@ -5608,7 +5609,7 @@ client.on("messageCreate", async msg => {
 
                         for (let o = 0; o < descripcionesU.length; o++) {
                             if (condicionalesU[o]) {
-                                const embErrMiembro = new Discord.MessageEmbed()
+                                const embErrMiembro = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesU[o])
                                     .setColor(ColorError)
@@ -5626,21 +5627,21 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embBaneo = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embBaneo = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                             .setTitle("⛔ Miembro baneado")
                             .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#ff0000")
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
 
-                        const embMeMD = new Discord.MessageEmbed()
-                            .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                        const embMeMD = new EmbedBuilder()
+                            .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                             .setTitle("⛔ Has sido baneado")
                             .setDescription(`📝 **Por la razón:** ${razon}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:** ${msg.author.id}`)
                             .setColor("#ff0000")
-                            .setFooter(`Del servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: `Del servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         miembro.ban({ reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             setTimeout(() => {
@@ -5693,7 +5694,7 @@ client.on("messageCreate", async msg => {
 
                     for (let i = 0; i < descripcionesB.length; i++) {
                         if (condicionalesB[i]) {
-                            const embErr = new Discord.MessageEmbed()
+                            const embErr = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripcionesB[i])
                                 .setColor(ColorError)
@@ -5717,7 +5718,7 @@ client.on("messageCreate", async msg => {
 
                         for (let i = 0; i < descripcionesBb.length; i++) {
                             if (condicionalesBb[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesBb[i])
                                     .setColor(ColorError)
@@ -5735,13 +5736,13 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embBaneo = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embBaneo = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Bot baneado")
                         .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                         miembro.ban({ reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBaneo] })
@@ -5752,7 +5753,7 @@ client.on("messageCreate", async msg => {
 
                         for (let i = 0; i < descripcionesBb.length; i++) {
                             if (condicionalesBb[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesBb[i])
                                     .setColor(ColorError)
@@ -5770,21 +5771,21 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embBaneo = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embBaneo = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Miembro baneado")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
-                        const embMeMD = new Discord.MessageEmbed()
-                        .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                        const embMeMD = new EmbedBuilder()
+                        .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("⛔ Has sido baneado")
                         .setDescription(`📝 **Por la razón:** ${razon}\n\n👮 **Por el moderador:**\n${msg.author}\n**ID:** ${msg.author.id}`)
                         .setColor("#ff0000")
-                        .setFooter(`Del servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Del servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                         miembro.ban({reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}`}).then(ban=>{
                             setTimeout(()=>{
@@ -5841,7 +5842,7 @@ client.on("messageCreate", async msg => {
 
                         for (let i = 0; i < descripcionesBb.length; i++) {
                             if (condicionalesBb[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesBb[i])
                                     .setColor(ColorError)
@@ -5859,13 +5860,13 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embBaneo = new Discord.MessageEmbed()
-                        .setAuthor({name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL({ dynamic: true })})
+                        const embBaneo = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Bot externo baneado")
                         .setDescription(`🤖 ${usuario.tag}\n${usuario.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter(msg.guild.name, msg.guild.iconURL())
                         .setTimestamp()
                         msg.guild.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBaneo] })
@@ -5876,7 +5877,7 @@ client.on("messageCreate", async msg => {
 
                         for (let i = 0; i < descripcionesBb.length; i++) {
                             if (condicionalesBb[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripcionesBb[i])
                                     .setColor(ColorError)
@@ -5894,13 +5895,13 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embBaneo = new Discord.MessageEmbed()
-                        .setAuthor({name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL({ dynamic: true })})
+                        const embBaneo = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Usuario externo baneado")
                         .setDescription(`👤 ${usuario.tag}\n${usuario.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
-                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL({ dynamic: true })})
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
                         msg.guild.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
@@ -5946,7 +5947,7 @@ client.on("messageCreate", async msg => {
                         await dataHis.save()
                     }
                 }).catch(c => {
-                    const embErrU1 = new Discord.MessageEmbed()
+                    const embErrU1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El argumento proporcionado (${args[0]}) no es una ID valida ni coresponde con la de ningun usuario de Discord, verifique la ID.`)
                         .setColor(ColorError)
@@ -5977,7 +5978,7 @@ client.on("messageCreate", async msg => {
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
-                    const embErrMiembro = new Discord.MessageEmbed()
+                    const embErrMiembro = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
@@ -5996,7 +5997,7 @@ client.on("messageCreate", async msg => {
                 }
             }
 
-            const embErrP3 = new Discord.MessageEmbed()
+            const embErrP3 = new EmbedBuilder()
                 .setTitle("📄")
                 .setDescription(`No se ha encontrado ningún miembro baneado en este servidor.`)
                 .setColor(colorEmbInfo)
@@ -6012,7 +6013,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando unban`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}unban <ID del usuario baneado>\`\`` },
@@ -6033,7 +6034,7 @@ client.on("messageCreate", async msg => {
 
             for (let i = 0; i < descripciones.length; i++) {
                 if (condicionales[i]) {
-                    const embErr = new Discord.MessageEmbed()
+                    const embErr = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripciones[i])
                         .setColor(ColorError)
@@ -6058,7 +6059,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripcionesM.length; i++) {
                     if (condicionalesM[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripcionesM[i])
                             .setColor(ColorError)
@@ -6078,7 +6079,7 @@ client.on("messageCreate", async msg => {
             } else {
                 await client.users.fetch(args[0], { force: true }).then(async usuario => {
                     if (usuario.bot) {
-                        const embErrU1 = new Discord.MessageEmbed()
+                        const embErrU1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`La ID proporcionada es de un bot el cual no esta baneado en el servidor.`)
                             .setColor(ColorError)
@@ -6094,13 +6095,13 @@ client.on("messageCreate", async msg => {
                             }, 30000));
                         }, 500)
 
-                        const embUban = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
-                            .setThumbnail(usuario.displayAvatarURL({ dynamic: true }))
+                        const embUban = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
+                            .setThumbnail(usuario.displayAvatarURL())
                             .setTitle("<a:afirmativo:856966728806432778> Bot des baneado")
                             .setDescription(`🤖 ${usuario.tag}\n${usuario.id}\n\n👮 **Por el moderador:**\n${msg.author}\n${msg.author.id}`)
                             .setColor("GREEN")
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         msg.guild.members.unban(usuario.id).then(un => {
                             setTimeout(() => {
@@ -6108,7 +6109,7 @@ client.on("messageCreate", async msg => {
                             }, 500)
                         })
                     } else {
-                        const embErrU1 = new Discord.MessageEmbed()
+                        const embErrU1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`La ID proporcionada es de un usuario el cual no esta baneado en el servidor.`)
                             .setColor(ColorError)
@@ -6124,13 +6125,13 @@ client.on("messageCreate", async msg => {
                             }, 30000));
                         }, 500)
 
-                        const embUban = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
-                            .setThumbnail(usuario.displayAvatarURL({ dynamic: true }))
+                        const embUban = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
+                            .setThumbnail(usuario.displayAvatarURL())
                             .setTitle("<a:afirmativo:856966728806432778> Usuario des baneado")
                             .setDescription(`👤 ${usuario.tag}\n${usuario.id}\n\n👮 **Por el moderador:**\n${msg.author}\n${msg.author.id}`)
                             .setColor("GREEN")
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         msg.guild.members.unban(usuario.id).then(un => {
                             setTimeout(() => {
@@ -6139,7 +6140,7 @@ client.on("messageCreate", async msg => {
                         })
                     }
                 }).catch(c => {
-                    const embErrU1 = new Discord.MessageEmbed()
+                    const embErrU1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El argumento proporcionado (${args}) no es una **ID** valida aun que este conformado por **18** caracteres numericos no coresponde con la de ningun usuario de Discord.`)
                         .setColor(ColorError)
@@ -6165,7 +6166,7 @@ client.on("messageCreate", async msg => {
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let c = 0; c < descripcionesP.length; c++) {
                 if (condicionalesP[c]) {
-                    const embErrMiembro = new Discord.MessageEmbed()
+                    const embErrMiembro = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[c])
                         .setColor(ColorError)
@@ -6185,7 +6186,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (!cooldowns.has("clear")) {
-                cooldowns.set("clear", new Discord.Collection())
+                cooldowns.set("clear", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -6196,7 +6197,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando clear")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -6213,7 +6214,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando clear`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}clear <Cantidad de emensajes>\`\`\n\`\`${prefijo}clear <Mencion del miembro> <Cantidad de emensajes>\`\`\n\`\`${prefijo}clear <ID del miembro> <Cantidad de emensajes>\`\`` },
@@ -6234,7 +6235,7 @@ client.on("messageCreate", async msg => {
                 let descripcionesCM = [`No has proporcionado la cantidad de mensajes del miembro a eliminar.`, `Has proporcionado un valor no numérico, introduce un valor numérico.`, `Has proporcionado una cantidad menor o igual a **1**, proporciona una cantidad mayor a **1** de mensajes a eliminar.`, `Has proporcionado una cantidad mayor a **100**, el máximo de mensajes que puedo eliminar es de **100**, proporciona una cantidad igual o menor a **100**.`]
                 for (let c = 0; c < descripcionesCM.length; c++) {
                     if (condicionalesCM[c]) {
-                        const embErrMiembro = new Discord.MessageEmbed()
+                        const embErrMiembro = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripcionesCM[c])
                             .setColor(ColorError)
@@ -6260,8 +6261,8 @@ client.on("messageCreate", async msg => {
 
                     cantidad += filtro.length
 
-                    const embClear = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embClear = new EmbedBuilder()
+                        .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("🗑 Mensajes eliminados del miembro")
                         .setDescription(`${msg.author} ha eliminado **${filtro.length}** mensajes del miembro ${miembro}.`)
                         .setColor(colorEmb)
@@ -6284,7 +6285,7 @@ client.on("messageCreate", async msg => {
                 let descripcionesC = [`Has introducido un valor no numérico, introduce un valor numérico.`, `Introduce un valor mayor a 1`, `Has introducido un valor mayor a 100, el máximo de mensajes que puedo eliminar es de 100, introduce un valor igual o menor a 100.`]
                 for (let c = 0; c < descripcionesC.length; c++) {
                     if (condicionalesC[c]) {
-                        const embErrMiembro = new Discord.MessageEmbed()
+                        const embErrMiembro = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripcionesC[c])
                             .setColor(ColorError)
@@ -6312,8 +6313,8 @@ client.on("messageCreate", async msg => {
                     console.log(filtro)
                     await msg.channel.bulkDelete(filtro)
 
-                    const embClear = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embClear = new EmbedBuilder()
+                        .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("🗑 Mensajes eliminados")
                         .setDescription(`${msg.author} ha eliminado **${filtro.size}** mensajes.`)
                         .setColor(colorEmb)
@@ -6331,8 +6332,8 @@ client.on("messageCreate", async msg => {
                     console.log(filtro)
                     await msg.channel.bulkDelete(filtro)
 
-                    const embClear = new Discord.MessageEmbed()
-                        .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embClear = new EmbedBuilder()
+                        .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("🗑 Mensajes eliminados")
                         .setDescription(`${msg.author} ha eliminado **${filtro.size - 1}** mensajes.`)
                         .setColor(colorEmb)
@@ -6356,7 +6357,7 @@ client.on("messageCreate", async msg => {
         if (["banlist", "blist"].some(s => comando == s)) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -6371,7 +6372,7 @@ client.on("messageCreate", async msg => {
                 })
             }, 30000))
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -6390,8 +6391,8 @@ client.on("messageCreate", async msg => {
 
             let gb = await msg.guild.bans.fetch()
 
-            const embBans0 = new Discord.MessageEmbed()
-                .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+            const embBans0 = new EmbedBuilder()
+                .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("🧾 Miembros baneados")
                 .setDescription(`*No hay miembros baneados en este servidor.*`)
                 .setColor(msg.guild.me.displayHexColor)
@@ -6401,12 +6402,12 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (gb.size <= 10) {
-                const embBanlist10 = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embBanlist10 = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Miembros baneados")
-                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL({ dynamic: true })})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).join("\n\n")}`)
+                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBanlist10] })
 
@@ -6420,18 +6421,18 @@ client.on("messageCreate", async msg => {
 
                 let ba1 = 0, ba2 = 10, pagina = 1
 
-                const embBanlist = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embBanlist = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Miembros baneados")
-                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL({ dynamic: true })})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
+                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                     .setTimestamp()
 
-                const botones1 = new Discord.MessageActionRow()
+                const botones1 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -6439,7 +6440,7 @@ client.on("messageCreate", async msg => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -6447,17 +6448,17 @@ client.on("messageCreate", async msg => {
                         ]
                     )
 
-                const botones2 = new Discord.MessageActionRow()
+                const botones2 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("PRIMARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -6465,17 +6466,17 @@ client.on("messageCreate", async msg => {
                         ]
                     )
 
-                const botones3 = new Discord.MessageActionRow()
+                const botones3 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("PRIMARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -6499,15 +6500,15 @@ client.on("messageCreate", async msg => {
                                 ba1 -= 10, ba2 -= 10, pagina--
 
                                 embBanlist
-                                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL({ dynamic: true })})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 return await botn.update({ embeds: [embBanlist], components: [botones1] })
                             }
                             ba1 -= 10, ba2 -= 10, pagina--
 
                             embBanlist
-                                .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL({ dynamic: true })})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
+                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                             await botn.update({ embeds: [embBanlist], components: [botones2] })
                         }
                         if (botn.customId === "2") {
@@ -6515,15 +6516,15 @@ client.on("messageCreate", async msg => {
                                 ba1 += 10, ba2 += 10, pagina++
 
                                 embBanlist
-                                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL({ dynamic: true })})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 return await botn.update({ embeds: [embBanlist], components: [botones3] })
                             }
                             ba1 += 10, ba2 += 10, pagina++
 
                             embBanlist
-                                .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL({ dynamic: true })})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
+                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                             return await botn.update({ embeds: [embBanlist], components: [botones2] })
                         }
                     })
@@ -6534,7 +6535,7 @@ client.on("messageCreate", async msg => {
         if (["dmsend", "md", "md"].some(s => comando == s) && msg.author.id == creadorID) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -6552,7 +6553,7 @@ client.on("messageCreate", async msg => {
             })
 
             if (!cooldowns.has("dmsend")) {
-                cooldowns.set("dmsend", new Discord.Collection())
+                cooldowns.set("dmsend", new Collection())
             }
 
             const tiempoActual = Date.now()
@@ -6563,7 +6564,7 @@ client.on("messageCreate", async msg => {
                 console.log(tiempoUltimo - tiempoActual)
 
                 const enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000);
-                const embEnfriarse = new Discord.MessageEmbed()
+                const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando dmsend")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -6580,7 +6581,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle("🔎 Comando dmsend")
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}dmsend <Mencion del miembro> <Mensaje>\`\`\n\`\`${prefijo}dmsend <ID del miembro> <Mensaje>\`\`\n\`\`${prefijo}dmsend <Etiqueta del miembro> <Mensaje>\`\`` },
@@ -6603,7 +6604,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -6623,7 +6624,7 @@ client.on("messageCreate", async msg => {
             }
 
             if (miembro) {
-                const embErr1 = new Discord.MessageEmbed()
+                const embErr1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No pude enviar el mensaje directo al miembro, puede ser por que el usuario tiene bloqueado los mensajes directos.`)
                     .setColor(ColorError)
@@ -6633,7 +6634,7 @@ client.on("messageCreate", async msg => {
                 let descripcionesD = [`El miembro proporcionado soy yo, ¿Por que me quieres enviar un mensaje?, de nada serviría, no puedo realizar la acción.`, `El miembro proporcionado eres tu, ¿Para que quieres que te envié un mensaje creado por ti?, no puedo realizar esa acción.`, `El miembro proporcionado es un bot, no puedo enviar un mensaje directo a un bot.`, `No has proporcionado el mensaje a enviar, proporciona el mensaje a enviarle al miembro.`]
                 for (let c = 0; c < descripcionesD.length; c++) {
                     if (condicionalesD[c]) {
-                        const embErrMiembro = new Discord.MessageEmbed()
+                        const embErrMiembro = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripcionesD[c])
                             .setColor(ColorError)
@@ -6652,21 +6653,21 @@ client.on("messageCreate", async msg => {
                     }
                 }
 
-                const emdSendDM = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
-                    .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true }))
+                const emdSendDM = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
+                    .setThumbnail(miembro.user.displayAvatarURL())
                     .setTitle("📤 Mensaje enviado al miembro")
                     .setDescription(`👤 ${miembro}\n**ID:** ${miembro.id}\n\n📝 **Mensaje:** ${mensaje}\n\n👮 **Enviado por:** ${msg.author}\n**ID:** ${msg.author.id}`)
                     .setColor(colorEmb)
-                    .setFooter(miembro.user.tag, miembro.displayAvatarURL({ dynamic: true }))
+                    .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
                     .setTimestamp()
 
-                const embMDSend = new Discord.MessageEmbed()
-                    .setAuthor(miembro.user.tag, miembro.user.displayAvatarURL({ dynamic: true }))
+                const embMDSend = new EmbedBuilder()
+                    .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                     .setTitle("📥 Mensaje entrante")
                     .setDescription(`📝 **Mensaje:** ${mensaje}\n\n👮 **Enviado por:** ${msg.author.tag}\n**ID:** ${msg.author.id}`)
                     .setColor(colorEmb)
-                    .setFooter(`Desde el servidor: ${msg.guild.name}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: `Desde el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 miembro.send({ embeds: [embMDSend] }).then(tm => {
                     setTimeout(() => {
@@ -6700,7 +6701,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataPre = await prefijosDB.findById(client.user.id)
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando, solo un administrador del servidor puede ejecutar el comando.`)
                 .setColor(ColorError)
@@ -6717,13 +6718,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("setprefix")) {
-                cooldowns.set("setprefix", new Discord.Collection())
+                cooldowns.set("setprefix", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("setprefix")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 4 * 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 4 * 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setprefix*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -6740,7 +6741,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setPrefix`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}setprefix <Nuevo prefijo>\`\`` },
@@ -6755,7 +6756,7 @@ client.on("messageCreate", async msg => {
             }, 500)
 
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No puedes establecer un emoji como prefijo.`)
                 .setColor(ColorError)
@@ -6771,7 +6772,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embErrP3 = new Discord.MessageEmbed()
+            const embErrP3 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No puedes establecer un prefijo con mas de **3** caracteres.`)
                 .setColor(ColorError)
@@ -6791,8 +6792,8 @@ client.on("messageCreate", async msg => {
             if (!dataPre.servidores.some(s => s.id === msg.guildId)) {
                 dataPre.servidores.push({ nombre: msg.guild.name, id: msg.guildId, prefijo: args[0] })
 
-                const embPrefix = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embPrefix = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⚙️ Prefijo cambiado")
                     .setDescription(`Nuevo prefijo: \`\`${args[0]}\`\``)
                     .setColor(msg.guild.me.displayHexColor)
@@ -6809,7 +6810,7 @@ client.on("messageCreate", async msg => {
                     }
                 }
 
-                const embErr2 = new Discord.MessageEmbed()
+                const embErr2 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El nuevo prefijo que has proporcionado *(${args[0]})* es el mismo prefijo que el actual.`)
                     .setColor("RED")
@@ -6827,8 +6828,8 @@ client.on("messageCreate", async msg => {
 
                 dataPre.servidores[posicion] = { nombre: msg.guild.name, id: msg.guildId, prefijo: args[0] }
 
-                const embPrefix = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                const embPrefix = new EmbedBuilder()
+                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⚙️ Prefijo cambiado")
                     .setDescription(`Nuevo prefijo: \`\`${args[0]}\`\``)
                     .setColor(msg.guild.me.displayHexColor)
@@ -6848,7 +6849,7 @@ client.on("messageCreate", async msg => {
         if (["setslowmode", "setslow", "slowmode"].some(s => comando == s)) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -6865,7 +6866,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -6883,13 +6884,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("setslowmode")) {
-                cooldowns.set("setslowmode", new Discord.Collection())
+                cooldowns.set("setslowmode", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("setslowmode")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setslowmode*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -6907,7 +6908,7 @@ client.on("messageCreate", async msg => {
             }
 
             let tiempos = ["10s", "2m", "30m", "1h", "6h", "12h"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setSlowMode`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}setSlowMode <Mención del canal> <Tiempo a establecer el modo pausado>\`\`\n\`\`${prefijo}setSlowMode <ID del canal> <Tiempo a establecer el modo pausado>\`\`` },
@@ -6928,7 +6929,7 @@ client.on("messageCreate", async msg => {
                 let condicionales = [!canal.isText(), !args[1], !isNaN(args[1]), ms(args[1]) / 1000 >= 21600, !ms(args[1])]
                 for (let d = 0; d < descripciones.length; d++) {
                     if (condicionales[d]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[d])
                             .setColor(ColorError)
@@ -6946,8 +6947,8 @@ client.on("messageCreate", async msg => {
                     }
                 }
 
-                const embSlow = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embSlow = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⏲ Modo pausado")
                     .setDescription(`El modo pausado del canal ${canal} se ha establecido a **${args[1]}**.`)
                     .setColor(msg.guild.me.displayHexColor)
@@ -6961,7 +6962,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -6990,7 +6991,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
             let random = Math.floor(Math.random() * roles.length)
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -7007,7 +7008,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -7025,13 +7026,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("addrol")) {
-                cooldowns.set("addrol", new Discord.Collection())
+                cooldowns.set("addrol", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("addrol")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *addrol*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -7048,7 +7049,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando addrol`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}addrol <Mencion del miembro> <Mencion del rol>\`\`\n\`\`${prefijo}addrol <ID del miembro> <ID del rol>\`\`\n\`\`${prefijo}addrol <Mención o ID del rol> <palabra *all* o *todos*>\`\`` },
@@ -7072,7 +7073,7 @@ client.on("messageCreate", async msg => {
                     let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, miembro.id == msg.author.id && miembro.roles.cache.find(f => f.id == rol.id), miembro.roles.cache.find(f => f.id == rol.id)]
                     for (let d in descripciones) {
                         if (condicionales[d]) {
-                            const embErr = new Discord.MessageEmbed()
+                            const embErr = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[d])
                                 .setColor(ColorError)
@@ -7092,23 +7093,23 @@ client.on("messageCreate", async msg => {
 
                     if (msg.author.id == msg.guild.ownerId) {
                         if (miembro.id == msg.author.id) {
-                            const embRoladd = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRoladd = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`Te he agregado el rol ${rol}.`)
                                 .setColor("GREEN")
-                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRoladd] })
                             }, 500))
                         } else {
-                            const embRoladd = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRoladd = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`El rol ${rol} ha sido agregado al miembro ${miembro}.`)
                                 .setColor("GREEN")
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRoladd] })
@@ -7117,7 +7118,7 @@ client.on("messageCreate", async msg => {
 
                     } else {
                         if (miembro.id == msg.author.id) {
-                            const embError1 = new Discord.MessageEmbed()
+                            const embError1 = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(`El rol proporcionado *(${rol})* tiene la un mayor posición de tu rol mas alto por lo tanto no te lo puedo agregar.`)
                                 .setColor(ColorError)
@@ -7133,18 +7134,18 @@ client.on("messageCreate", async msg => {
                                 }, 30000))
                             }, 500)
 
-                            const embRoladd = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRoladd = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`Te he agregado el rol ${rol}.`)
                                 .setColor("GREEN")
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRoladd] })
                             }, 500))
                         } else {
-                            const embError1 = new Discord.MessageEmbed()
+                            const embError1 = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(`El rol proporcionado *(${rol})* tiene la misma o mayor posición de tu rol mas alto por lo tanto no le puedes agregar el rol al miembro.`)
                                 .setColor(ColorError)
@@ -7160,12 +7161,12 @@ client.on("messageCreate", async msg => {
                                 }, 30000))
                             }, 500)
 
-                            const embRoladd = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRoladd = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`El rol ${rol} ha sido agregado al miembro ${miembro}.`)
                                 .setColor("GREEN")
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRoladd] })
@@ -7185,7 +7186,7 @@ client.on("messageCreate", async msg => {
                             let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, botDB.servidor.some(s => s.id == msg.guildId) && botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol]
                             for (let d in descripciones) {
                                 if (condicionales[d]) {
-                                    const embErr = new Discord.MessageEmbed()
+                                    const embErr = new EmbedBuilder()
                                         .setTitle(`${emojis.negativo} Error`)
                                         .setDescription(descripciones[d])
                                         .setColor(ColorError)
@@ -7206,7 +7207,7 @@ client.on("messageCreate", async msg => {
                             if (msg.guild.ownerId == msg.author.id) {
                                 let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
-                                const embCargando = new Discord.MessageEmbed()
+                                const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Agregando el rol a todos..`)
                                     .setDescription(`Se esta agregando el rol ${rol} a todos lo miembros, tenga paciencia esto puede tardar aproximadamente ${ms(noLoTienen.length * 1000)}.`)
                                     .setColor(msg.guild.me.displayHexColor)
@@ -7228,8 +7229,8 @@ client.on("messageCreate", async msg => {
                                             } else {
                                                 descripcion = `He añadido el rol ${rol} a **${noLoTienen.length.toLocaleString()}** miembros.`
                                             }
-                                            const embRoladd = new Discord.MessageEmbed()
-                                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                                            const embRoladd = new EmbedBuilder()
+                                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol agregado a todos los miembros`)
                                                 .setDescription(descripcion)
                                                 .setColor("GREEN")
@@ -7246,7 +7247,7 @@ client.on("messageCreate", async msg => {
                                     }, 1000)
                                 })
                             } else {
-                                const embError1 = new Discord.MessageEmbed()
+                                const embError1 = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(`El rol proporcionado *(${rol})* tiene la misma o mayor posición de tu rol mas alto por lo tanto no lo puedes agregar a ningún miembro. `)
                                     .setColor(ColorError)
@@ -7264,7 +7265,7 @@ client.on("messageCreate", async msg => {
 
                                 let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
-                                const embCargando = new Discord.MessageEmbed()
+                                const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Agregando el rol a todos..`)
                                     .setDescription(`Se esta agregando el rol ${rol} a todos los miembros, tenga paciencia esto puede tardar aproximadamente ${ms(noLoTienen.length * 1000)}.`)
                                     .setColor(msg.guild.me.displayHexColor)
@@ -7286,12 +7287,12 @@ client.on("messageCreate", async msg => {
                                             } else {
                                                 descripcion = `He añadido el rol ${rol} a **${noLoTienen.length.toLocaleString()}** miembros.`
                                             }
-                                            const embRoladd = new Discord.MessageEmbed()
-                                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                                            const embRoladd = new EmbedBuilder()
+                                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol agregado a todos los miembros`)
                                                 .setDescription(descripcion)
                                                 .setColor("GREEN")
-                                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRoladd] }).then(td => {
                                                 botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol = false
@@ -7311,7 +7312,7 @@ client.on("messageCreate", async msg => {
                             let condicionales = [!isNaN(args[0]) && args[0].length != 18 || isNaN(args[0]) && !["@", "&", "<", ">"].some(s => args[0].includes(s)), !isNaN(args[1]) && args[1].length != 18 || isNaN(args[1]) && !["@", "&", "<", ">"].some(s => args[1].includes(s))]
                             for (let d in descripciones) {
                                 if (condicionales[d]) {
-                                    const embError = new Discord.MessageEmbed()
+                                    const embError = new EmbedBuilder()
                                         .setTitle(`${emojis.negativo} Error`)
                                         .setDescription(descripciones[d])
                                         .setColor(ColorError)
@@ -7330,7 +7331,7 @@ client.on("messageCreate", async msg => {
                             }
                         }
                     } else {
-                        const embError1 = new Discord.MessageEmbed()
+                        const embError1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`Solo has proporcionado el rol *(${rol})* a agregar pero no has proporcionado al miembro o la palabra *all* o *todos* con las cuales se agregara el rol a todos los miembros del servidor.`)
                             .setColor(ColorError)
@@ -7348,7 +7349,7 @@ client.on("messageCreate", async msg => {
                     }
                 }
             } else {
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No has proporcionado lo mas importante que es el rol, asegúrate de proporcionar correctamente la mención o ID del rol.`)
                     .setColor(ColorError)
@@ -7371,7 +7372,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
             let random = Math.floor(Math.random() * roles.length)
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -7388,7 +7389,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -7406,13 +7407,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("removerol")) {
-                cooldowns.set("removerol", new Discord.Collection())
+                cooldowns.set("removerol", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("removerol")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removerol*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -7429,7 +7430,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando removerol`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}removerol <Mencion del miembro> <Mencion del rol>\`\`\n\`\`${prefijo}removerol <ID del miembro> <ID del rol>\`\`` },
@@ -7453,7 +7454,7 @@ client.on("messageCreate", async msg => {
                     let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, miembro.id == msg.author.id && !miembro.roles.cache.find(f => f.id == rol.id), !miembro.roles.cache.find(f => f.id == rol.id)]
                     for (let d in descripciones) {
                         if (condicionales[d]) {
-                            const embError = new Discord.MessageEmbed()
+                            const embError = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[d])
                                 .setColor(ColorError)
@@ -7473,23 +7474,23 @@ client.on("messageCreate", async msg => {
 
                     if (msg.author.id == msg.guild.ownerId) {
                         if (miembro.id == msg.author.id) {
-                            const embRolRemove = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRolRemove = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`Te he removido el rol ${rol}.`)
                                 .setColor("GREEN")
-                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRolRemove] })
                             }, 500))
                         } else {
-                            const embRolRemove = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRolRemove = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`El rol ${rol} ha sido removido del miembro ${miembro}.`)
                                 .setColor("GREEN")
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRolRemove] })
@@ -7498,7 +7499,7 @@ client.on("messageCreate", async msg => {
 
                     } else {
                         if (miembro.id == msg.author.id) {
-                            const embError1 = new Discord.MessageEmbed()
+                            const embError1 = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(`El rol proporcionado *(${rol})* tiene la misma o mayor posición de tu rol mas alto por lo tanto no te puedo remover el rol.`)
                                 .setColor(ColorError)
@@ -7514,18 +7515,18 @@ client.on("messageCreate", async msg => {
                                 }, 30000))
                             }, 500)
 
-                            const embRolRemove = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRolRemove = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`Te he removido el rol ${rol}.`)
                                 .setColor("GREEN")
-                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRolRemove] })
                             }, 500))
                         } else {
-                            const embError1 = new Discord.MessageEmbed()
+                            const embError1 = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(`El rol proporcionado *(${rol})* tiene la misma o mayor posición de tu rol mas alto por lo tanto no lo puedes remover de ningún miembro.`)
                                 .setColor(ColorError)
@@ -7541,12 +7542,12 @@ client.on("messageCreate", async msg => {
                                 }, 30000))
                             }, 500)
 
-                            const embRolRemove = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embRolRemove = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`El rol ${rol} ha sido removido del miembro ${miembro}.`)
                                 .setColor("GREEN")
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRolRemove] })
@@ -7566,7 +7567,7 @@ client.on("messageCreate", async msg => {
                             let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, botDB.servidor.some(s => s.id == msg.guildId) && botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol]
                             for (let d in descripciones) {
                                 if (condicionales[d]) {
-                                    const embError = new Discord.MessageEmbed()
+                                    const embError = new EmbedBuilder()
                                         .setTitle(`${emojis.negativo} Error`)
                                         .setDescription(descripciones[d])
                                         .setColor(ColorError)
@@ -7587,7 +7588,7 @@ client.on("messageCreate", async msg => {
                             if (msg.guild.ownerId == msg.author.id) {
                                 let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
-                                const embCargando = new Discord.MessageEmbed()
+                                const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Rremoviendo el rol de todos..`)
                                     .setDescription(`Se esta removiendo el rol ${rol} de todos los miembros, tenga paciencia esto puede tardar aproximadamente ${ms(siLoTienen.length * 1000)}`)
                                     .setColor(msg.guild.me.displayHexColor)
@@ -7609,12 +7610,12 @@ client.on("messageCreate", async msg => {
                                             } else {
                                                 descripcion = `He removido el rol ${rol} de **${siLoTienen.length.toLocaleString()}** miembros.`
                                             }
-                                            const embRolRemove = new Discord.MessageEmbed()
-                                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                                            const embRolRemove = new EmbedBuilder()
+                                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol removido de todos los miembros`)
                                                 .setDescription(descripcion)
                                                 .setColor("GREEN")
-                                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRolRemove] }).then(td => {
                                                 botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol = false
@@ -7628,7 +7629,7 @@ client.on("messageCreate", async msg => {
                                     }, 1000)
                                 })
                             } else {
-                                const embError1 = new Discord.MessageEmbed()
+                                const embError1 = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(`El rol proporcionado *(${rol})* tiene la misma o mayor posición de tu rol mas alto por lo tanto no lo puedes remover de ningún miembro.`)
                                     .setColor(ColorError)
@@ -7646,7 +7647,7 @@ client.on("messageCreate", async msg => {
 
                                 let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
-                                const embCargando = new Discord.MessageEmbed()
+                                const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Rremoviendo el rol de todos..`)
                                     .setDescription(`Se esta removiendo el rol ${rol} de todos los miembros, tenga paciencia esto puede tardar aproximadamente ${ms(siLoTienen.length * 1000)}`)
                                     .setColor(msg.guild.me.displayHexColor)
@@ -7668,12 +7669,12 @@ client.on("messageCreate", async msg => {
                                             } else {
                                                 descripcion = `He removido el rol ${rol} de **${siLoTienen.length.toLocaleString()}** miembros.`
                                             }
-                                            const embRolRemove = new Discord.MessageEmbed()
-                                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                                            const embRolRemove = new EmbedBuilder()
+                                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol removido de todos los miembros`)
                                                 .setDescription(descripcion)
                                                 .setColor("GREEN")
-                                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRolRemove] }).then(td => {
                                                 botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol = false
@@ -7692,7 +7693,7 @@ client.on("messageCreate", async msg => {
                             let condicionales = [!isNaN(args[0]) && args[0].length != 18 || isNaN(args[0]) && !["@", "&", "<", ">"].some(s => args[0].includes(s)), !isNaN(args[1]) && args[1].length != 18 || isNaN(args[1]) && !["@", "&", "<", ">"].some(s => args[1].includes(s))]
                             for (let d in descripciones) {
                                 if (condicionales[d]) {
-                                    const embError = new Discord.MessageEmbed()
+                                    const embError = new EmbedBuilder()
                                         .setTitle(`${emojis.negativo} Error`)
                                         .setDescription(descripciones[d])
                                         .setColor(ColorError)
@@ -7711,7 +7712,7 @@ client.on("messageCreate", async msg => {
                             }
                         }
                     } else {
-                        const embError1 = new Discord.MessageEmbed()
+                        const embError1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`Solo has proporcionado el rol *(${rol})* a remover pero no has proporcionado al miembro o la palabra *all* o *todos* con las cuales se removera el rol de todos los miembros del servidor.`)
                             .setColor(ColorError)
@@ -7729,7 +7730,7 @@ client.on("messageCreate", async msg => {
                     }
                 }
             } else {
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No has proporcionado lo mas importante que es el rol, asegúrate de proporcionar correctamente la mención o ID del rol.`)
                     .setColor(ColorError)
@@ -7764,7 +7765,7 @@ client.on("messageCreate", async msg => {
                 "GUILD_STAGE_VOICE": "escenario",
                 "GUILD_STORE": "tienda"
             }
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -7781,7 +7782,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -7799,13 +7800,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("createchannel")) {
-                cooldowns.set("createchannel", new Discord.Collection())
+                cooldowns.set("createchannel", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("createchannel")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *createchannel*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -7822,7 +7823,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando createchannel`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}createchannel <Nombre del canal>\`\`\n\`\`${prefijo}createchannel <Nombre del canal> <Tipo de canal (texto o voz)>\`\`\n\`\`${prefijo}createchannel <Nombre del canal> <Tipo de canal (texto o voz)> <ID de la categoría en la que se creara>\`\`` },
@@ -7841,7 +7842,7 @@ client.on("messageCreate", async msg => {
             if (args[0]) {
                 if (args[1]) {
                     if (isNaN(args[1])) {
-                        const embErr1 = new Discord.MessageEmbed()
+                        const embErr1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`El segundo argumento que has proporcionado *(${args[1]})* no es igual a las palabra **texto** o **voz** las cuales determinan el tipo de canal que seré creado.`)
                             .setColor(ColorError)
@@ -7865,7 +7866,7 @@ client.on("messageCreate", async msg => {
 
                             for (let i = 0; i < descripciones.length; i++) {
                                 if (condicionales[i]) {
-                                    const embErr = new Discord.MessageEmbed()
+                                    const embErr = new EmbedBuilder()
                                         .setTitle(`${emojis.negativo} Error`)
                                         .setDescription(descripciones[i])
                                         .setColor(ColorError)
@@ -7894,8 +7895,8 @@ client.on("messageCreate", async msg => {
                             }
 
                             msg.guild.channels.create(`${args[0]}`, { type: `${tipoCanal}`, parent: `${args[2]}` }).then(cc => setTimeout(() => {
-                                const embCreateCha = new Discord.MessageEmbed()
-                                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embCreateCha = new EmbedBuilder()
+                                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle(`${emojis.acierto} Canal creado`)
                                     .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
                                     .setColor("GREEN")
@@ -7915,8 +7916,8 @@ client.on("messageCreate", async msg => {
                             }
 
                             msg.guild.channels.create(`${args[0]}`, { type: `${tipoCanal}`, parent: `${msg.channel.parentId}` }).then(cc => setTimeout(() => {
-                                const embCreateCha = new Discord.MessageEmbed()
-                                    .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                                const embCreateCha = new EmbedBuilder()
+                                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle(`${emojis.acierto} Canal creado`)
                                     .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
                                     .setColor("GREEN")
@@ -7930,7 +7931,7 @@ client.on("messageCreate", async msg => {
 
                         for (let i = 0; i < descripciones.length; i++) {
                             if (condicionales[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripciones[i])
                                     .setColor(ColorError)
@@ -7950,8 +7951,8 @@ client.on("messageCreate", async msg => {
 
 
                         msg.guild.channels.create(`${args[0]}`, { parent: `${args[1]}` }).then(cc => setTimeout(() => {
-                            const embCreateCha = new Discord.MessageEmbed()
-                                .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embCreateCha = new EmbedBuilder()
+                                .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Canal creado`)
                                 .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
                                 .setColor("GREEN")
@@ -7960,7 +7961,7 @@ client.on("messageCreate", async msg => {
                         }, 300))
                     }
                 } else {
-                    const embErr3 = new Discord.MessageEmbed()
+                    const embErr3 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El primer argumento *(${args[0]})* el cual será el nombre del canal supera los **80** caracteres los cuales son muchos para el nombre de un canal.`)
                         .setColor(ColorError)
@@ -7977,8 +7978,8 @@ client.on("messageCreate", async msg => {
                     }, 500)
 
                     msg.guild.channels.create(`${args[0]}`, { parent: msg.channel.parentId }).then(cc => setTimeout(() => {
-                        const embCreateCha = new Discord.MessageEmbed()
-                            .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embCreateCha = new EmbedBuilder()
+                            .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle(`${emojis.acierto} Canal creado`)
                             .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
                             .setColor("GREEN")
@@ -8013,7 +8014,7 @@ client.on("messageCreate", async msg => {
             }
 
 
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -8030,7 +8031,7 @@ client.on("messageCreate", async msg => {
                 }, 30000))
             }, 500)
 
-            const embErrP2 = new Discord.MessageEmbed()
+            const embErrP2 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -8048,13 +8049,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("deletechannel")) {
-                cooldowns.set("deletechannel", new Discord.Collection())
+                cooldowns.set("deletechannel", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("deletechannel")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *deletechannel*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -8071,7 +8072,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando deletechannel`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}deletechannel <Mencion del canal>\`\`\n\`\`${prefijo}deletechannel <ID del canal>\`\`` },
@@ -8086,12 +8087,12 @@ client.on("messageCreate", async msg => {
             let canal = msg.mentions.channels.first() || msg.guild.channels.cache.get(args[0])
 
             if (canal) {
-                const embDeleteCha = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embDeleteCha = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⭕ Canal eliminado")
                     .setDescription(`**Nombre:** ${canal.name}\n**ID:** ${canal.id}\n**Tipo:** ${tiposDeCanales[canal.type]}\n**Categoría:** ${canal.parent ? canal.parent : "*Sin categoría*"}`)
                     .setColor("RED")
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 canal.delete().then(ch => setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embDeleteCha] })
@@ -8102,7 +8103,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -8131,7 +8132,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
             msg.channel.sendTyping()
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -8149,13 +8150,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("memberswithrole")) {
-                cooldowns.set("memberswithrole", new Discord.Collection())
+                cooldowns.set("memberswithrole", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("memberswithrole")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *memberswithrole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -8172,7 +8173,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando memberswithrole`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}memberswithrole <Mención del rol>\`\`\n\`\`${prefijo}memberswithrole <ID del rol>\`\`` },
@@ -8189,7 +8190,7 @@ client.on("messageCreate", async msg => {
             let rol = msg.mentions.roles.first() || msg.guild.roles.cache.get(args[0])
 
             if (rol) {
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El rol proporcionado ${rol} es un rol exclusivo de un bot, solo un bot puede tener ese rol el cual es ${msg.guild.members.cache.find(f => f.roles.cache.has(rol.id))}`)
                     .setColor(ColorError)
@@ -8198,7 +8199,7 @@ client.on("messageCreate", async msg => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embError1] })
                 }, 500)
 
-                const embError2 = new Discord.MessageEmbed()
+                const embError2 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El rol proporcionado ${rol} es el rol que todos los miembros tienen por defecto al entrar al servidor.`)
                     .setColor(ColorError)
@@ -8209,12 +8210,12 @@ client.on("messageCreate", async msg => {
 
                 let miembros = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(r => r)
 
-                const embNoMiembros = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embNoMiembros = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("👥 Miembros con el rol")
                     .setDescription(`${rol}\n*No hay miembros con ese rol.*`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 if (miembros.length <= 0) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embNoMiembros] })
@@ -8228,12 +8229,12 @@ client.on("messageCreate", async msg => {
                 }
 
                 if (miembros.length <= 10) {
-                    const embMiembros = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMiembros = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros con el rol")
                         .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(`Pagina - 1/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embMiembros] })
@@ -8241,18 +8242,18 @@ client.on("messageCreate", async msg => {
                 } else {
                     let m1 = 0, m2 = 10, pagina = 1, descripcion = `${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n`
 
-                    const embMiembros = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMiembros = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros con el rol")
                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
-                    const botones1 = new Discord.MessageActionRow()
+                    const botones1 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -8260,7 +8261,7 @@ client.on("messageCreate", async msg => {
                                     .setDisabled(true)
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -8268,17 +8269,17 @@ client.on("messageCreate", async msg => {
                             ]
                         )
 
-                    const botones2 = new Discord.MessageActionRow()
+                    const botones2 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -8286,17 +8287,17 @@ client.on("messageCreate", async msg => {
                             ]
                         )
 
-                    const botones3 = new Discord.MessageActionRow()
+                    const botones3 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -8320,14 +8321,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones1] })
                                 } else {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8337,14 +8338,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones3] })
                                 } else {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8357,7 +8358,7 @@ client.on("messageCreate", async msg => {
 
                 condicionales.forEach((valorCs, ps) => {
                     if (valorCs) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[ps])
                             .setColor(ColorError)
@@ -8386,7 +8387,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let roles = msg.guild.roles.cache.filter(fr => !fr.managed && fr.id != msg.guildId).map(mr => mr)
             msg.channel.sendTyping()
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -8404,13 +8405,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("memberswithouttherole")) {
-                cooldowns.set("memberswithouttherole", new Discord.Collection())
+                cooldowns.set("memberswithouttherole", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("memberswithouttherole")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *memberswithouttherole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -8427,7 +8428,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando memberswithouttherole`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}memberswithouttherole <Mención del rol>\`\`\n\`\`${prefijo}memberswithouttherole <ID del rol>\`\`` },
@@ -8444,7 +8445,7 @@ client.on("messageCreate", async msg => {
             let rol = msg.mentions.roles.first() || msg.guild.roles.cache.get(args[0])
 
             if (rol) {
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El rol proporcionado ${rol} es un rol exclusivo de un bot, solo un bot puede tener ese rol el cual es ${msg.guild.members.cache.find(f => f.roles.cache.has(rol.id))}, todos los demás miembros no tienen el rol.`)
                     .setColor(ColorError)
@@ -8453,7 +8454,7 @@ client.on("messageCreate", async msg => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embError1] })
                 }, 500)
 
-                const embError2 = new Discord.MessageEmbed()
+                const embError2 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El rol proporcionado ${rol} es el rol que todos los miembros tienen por defecto al entrar al servidor, no hay ningún miembro en el servidor que no tenga ese rol.`)
                     .setColor(ColorError)
@@ -8464,12 +8465,12 @@ client.on("messageCreate", async msg => {
 
                 let miembros = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(r => r)
 
-                const embNoMiembros = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embNoMiembros = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("👥 Miembros sin el rol")
                     .setDescription(`${rol}\n*Todos los miembros tienen el rol.*`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 if (miembros.length == 0) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embNoMiembros] })
@@ -8483,12 +8484,12 @@ client.on("messageCreate", async msg => {
                 }
 
                 if (miembros.length <= 10) {
-                    const embMiembros = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMiembros = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros sin el rol")
                         .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(`Pagina - 1/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embMiembros] })
@@ -8496,18 +8497,18 @@ client.on("messageCreate", async msg => {
                 } else {
                     let m1 = 0, m2 = 10, pagina = 1, descripcion = `${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n`
 
-                    const embMiembros = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embMiembros = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros sin el rol")
                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
-                    const botones1 = new Discord.MessageActionRow()
+                    const botones1 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -8515,7 +8516,7 @@ client.on("messageCreate", async msg => {
                                     .setDisabled(true)
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -8523,17 +8524,17 @@ client.on("messageCreate", async msg => {
                             ]
                         )
 
-                    const botones2 = new Discord.MessageActionRow()
+                    const botones2 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -8541,17 +8542,17 @@ client.on("messageCreate", async msg => {
                             ]
                         )
 
-                    const botones3 = new Discord.MessageActionRow()
+                    const botones3 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -8576,14 +8577,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones1] })
                                 } else {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8593,14 +8594,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     return await botn.update({ embeds: [embMiembros], components: [botones3] })
                                 } else {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8613,7 +8614,7 @@ client.on("messageCreate", async msg => {
 
                 condicionales.forEach((valorCs, ps) => {
                     if (valorCs) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[ps])
                             .setColor(ColorError)
@@ -8653,12 +8654,12 @@ client.on("messageCreate", async msg => {
                 await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto })
             }
 
-            const embInfoP = new Discord.MessageEmbed()
-                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+            const embInfoP = new EmbedBuilder()
+                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle(`${emojis.puntos} ¿Qué es el sistema de Puntos?`)
                 .setDescription(`Es un sistema creado con la intención de ayudar a los dueños y administradores de servidores a tener una mejor forma de administrar las acciones de lo demás miembros del staff y determinar con mayor facilidad cuando un miembro del staff se me rece un acenso.\n\n📑 **Comandos:** *10*\n\`\`${prefijo}points\`\` **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n\`\`${prefijo}addpoints\`\` **|** Agrega puntos a un miembro.\n\`\`${prefijo}removepoints\`\` **|** Elimina puntos a un miembro.\n\`\`${prefijo}setstaffrole\`\` **|** Establece un rol del staff o personal del servidor.\n\`\`${prefijo}deletestaffrole\`\` **|** Elimina un rol establecido como rol del staff del servidor.\n\`\`${prefijo}setemojipoints\`\` **|** Establece un símbolo o emoji personalizado para el sistema de puntos.\n\`\`${prefijo}pointsleaderboard\`\` **|** Muestra una tabla de clasificaciones con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n\`\`${prefijo}pointsystemstatus\`\` **|** Muestra el estado del sistema en el servidor.\n\`\`${prefijo}removeusersystemp\`\` **|** Elimina a un miembro del sistema de puntos del servidor.\n\`\`${prefijo}updatepointssystem\`\` **|** Actualiza el sistema de puntos en el servidor eliminando del sistema a todos los usuarios que se han ido del servidor.`)
                 .setColor(colorEmb)
-                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
             setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfoP] })
@@ -8676,7 +8677,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i in descripciones) {
                     if (condicionales[i]) {
-                        const embError = new Discord.MessageEmbed()
+                        const embError = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -8699,7 +8700,7 @@ client.on("messageCreate", async msg => {
                     let objeto = dataSP.datos
                     objeto.comandosUsos++
 
-                    const embError1 = new Discord.MessageEmbed()
+                    const embError1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No puedes usar este comando ya que no eres miembro del personal del servidor.`)
                         .setColor(ColorError)
@@ -8723,11 +8724,11 @@ client.on("messageCreate", async msg => {
                                 }
                             }
 
-                            const embPMi = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, miembro.user.displayAvatarURL({ dynamic: true }))
+                            const embPMi = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: miembro.user.displayAvatarURL()})
                                 .setDescription(`Tienes ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                                 .setColor(msg.guild.me.displayHexColor)
-                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPMi] })
@@ -8737,11 +8738,11 @@ client.on("messageCreate", async msg => {
                             array.push({ id: msg.author.id, nombre: msg.author.tag, puntos: 0 })
                             await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto, miembros: array })
 
-                            const embPMi = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embPMi = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setDescription(`Tienes ${dataSP.datos.emoji} **0** puntos.`)
                                 .setColor(msg.guild.me.displayHexColor)
-                                .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
 
                             setTimeout(() => {
@@ -8756,11 +8757,11 @@ client.on("messageCreate", async msg => {
                                 }
                             }
 
-                            const embPMi = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embPMi = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                                 .setColor(msg.guild.me.displayHexColor)
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.user.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.user.displayAvatarURL()})
                                 .setTimestamp()
                             setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPMi] })
@@ -8771,11 +8772,11 @@ client.on("messageCreate", async msg => {
                             array.push({ id: miembro.id, nombre: miembro.user.tag, puntos: 0 })
                             await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto, miembros: array })
 
-                            const embPMi = new Discord.MessageEmbed()
-                                .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                            const embPMi = new EmbedBuilder()
+                                .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **0** puntos.`)
                                 .setColor(msg.guild.me.displayHexColor)
-                                .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.user.displayAvatarURL({ dynamic: true }))
+                                .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.user.displayAvatarURL()})
                                 .setTimestamp()
 
                             setTimeout(() => {
@@ -8793,11 +8794,11 @@ client.on("messageCreate", async msg => {
                             miembros: [{ id: msg.author.id, nombre: msg.author.tag, puntos: 0 }]
                         })
 
-                        const embPMi = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, miembro.user.displayAvatarURL({ dynamic: true }))
+                        const embPMi = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: miembro.user.displayAvatarURL()})
                             .setDescription(`Tienes ${emojis.puntos} **0** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         await nuevaDataSP.save()
 
@@ -8813,11 +8814,11 @@ client.on("messageCreate", async msg => {
                             miembros: [{ id: msg.author.id, nombre: msg.author.tag, puntos: 0 }, { id: miembro.id, nombre: miembro.user.tag, puntos: 0 }]
                         })
 
-                        const embPMi = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embPMi = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`${miembro} tiene ${emojis.puntos} **0** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
-                            .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.user.displayAvatarURL({ dynamic: true }))
+                            .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.user.displayAvatarURL()})
                             .setTimestamp()
                         await nuevaDataSP.save()
 
@@ -8832,7 +8833,7 @@ client.on("messageCreate", async msg => {
                     let objeto = dataSP.datos
                     objeto.comandosUsos++
 
-                    const embError1 = new Discord.MessageEmbed()
+                    const embError1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No puedes usar este comando ya que no eres miembro del personal del servidor.`)
                         .setColor(ColorError)
@@ -8855,11 +8856,11 @@ client.on("messageCreate", async msg => {
                             }
                         }
 
-                        const embPAu = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embPAu = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`Tienes ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPAu] })
@@ -8870,11 +8871,11 @@ client.on("messageCreate", async msg => {
                         array.push({ id: msg.author.id, nombre: msg.author.tag, puntos: 0 })
                         await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto, miembros: array })
 
-                        const embPAu = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embPAu = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`Tienes ${dataSP.datos.emoji} **0** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
-                            .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                            .setFooter(msg.guild.name, msg.guild.iconURL())
                             .setTimestamp()
 
                         setTimeout(() => {
@@ -8890,11 +8891,11 @@ client.on("messageCreate", async msg => {
                         miembros: [{ id: msg.author.id, nombre: msg.author.tag, puntos: 0 }]
                     })
 
-                    const embPAu = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embPAu = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setDescription(`Tienes ${emojis.puntos} **0** puntos.`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     await nuevaDataSP.save()
 
@@ -8909,7 +8910,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let roles = msg.guild.roles.cache.map(m => m)
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -8927,13 +8928,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("setstaffrole")) {
-                cooldowns.set("setstaffrole", new Discord.Collection())
+                cooldowns.set("setstaffrole", new Collection())
             }
 
             const datosComando = cooldowns.get("setstaffrole"), tiempoActual = Date.now()
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setstaffrole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -8950,7 +8951,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setstaffrole`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}setstaffrole <Mención del rol>\`\`\n\`\`${prefijo}setstaffrole <ID del rol>\`\`` },
@@ -8972,7 +8973,7 @@ client.on("messageCreate", async msg => {
                 let condicionales = [rol.managed, rol.id == msg.guildId]
                 for (let r in descripciones) {
                     if (condicionales[r]) {
-                        const embError = new Discord.MessageEmbed()
+                        const embError = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[r])
                             .setColor(ColorError)
@@ -8995,7 +8996,7 @@ client.on("messageCreate", async msg => {
                     objeto.comandosUsos++
                     await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto })
 
-                    const embError1 = new Discord.MessageEmbed()
+                    const embError1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`Ya se han establecido **3** roles del personal de este servidor en el sistema de puntos, no puedes agregar mas roles.`)
                         .setColor(ColorError)
@@ -9014,12 +9015,12 @@ client.on("messageCreate", async msg => {
                     objeto.rolesPersonal.push(rol.id)
                     await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto })
 
-                    const embStaffRol = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embStaffRol = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle(`${emojis.acierto} Rol del personal establecido`)
                         .setDescription(`El rol ${rol} ha sido establecido como rol del personal del servidor en el sistema de puntos.`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
                     setTimeout(() => {
@@ -9033,12 +9034,12 @@ client.on("messageCreate", async msg => {
                         miembros: [{ id: msg.author.id, nombre: msg.author.tag, puntos: 0 }]
                     })
 
-                    const embStaffRol = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embStaffRol = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle(`${emojis.acierto} Rol del personal establecido`)
                         .setDescription(`El rol ${rol} ha sido establecido como rol del personal del servidor en el sistema de puntos.`)
                         .setColor("GREEN")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     await nuevaDataSP.save()
 
@@ -9052,7 +9053,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -9081,7 +9082,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let roles = msg.guild.roles.cache.map(m => m)
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -9099,13 +9100,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("deletestaffrole")) {
-                cooldowns.set("deletestaffrole", new Discord.Collection())
+                cooldowns.set("deletestaffrole", new Collection())
             }
 
             const datosComando = cooldowns.get("deletestaffrole"), tiempoActual = Date.now()
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *deletestaffrole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -9122,7 +9123,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando deletestaffrole`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}deletestaffrole <Mención del rol>\`\`\n\`\`${prefijo}deletestaffrole <ID del rol>\`\`` },
@@ -9139,7 +9140,7 @@ client.on("messageCreate", async msg => {
             let dataSP = await puntosDB.findOne({ _id: msg.guildId })
             let rol = msg.mentions.roles.first() || msg.guild.roles.cache.get(args[0])
 
-            const embError1 = new Discord.MessageEmbed()
+            const embError1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`En este servidor no se ha utilizado el sistema de puntos por lo tanto no hay roles del personal del servidor establecidos que puedas eliminar.`)
                 .setColor(ColorError)
@@ -9165,7 +9166,7 @@ client.on("messageCreate", async msg => {
                     let condicionales = [dataSP.datos.rolesPersonal.length == 0, rol.managed, rol.id == msg.guildId, !dataSP.datos.rolesPersonal.some(s => s == rol.id)]
                     for (let r in descripciones) {
                         if (condicionales[r]) {
-                            const embError = new Discord.MessageEmbed()
+                            const embError = new EmbedBuilder()
                                 .setTitle(`${emojis.negativo} Error`)
                                 .setDescription(descripciones[r])
                                 .setColor(ColorError)
@@ -9190,12 +9191,12 @@ client.on("messageCreate", async msg => {
                     }
                     await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto })
 
-                    const embRemoveRolStaff = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embRemoveRolStaff = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle(`${emojis.negativo} Se ha eliminado un rol`)
                         .setDescription(`Se ha eliminado el rol ${rol} anterior mente establecido en el sistema como un rol del personal del servidor.`)
                         .setColor("RED")
-                        .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRemoveRolStaff] })
@@ -9207,7 +9208,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -9237,7 +9238,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
 
             let alias = ["añadirpuntos", "addpoints", "addp"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando addpoints`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}addpoints <Miembro> <Puntos a dar>\`\`` },
@@ -9277,13 +9278,13 @@ client.on("messageCreate", async msg => {
             if (erroresMsg(msg, erroresP1)) return;
 
             if (!cooldowns.has("addpoints")) {
-                cooldowns.set("addpoints", new Discord.Collection())
+                cooldowns.set("addpoints", new Collection())
             }
 
             const datosComando = cooldowns.get("addpoints"), tiempoActual = Date.now()
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *addpoints*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -9296,12 +9297,12 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embAddPoints = new Discord.MessageEmbed()
-                .setAuthor({ name: msg.member.nick ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+            const embAddPoints = new EmbedBuilder()
+                .setAuthor({ name: msg.member.nick ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Puntos agregados al miembro`)
                 .setDescription(`Se ${msg.author.id == miembro.id ? "te" : "le"} han agregado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${msg.author.id == miembro.id ? "." : `a **${miembro}**.`}`)
                 .setColor("GREEN")
-                .setFooter({ text: miembro.id == msg.author.id ? msg.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == msg.author.id ? msg.guild.iconURL({ dynamic: true }) : miembro.user.displayAvatarURL({ dynamic: true }) })
+                .setFooter({ text: miembro.id == msg.author.id ? msg.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == msg.author.id ? msg.guild.iconURL() : miembro.user.displayAvatarURL() })
                 .setTimestamp()
             setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAddPoints] })
@@ -9335,7 +9336,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
 
             let alias = ["quitarpuntos", "removepoints", "removep"]
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando addpoints`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}addpoints <Miembro> <Puntos a dar>\`\`` },
@@ -9375,13 +9376,13 @@ client.on("messageCreate", async msg => {
             if (erroresMsg(msg, erroresP1)) return;
 
             if (!cooldowns.has("removepoints")) {
-                cooldowns.set("removepoints", new Discord.Collection())
+                cooldowns.set("removepoints", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("removepoints")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removepoints*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -9398,12 +9399,12 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embAddPoints = new Discord.MessageEmbed()
-                .setAuthor({ name: msg.member.nick ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+            const embAddPoints = new EmbedBuilder()
+                .setAuthor({ name: msg.member.nick ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                 .setTitle(`${emojis.negativo} Puntos del miembro eliminados`)
                 .setDescription(`Se ${msg.author.id == miembro.id ? "te" : "le"} han eliminado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${msg.author.id == miembro.id ? "." : `a **${miembro}**.`}`)
                 .setColor("RED")
-                .setFooter({ text: miembro.id == msg.author.id ? msg.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == msg.author.id ? msg.guild.iconURL({ dynamic: true }) : miembro.user.displayAvatarURL({ dynamic: true }) })
+                .setFooter({ text: miembro.id == msg.author.id ? msg.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == msg.author.id ? msg.guild.iconURL() : miembro.user.displayAvatarURL() })
                 .setTimestamp()
             setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAddPoints] })
@@ -9443,7 +9444,7 @@ client.on("messageCreate", async msg => {
                 objeto.comandosUsos++
                 await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto })
 
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No puedes usar este comando ya que no eres miembro del personal del servidor.`)
                     .setColor(ColorError)
@@ -9459,11 +9460,11 @@ client.on("messageCreate", async msg => {
                     }, 30000));
                 }, 500)
 
-                const embed = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embed = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setDescription(`No hay ningún miembro en la base de datos del sistema de puntos de este servidor, para saber mas sobre el sistema utiliza el comando \`\`${prefijo}pointsinfo\`\`.`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 if (dataSP.miembros.length <= 0) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embed] })
@@ -9495,11 +9496,11 @@ client.on("messageCreate", async msg => {
                 }
 
                 if (segPage <= 1) {
-                    const embTopP = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embTopP = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(0, 10).join("\n\n")}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(`Pagina - 1/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embTopP] })
@@ -9507,17 +9508,17 @@ client.on("messageCreate", async msg => {
                 } else {
                     let cps1 = 0, cps2 = 10, pagina = 1
 
-                    const embTopP = new Discord.MessageEmbed()
-                        .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                    const embTopP = new EmbedBuilder()
+                        .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
-                    const botones1 = new Discord.MessageActionRow()
+                    const botones1 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -9525,7 +9526,7 @@ client.on("messageCreate", async msg => {
                                     .setDisabled(true)
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -9533,17 +9534,17 @@ client.on("messageCreate", async msg => {
                             ]
                         )
 
-                    const botones2 = new Discord.MessageActionRow()
+                    const botones2 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -9551,17 +9552,17 @@ client.on("messageCreate", async msg => {
                             ]
                         )
 
-                    const botones3 = new Discord.MessageActionRow()
+                    const botones3 = new ActionRowBuilder()
                         .setComponents(
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle("PRIMARY")
                             ],
                             [
-                                new Discord.MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
                                     .setEmoji("<a:RightArrow:942154978859044905>")
@@ -9586,14 +9587,14 @@ client.on("messageCreate", async msg => {
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embTopP], components: [botones1] })
                                 } else {
                                     cps1 -= 10, cps2 -= 10, pagina--
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embTopP], components: [botones2] })
                                 }
                             }
@@ -9603,14 +9604,14 @@ client.on("messageCreate", async msg => {
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embTopP], components: [botones3] })
                                 } else {
                                     cps1 += 10, cps2 += 10, pagina++
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                     await botn.update({ embeds: [embTopP], components: [botones2] })
                                 }
                             }
@@ -9625,8 +9626,8 @@ client.on("messageCreate", async msg => {
                     miembros: [{ id: msg.author.id, nombre: msg.author.tag, puntos: 0 }]
                 })
 
-                const embed = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embed = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema utiliza el comando \`\`${prefijo}pointsinfo\`\`.`)
                     .setColor(msg.guild.me.displayHexColor)
                 await nuevaDataSP.save()
@@ -9642,7 +9643,7 @@ client.on("messageCreate", async msg => {
             let dataSP = await puntosDB.findOne({ _id: msg.guildId })
             let emojisR = msg.guild.emojis.cache.map(e => e)
 
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -9660,13 +9661,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("setemojipoints")) {
-                cooldowns.set("setemojipoints", new Discord.Collection())
+                cooldowns.set("setemojipoints", new Collection())
             }
 
             const datosComando = cooldowns.get("setemojipoints"), tiempoActual = Date.now()
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setemojipoints*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -9683,7 +9684,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setemojipoints`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}setemojipoints <Emoji a establecer>\`\`` },
@@ -9702,7 +9703,7 @@ client.on("messageCreate", async msg => {
 
             for (let i = 0; i < descripciones.length; i++) {
                 if (condicionales[i]) {
-                    const embErr = new Discord.MessageEmbed()
+                    const embErr = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripciones[i])
                         .setColor(ColorError)
@@ -9726,8 +9727,8 @@ client.on("messageCreate", async msg => {
                 objeto.emoji = args[0]
                 await puntosDB.findByIdAndUpdate(msg.guildId, { serverName: msg.guild.name, datos: objeto })
 
-                const embSetE = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embSetE = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("<a:afirmativo:856966728806432778> Símbolo establecido")
                     .setDescription(`El emoji ${args[0]} se a establecido como símbolo del sistema de puntos.`)
                     .setColor("GREEN")
@@ -9743,8 +9744,8 @@ client.on("messageCreate", async msg => {
                     miembros: [{ id: msg.author.id, nombre: msg.author.tag, puntos: 0 }]
                 })
 
-                const embSetE = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embSetE = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("<a:afirmativo:856966728806432778> Símbolo establecido")
                     .setDescription(`El emoji ${args[0]} se a establecido como el símbolo del sistema de puntos.`)
                     .setColor("GREEN")
@@ -9773,8 +9774,8 @@ client.on("messageCreate", async msg => {
                 await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto })
                 let totalPuntos = dataSP.datos.puntosAgregados + dataSP.datos.puntosEliminados
 
-                const embPointsSystem = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embPointsSystem = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`<:status:957353077650886716> Estado del sistema de puntos`)
                     .addFields(
                         { name: `👥 **Miembros que han utilizado el sistema:**`, value: `**${dataSP.miembros.length.toLocaleString()}**`, inline: true },
@@ -9785,7 +9786,7 @@ client.on("messageCreate", async msg => {
                         // {name: ``, value: ``, inline: true},
                     )
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPointsSystem] })
                 }, 500)
@@ -9799,7 +9800,7 @@ client.on("messageCreate", async msg => {
                 })
                 await nuevaDataSP.save()
 
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No tengo datos sobre el sistema de puntos en este servidor ya que no se a utilizado el sistema en este servidor.`)
                     .setColor(ColorError)
@@ -9820,7 +9821,7 @@ client.on("messageCreate", async msg => {
         if (["updatepointssystem", "updatepsystem", "updateps"].some(s => comando == s)) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -9846,7 +9847,7 @@ client.on("messageCreate", async msg => {
 
                 let falsosMiembros = arrayMs.filter(f => !msg.guild.members.cache.get(f.id))
 
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No hay usuarios en el sistema que no estén en el servidor.`)
                     .setColor(ColorError)
@@ -9869,12 +9870,12 @@ client.on("messageCreate", async msg => {
                 })
                 await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto, miembros: array })
 
-                const embUpdateSistemP = new Discord.MessageEmbed()
-                    .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                const embUpdateSistemP = new EmbedBuilder()
+                    .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`${emojis.acierto} Sistema actualizado`)
                     .setDescription(`Se han eliminado datos de **${falsosMiembros.length.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(msg.guild.name, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embUpdateSistemP] })
@@ -9889,7 +9890,7 @@ client.on("messageCreate", async msg => {
                 })
                 await nuevaDataSP.save()
 
-                const embError1 = new Discord.MessageEmbed()
+                const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`No hay usuarios en el sistema que no estén en el servidor.`)
                     .setColor(ColorError)
@@ -9910,7 +9911,7 @@ client.on("messageCreate", async msg => {
         if (comando == "removeusersystemp") {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            const embErrP1 = new Discord.MessageEmbed()
+            const embErrP1 = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
@@ -9928,13 +9929,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             if (!cooldowns.has("removeusersystemp")) {
-                cooldowns.set("removeusersystemp", new Discord.Collection())
+                cooldowns.set("removeusersystemp", new Collection())
             }
 
             const tiempoActual = Date.now(), datosComando = cooldowns.get("removeusersystemp")
 
             if (datosComando.has(msg.author.id)) {
-                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new Discord.MessageEmbed()
+                const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removeusersystemp*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
                     .setColor("BLUE")
@@ -9951,7 +9952,7 @@ client.on("messageCreate", async msg => {
                 }, 500)
             }
 
-            const embInfo = new Discord.MessageEmbed()
+            const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando removeusersystemp`)
                 .addFields(
                     { name: "Uso:", value: `\`\`${prefijo}removeusersystemp <Mención del miembro>\`\`\n\`\`${prefijo}removeusersystemp <ID del miembro>\`\`\n\`\`${prefijo}removeusersystemp <Etiqueta del miembro>\`\`` },
@@ -9978,7 +9979,7 @@ client.on("messageCreate", async msg => {
                         let condicionales = [miembro.id == client.user.id, miembro.user.bot, !dataSP.miembros.some(s => s.id == miembro.id)]
                         for (let i in descripciones) {
                             if (condicionales[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripciones[i])
                                     .setColor(ColorError)
@@ -10008,19 +10009,19 @@ client.on("messageCreate", async msg => {
                         array.splice(posicion, 1)
                         await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto, miembros: array })
 
-                        const embRemoveUserSystem = new Discord.MessageEmbed()
-                            .setAuthor(msg.member.nickname ? msg.member.nickname : msg.author.username, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embRemoveUserSystem = new EmbedBuilder()
+                            .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("🗑️ Miembro eliminado del sistema")
                             .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos en el cual tenia ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
-                            .setFooter(miembro.nickname ? miembro.nickname : miembro.user.username, miembro.displayAvatarURL({ dynamic: true }))
+                            .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                             .setTimestamp()
                         setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRemoveUserSystem] })
                         }, 500)
 
                     } else {
-                        const embError1 = new Discord.MessageEmbed()
+                        const embError1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`El miembro proporcionado *(${miembro})* no esta en el sistema de puntos.`)
                             .setColor(ColorError)
@@ -10056,7 +10057,7 @@ client.on("messageCreate", async msg => {
 
                         for (let i = 0; i < descripciones.length; i++) {
                             if (condicionales[i]) {
-                                const embErr = new Discord.MessageEmbed()
+                                const embErr = new EmbedBuilder()
                                     .setTitle(`${emojis.negativo} Error`)
                                     .setDescription(descripciones[i])
                                     .setColor(ColorError)
@@ -10086,8 +10087,8 @@ client.on("messageCreate", async msg => {
                         array.splice(posicion, 1)
                         await puntosDB.findByIdAndUpdate(msg.guildId, { datos: objeto, miembros: array })
 
-                        const embRemoveUserSystem = new Discord.MessageEmbed()
-                            .setAuthor(msg.author.tag, msg.author.displayAvatarURL({ dynamic: true }))
+                        const embRemoveUserSystem = new EmbedBuilder()
+                            .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("🗑️ Miembro eliminado del sistema")
                             .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos en el cual tenia ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
@@ -10097,7 +10098,7 @@ client.on("messageCreate", async msg => {
                         }, 400)
 
                     } else {
-                        const embError1 = new Discord.MessageEmbed()
+                        const embError1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`El miembro proporcionado *(${miembro})* no esta en el sistema de puntos.`)
                             .setColor(ColorError)
@@ -10129,7 +10130,7 @@ client.on("messageCreate", async msg => {
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
-                        const embErr = new Discord.MessageEmbed()
+                        const embErr = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripciones[i])
                             .setColor(ColorError)
@@ -10160,14 +10161,14 @@ client.on("messageCreate", async msg => {
     if(creadoresID.some(s => s == msg.author.id)){
         if (comando == "autoroles") {
             let rolesColores = ["985631910581653556", "985631917330268201", "985631924619976806", "985631921184837673", "985631931595104276", "985631934879244378", "985631938373116004", "985631941665652757", "985634743930454017", "985634749437587516", "985634753048903770", "985631927853785169", "985634755984908318", "985631914507518023", "985634992317157456"]
-            const embAutoRoles = new Discord.MessageEmbed()
+            const embAutoRoles = new EmbedBuilder()
                 .setTitle(`🌈 Roles de colores`)
                 .setDescription(`Estos roles pueden cambiar el color de tu nombre dentro del servidor solo elije uno en el menú de abajo.\n\n${rolesColores.map(m => `> **<@&${m}>**`).join("\n")}`)
                 .setColor(msg.guild.me.displayHexColor)
     
-            const menuAutoRoles = new Discord.MessageActionRow()
+            const menuAutoRoles = new ActionRowBuilder()
                 .addComponents(
-                    new Discord.MessageSelectMenu()
+                    new SelectMenuBuilder()
                         .setCustomId("rolesColores")
                         .setPlaceholder(`👆 Selecciona una opción.`)
                         .setOptions(
@@ -10270,7 +10271,7 @@ client.on("messageCreate", async msg => {
         if ((comando == "time" || comando == "tiempo")) {
             let tiempo = new Date()
     
-            const embTiempo = new Discord.MessageEmbed()
+            const embTiempo = new EmbedBuilder()
             .setTitle(`⌚ Tiempo`)
             .setDescription(`Son las ${tiempo.getHours()}:${tiempo.getMinutes()}:${tiempo.getSeconds()}`)
             .setColor(msg.guild.me.displayHexColor)
@@ -10278,7 +10279,7 @@ client.on("messageCreate", async msg => {
         }
         if(comando == "eval"){
             const code = await eval(args.join(" "))
-            const evalEmb = new Discord.MessageEmbed()
+            const evalEmb = new EmbedBuilder()
             .setTitle("Command eval")
             .setDescription(`\`\`\`js\n${code}\`\`\``)
             .setColor(colorEmb)
@@ -10295,7 +10296,7 @@ client.on("messageCreate", async msg => {
                         msg.channel.send({ content: `La invitacion se creo y es:\n${invi}` })
                     }, 400))
                 } else {
-                    const embErrP1 = new Discord.MessageEmbed()
+                    const embErrP1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`En el servidor que has proporcionado no tengo permiso en ningún canal para crear una invitación.`)
                         .setColor(ColorError)
@@ -10315,7 +10316,7 @@ client.on("messageCreate", async msg => {
                 if (canal) {
                     let servidorDelCanal = client.guilds.cache.get(canal.guildId)
     
-                    const embErrP1 = new Discord.MessageEmbed()
+                    const embErrP1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`El canal que has proporcionado *(${canal.name})* del servidor ${servidorDelCanal.name} no es un canal de texto por lo tanto no puedo crear una invitación en el.`)
                         .setColor(ColorError)
@@ -10336,7 +10337,7 @@ client.on("messageCreate", async msg => {
                             msg.channel.send({ content: `La invitacion se creo y es:\n${invi}` })
                         }, 400))
                     } else {
-                        const embErrP1 = new Discord.MessageEmbed()
+                        const embErrP1 = new EmbedBuilder()
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(`En el canal que has proporcionado el cual es del servidor ${servidorDelCanal.name} no tengo permisos para crear una invitación.`)
                             .setColor(ColorError)
@@ -10353,7 +10354,7 @@ client.on("messageCreate", async msg => {
                         }, 400)
                     }
                 } else {
-                    const embErrP1 = new Discord.MessageEmbed()
+                    const embErrP1 = new EmbedBuilder()
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(`No encontré el servidor o el canal que has proporcionado, recuerda que debes de proporcionar una **ID** valida de uno de los dos.`)
                         .setColor(ColorError)
@@ -10431,8 +10432,8 @@ client.on("messageCreate", async msg => {
                         }
                     }
     
-                    const embInfoSv = new Discord.MessageEmbed()
-                        .setAuthor(creador.user.tag, creador.user.displayAvatarURL({ dynamic: true }))
+                    const embInfoSv = new EmbedBuilder()
+                        .setAuthor({name: creador.user.tag, iconURL: creador.user.displayAvatarURL()})
                         .setThumbnail(servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setImage(servidor.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle(`<a:Info:926972188018479164> Información del servidor ${servidor.name}`)
@@ -10446,14 +10447,14 @@ client.on("messageCreate", async msg => {
                             // {name: ``, value: ``, inline: true},
                         )
                         .setColor(servidor.me.displayHexColor)
-                        .setFooter(`${servidor.name} • Miembros: ${servidor.members.cache.size}`, servidor.iconURL({ dynamic: true }))
+                        .setFooter({text: `${servidor.name} • Miembros: ${servidor.members.cache.size}`, iconURL: servidor.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfoSv], content: `${inURL}` })
                     }, 400)
                 } else {
-                    const embInfoSv = new Discord.MessageEmbed()
-                        .setAuthor(creador.user.tag, creador.user.displayAvatarURL({ dynamic: true }))
+                    const embInfoSv = new EmbedBuilder()
+                        .setAuthor({name: creador.user.tag, iconURL: creador.user.displayAvatarURL()})
                         .setThumbnail(servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setImage(servidor.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle(`<a:Info:926972188018479164> Información del servidor ${servidor.name}`)
@@ -10464,14 +10465,14 @@ client.on("messageCreate", async msg => {
                             { name: `📃 **Permisos:** ${servidor.me.permissions.toArray().length}`, value: `${servidor.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
                         )
                         .setColor(servidor.me.displayHexColor)
-                        .setFooter(`${servidor.name} • Miembros: ${servidor.members.cache.size}`, servidor.iconURL({ dynamic: true }))
+                        .setFooter({text: `${servidor.name} • Miembros: ${servidor.members.cache.size}`, iconURL: servidor.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfoSv] })
                     }, 400)
                 }
             } else {
-                const embErrP1 = new Discord.MessageEmbed()
+                const embErrP1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`Al parecer no estoy en ese servidor ya que no lo encontré.`)
                     .setColor(ColorError)
@@ -10499,30 +10500,30 @@ client.on("messageCreate", async msg => {
     
     
             if (client.guilds.cache.size <= 0) {
-                const embServidores = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.username, msg.author.displayAvatarURL())
+                const embServidores = new EmbedBuilder()
+                    .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Lista de servidores en los que estoy.")
                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                     .setColor(colorEmb)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embServidores] })
                 }, 400)
     
             } else {
-                const embServidores = new Discord.MessageEmbed()
-                    .setAuthor(msg.author.username, msg.author.displayAvatarURL())
+                const embServidores = new EmbedBuilder()
+                    .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Lista de servidores en los que estoy.")
                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                     .setColor(colorEmb)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
     
-                const botones1 = new Discord.MessageActionRow()
+                const botones1 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
@@ -10530,7 +10531,7 @@ client.on("messageCreate", async msg => {
                                 .setDisabled(true)
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -10538,17 +10539,17 @@ client.on("messageCreate", async msg => {
                         ]
                     )
     
-                const botones2 = new Discord.MessageActionRow()
+                const botones2 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("PRIMARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -10556,17 +10557,17 @@ client.on("messageCreate", async msg => {
                         ]
                     )
     
-                const botones3 = new Discord.MessageActionRow()
+                const botones3 = new ActionRowBuilder()
                     .setComponents(
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle("PRIMARY")
                         ],
                         [
-                            new Discord.MessageButton()
+                            new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
@@ -10590,14 +10591,14 @@ client.on("messageCreate", async msg => {
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 return await botn.update({ embeds: [embServidores], components: [botones1] })
                             } else {
                                 s0 -= 10, s1 -= 10, pagina--
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 await botn.update({ embeds: [embServidores], components: [botones2] })
                             }
                         }
@@ -10607,14 +10608,14 @@ client.on("messageCreate", async msg => {
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 await botn.update({ embeds: [embServidores], components: [botones3] })
                             } else {
                                 s0 += 10, s1 += 10, pagina++
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL({ dynamic: true }))
+                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
                                 await botn.update({ embeds: [embServidores], components: [botones2] })
                             }
                         }
@@ -10683,8 +10684,8 @@ client.on("guildCreate", async gc => {
                 invite = "No hay invitaciones en el servidor"
             }
         }
-        const embGC = new Discord.MessageEmbed()
-            .setAuthor(dueño.user.tag, dueño.user.displayAvatarURL({ dynamic: true }))
+        const embGC = new EmbedBuilder()
+            .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
             .setThumbnail(gc.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
             .setImage(gc.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
             .setTitle("➕ Añadido en un nuevo servidor")
@@ -10702,8 +10703,8 @@ client.on("guildCreate", async gc => {
             .setTimestamp()
         servidorSP.channels.cache.get("940078302880743505").send({ embeds: [embGC], content: `${invite}` })
     } else {
-        const embGC = new Discord.MessageEmbed()
-            .setAuthor(dueño.user.tag, dueño.user.displayAvatarURL({ dynamic: true }))
+        const embGC = new EmbedBuilder()
+            .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
             .setThumbnail(gc.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
             .setImage(gc.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
             .setTitle("➕ Añadido en un nuevo servidor")
@@ -10725,8 +10726,8 @@ client.on("guildCreate", async gc => {
 // Registro de expulsion de servidor
 client.on("guildDelete", async gd => {
     let dueño = gd.members.cache.get(gd.ownerId), servidorSP = client.guilds.cache.get("940034044819828767")
-    const embGD = new Discord.MessageEmbed()
-        .setAuthor(dueño.user.tag, dueño.user.displayAvatarURL({ dynamic: true }))
+    const embGD = new EmbedBuilder()
+        .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
         .setThumbnail(gd.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
         .setImage(gd.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
         .setTitle("➖ Expulsado de un servidor")
@@ -10754,7 +10755,7 @@ client.on("guildDelete", async gd => {
 
 process.on("unhandledRejection", err => {
     const server = client.guilds.cache.get(guild.id)
-    const embErr = new Discord.MessageEmbed()
+    const embErr = new EmbedBuilder()
     .setTitle(`${emojis.negativo} Ocurio un error`)
     .setDescription(`\`\`\`js\n${err}\n\nGuild: ${guild.id}\nChannel: ${guild.channelId}\`\`\``)
     .setColor("ff0000")
@@ -10766,7 +10767,7 @@ process.on("unhandledRejection", err => {
 
 client.on("shardError", async err => {
     const server = client.guilds.cache.get(guild.id)
-    const embErr = new Discord.MessageEmbed()
+    const embErr = new EmbedBuilder()
     .setTitle(`${emojis.negativo} Ocurio un error`)
     .setDescription(`\`\`\`js\n${err.name}\n${err.message}\n${err.stack}\n\nGuild: ${guild.id}\nChannel: ${guild.channelId}\`\`\``)
     .setColor("ff0000")
