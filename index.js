@@ -884,14 +884,14 @@ client.on("interactionCreate", async int => {
 
                                             embTopP
                                                 .setDescription(descripcion + topC.slice(ttp1, ttp2).join("\n\n"))
-                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL())
+                                                .setFooter({text: `Pagina ${pagina}/${segPage}`, iconURL: int.guild.iconURL()})
                                             await bt.update({ embeds: [embTopP], components: [botones3] })
                                         } else {
                                             ttp1 += 10, ttp2 += 10, pagina++
 
                                             embTopP
                                                 .setDescription(descripcion + topC.slice(ttp1, ttp2).join("\n\n"))
-                                                .setFooter(`Pagina ${pagina}/${segPage}`, int.guild.iconURL())
+                                                .setFooter({text: `Pagina ${pagina}/${segPage}`, iconURL: int.guild.iconURL()})
                                             await bt.update({ embeds: [embTopP], components: [botones1] })
                                         }
                                     }
@@ -1066,7 +1066,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nickname ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`<:advertencia:929204500739268608> Advertencias`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
+                .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1116,7 +1116,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
+                                    .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -1128,7 +1128,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
+                                    .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1142,7 +1142,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
+                                    .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -1154,7 +1154,7 @@ client.on("interactionCreate", async int => {
 
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
-                                    .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, miembro.displayAvatarURL())
+                                    .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -1247,7 +1247,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`<:aislacion:947965052772814848> Aislamientos`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
+                .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1428,7 +1428,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`<:salir12:879519859694776360> Expulsiones`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
+                .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1606,7 +1606,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`⛔ Baneos`)
                 .setColor(int.guild.me.displayHexColor)
-                .setFooter(`${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, miembro.displayAvatarURL())
+                .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
                 embHistorial
@@ -1857,8 +1857,8 @@ function erroresMsg(tipo = false, errores = false) {
     }
 }
 let guild = {
-    id: null,
-    channelId: null
+    id: '',
+    channelId: ''
 }
 client.on("messageCreate", async msg => {
     if (msg.author.bot) return;
@@ -1880,7 +1880,7 @@ client.on("messageCreate", async msg => {
                 .setTitle("💤 Estado AFK removido")
                 .setDescription(`${msg.author} tu estado AFK se a removido.`)
                 .setColor(msg.guild.me.displayHexColor)
-                .setFooter(msg.guild.name, msg.guild.iconURL())
+                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
             if (dataAFK.miembros.find(f => f.id == msg.author.id).apodo == msg.author.username) {
@@ -1950,7 +1950,7 @@ client.on("messageCreate", async msg => {
             .setTitle(`Hola, soy **${client.user.username}** un Bot multi fundacional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de inter promoción.`)
             .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: ${"``"}${prefijo}${"``"}\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](${serverSuport})`)
             .setColor(colorEmb)
-            .setFooter(msg.guild.name, msg.guild.iconURL())
+            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
             .setTimestamp()
 
         setTimeout(() => {
@@ -2005,7 +2005,7 @@ client.on("messageCreate", async msg => {
             .setTitle(`Hola, soy **${client.user.username}** un Bot multi funcional, tengo comandos de moderación, comandos informativos y sistemas como el sistema de puntos.`)
             .setDescription(`Usa el comando \`\`${prefijo}comandos\`\` para conocer todos mis comandos.\nMi prefijo en este servidor es: \`\`${prefijo}\`\`\n[📨 **Invítame a tu servidor**](${invitacion})\n[🔧 **Servidor de soporte**](${serverSuport})`)
             .setColor(colorEmb)
-            .setFooter(client.user.username, client.user.displayAvatarURL())
+            .setFooter({text: client.user.username, iconURL: client.user.displayAvatarURL()})
             .setTimestamp()
 
         setTimeout(() => {
@@ -2144,7 +2144,7 @@ client.on("messageCreate", async msg => {
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL())
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAFK] })
@@ -2167,7 +2167,7 @@ client.on("messageCreate", async msg => {
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
                         .setColor(msg.guild.me.displayHexColor)
-                        .setFooter(msg.guild.name, msg.guild.iconURL())
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAFK] })
@@ -2319,7 +2319,7 @@ client.on("messageCreate", async msg => {
                     { name: "🔍 **Estado:**", value: `${presencia[miemPresence?.status]}\n${actyvidad}`, inline: true },
                 )
                 .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.me.displayHexColor)
-                .setFooter(miembro ? miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() } : { text: msg.guild.name, iconURL: msg.guild.iconURL() })
+                .setFooter( miembro ? miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() } : { text: msg.guild.name, iconURL: msg.guild.iconURL() })
                 .setTimestamp()
             miembro ? miembro.user.bot ? embMiembro.fields.splice(6, 1) : null : null
             miembro ? miembro.id != msg.author.id && !miembro.user.bot ? "hola" : embMiembro.fields.length == 9 ? embMiembro.fields.splice(6, 1) : embMiembro.fields.splice(7, 1) : embMiembro.fields.length == 9 ? embMiembro.fields.splice(6, 1) : embMiembro.fields.splice(7, 1)
@@ -2478,7 +2478,7 @@ client.on("messageCreate", async msg => {
                     .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                     .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(0, 10).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - 1/1`, msg.guild.iconURL())
+                    .setFooter({text: `Pagina - 1/1`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEmojis] })
@@ -2537,7 +2537,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -2549,7 +2549,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2563,7 +2563,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -2575,7 +2575,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2668,7 +2668,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -2679,7 +2679,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -2693,7 +2693,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -2704,7 +2704,7 @@ client.on("messageCreate", async msg => {
 
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -3334,7 +3334,7 @@ client.on("messageCreate", async msg => {
                                 in1 -= 10, in2 -= 10, pagina--
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "SECONDARY"
                                 botones.components[0].disabled = true
                                 botones.components[1].disabled = false
@@ -3345,7 +3345,7 @@ client.on("messageCreate", async msg => {
                                 in1 -= 10, in2 -= 10, pagina--
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -3358,7 +3358,7 @@ client.on("messageCreate", async msg => {
                                 in1 += 10, in2 += 10, pagina++
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].disabled = false
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[1].style = "SECONDARY"
@@ -3371,7 +3371,7 @@ client.on("messageCreate", async msg => {
 
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 botones.components[0].style = "PRIMARY"
                                 botones.components[0].disabled = false
                                 botones.components[1].disabled = false
@@ -3451,7 +3451,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido: Banear miembros, Expulsar miembros o Aislar miembros.")
+                .setFooter({text: "Permiso requerido: Banear miembros, Expulsar miembros o Aislar miembros."})
                 .setTimestamp()
             if (!msg.member.permissions.has("KICK_MEMBERS" || "BAN_MEMBERS" || "MODERATE_MEMBERS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(dt => setTimeout(() => {
@@ -3991,7 +3991,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido: Aislar miembros, Expulsar miembros o Banear miembros.")
+                .setFooter({text: "Permiso requerido: Aislar miembros, Expulsar miembros o Banear miembros."})
                 .setTimestamp()
             if (!msg.member.permissions.has("MODERATE_MEMBERS") && !msg.member.permissions.has("KICK_MEMBERS") && !msg.member.permissions.has("BAN_MEMBERS")) {
                 return setTimeout(() => {
@@ -4293,7 +4293,7 @@ client.on("messageCreate", async msg => {
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
-                        .setFooter("Permiso requerido: Aislar temporalmente a miembros")
+                        .setFooter({text: "Permiso requerido: Aislar temporalmente a miembros"})
                         .setTimestamp()
                     return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -4667,7 +4667,7 @@ client.on("messageCreate", async msg => {
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
-                        .setFooter("Permiso requerido: Aislar temporalmente a miembros")
+                        .setFooter({text: "Permiso requerido: Aislar temporalmente a miembros"})
                         .setTimestamp()
                     return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -4998,14 +4998,14 @@ client.on("messageCreate", async msg => {
 
                                 embMuteList
                                     .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 return await botn.update({ embeds: [embMuteList], components: [botones1] })
                             }
                             ai1 -= 10, ai2 -= 10, pagina--
 
                             embMuteList
                                 .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                             await botn.update({ embeds: [embMuteList], components: [botones2] })
                         }
                         if (botn.customId === "2") {
@@ -5014,14 +5014,14 @@ client.on("messageCreate", async msg => {
 
                                 embMuteList
                                     .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 return await botn.update({ embeds: [embMuteList], components: [botones3] })
                             }
                             ai1 += 10, ai2 += 10, pagina++
 
                             embMuteList
                                 .setDescription(`Hay un total de **${aislados.size.toLocaleString()}** miembros con aislamiento temporal.\n\n${aislados.map(p => p).map((a, n) => `**${n + 1}.** [${a.user.tag}](${a.user.displayAvatarURL()}) su aislamiento termina <t:${Math.floor(a.communicationDisabledUntilTimestamp / 1000)}:R>`).slice(ai1, ai2).join("\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                             return await botn.update({ embeds: [embMuteList], components: [botones2] })
                         }
                     })
@@ -5041,7 +5041,7 @@ client.on("messageCreate", async msg => {
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
-                        .setFooter("Permiso requerido: Expulsar miembros")
+                        .setFooter({text: "Permiso requerido: Expulsar miembros"})
                         .setTimestamp()
                     return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -5481,7 +5481,7 @@ client.on("messageCreate", async msg => {
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
-                        .setFooter("Permiso requerido: Banear miembros")
+                        .setFooter({text: "Permiso requerido: Banear miembros"})
                         .setTimestamp()
                     return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -5868,7 +5868,7 @@ client.on("messageCreate", async msg => {
                         .setTitle("⛔ Bot externo baneado")
                         .setDescription(`🤖 ${usuario.tag}\n${usuario.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
-                        .setFooter(msg.guild.name, msg.guild.iconURL())
+                        .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                         msg.guild.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBaneo] })
@@ -5984,7 +5984,7 @@ client.on("messageCreate", async msg => {
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[p])
                         .setColor(ColorError)
-                        .setFooter("Permiso requerido: Banear miembros")
+                        .setFooter({text: "Permiso requerido: Banear miembros"})
                         .setTimestamp()
                     return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -6172,7 +6172,7 @@ client.on("messageCreate", async msg => {
                         .setTitle(`${emojis.negativo} Error`)
                         .setDescription(descripcionesP[c])
                         .setColor(ColorError)
-                        .setFooter("Permiso requerido: Gestionar mensajes")
+                        .setFooter({text: "Permiso requerido: Gestionar mensajes"})
                         .setTimestamp()
                     return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -6291,7 +6291,7 @@ client.on("messageCreate", async msg => {
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripcionesC[c])
                             .setColor(ColorError)
-                            .setFooter("Permiso requerido: Gestionar mensajes")
+                            .setFooter({text: "Permiso requerido: Gestionar mensajes"})
                             .setTimestamp()
                         return setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -6363,7 +6363,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requiero del permiso: Banear miembros.")
+                .setFooter({text: "Requiero del permiso: Banear miembros."})
                 .setTimestamp()
             if (!msg.guild.me.permissions.has("BAN_MEMBERS")) return msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                 msg.delete().catch(c => {
@@ -6378,7 +6378,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requieres del permiso: Banear miembros.")
+                .setFooter({text: "Requieres del permiso: Banear miembros."})
                 .setTimestamp()
             if (!msg.member.permissions.has("BAN_MEMBERS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
@@ -6428,7 +6428,7 @@ client.on("messageCreate", async msg => {
                     .setTitle("🧾 Miembros baneados")
                     .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
                     .setColor(msg.guild.me.displayHexColor)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
                 const botones1 = new ActionRowBuilder()
@@ -6503,14 +6503,14 @@ client.on("messageCreate", async msg => {
 
                                 embBanlist
                                     .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 return await botn.update({ embeds: [embBanlist], components: [botones1] })
                             }
                             ba1 -= 10, ba2 -= 10, pagina--
 
                             embBanlist
                                 .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                             await botn.update({ embeds: [embBanlist], components: [botones2] })
                         }
                         if (botn.customId === "2") {
@@ -6519,14 +6519,14 @@ client.on("messageCreate", async msg => {
 
                                 embBanlist
                                     .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 return await botn.update({ embeds: [embBanlist], components: [botones3] })
                             }
                             ba1 += 10, ba2 += 10, pagina++
 
                             embBanlist
                                 .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                                .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                             return await botn.update({ embeds: [embBanlist], components: [botones2] })
                         }
                     })
@@ -6541,7 +6541,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido: Gestionar mensajes, Expulsar miembros o Banear miembros")
+                .setFooter({text: "Permiso requerido: Gestionar mensajes, Expulsar miembros o Banear miembros"})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_MESSAGES") || !msg.member.permissions.has("KICK_MEMBERS") || !msg.member.permissions.has("BAN_MEMBERS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(dt => setTimeout(() => {
@@ -6640,7 +6640,7 @@ client.on("messageCreate", async msg => {
                             .setTitle(`${emojis.negativo} Error`)
                             .setDescription(descripcionesD[c])
                             .setColor(ColorError)
-                            .setFooter("Permiso requerido: Gestionar mensajes")
+                            .setFooter({text: "Permiso requerido: Gestionar mensajes"})
                             .setTimestamp()
                         return setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrMiembro] }).then(dt => setTimeout(() => {
@@ -6855,7 +6855,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Gestionar canales")
+                .setFooter({text: "Permiso requerido:  Gestionar canales"})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -6872,7 +6872,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido: Gestionar canales")
+                .setFooter({text: "Permiso requerido: Gestionar canales"})
                 .setTimestamp()
             if (!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
@@ -6997,7 +6997,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requieres del permiso: Gestionar roles.")
+                .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -7014,7 +7014,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requiero del permiso: Gestionar roles.")
+                .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.guild.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
@@ -7378,7 +7378,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requieres del permiso: Gestionar roles.")
+                .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -7395,7 +7395,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requiero del permiso: Gestionar roles.")
+                .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.guild.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
@@ -7771,7 +7771,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requieres del permiso: Gestionar roles.")
+                .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -7788,7 +7788,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requiero del permiso: Gestionar roles.")
+                .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
@@ -8020,7 +8020,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requieres del permiso: Gestionar roles.")
+                .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -8037,7 +8037,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tengo los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Requiero del permiso: Gestionar roles.")
+                .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
             if (!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
@@ -8138,7 +8138,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Gestionar roles")
+                .setFooter({text: "Permiso requerido:  Gestionar roles"})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -8323,14 +8323,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones1] })
                                 } else {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8340,14 +8340,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones3] })
                                 } else {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8393,7 +8393,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Gestionar roles")
+                .setFooter({text: "Permiso requerido:  Gestionar roles"})
                 .setTimestamp()
             if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -8579,14 +8579,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones1] })
                                 } else {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8596,14 +8596,14 @@ client.on("messageCreate", async msg => {
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     return await botn.update({ embeds: [embMiembros], components: [botones3] })
                                 } else {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
                                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
                             }
@@ -8877,7 +8877,7 @@ client.on("messageCreate", async msg => {
                             .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`Tienes ${dataSP.datos.emoji} **0** puntos.`)
                             .setColor(msg.guild.me.displayHexColor)
-                            .setFooter(msg.guild.name, msg.guild.iconURL())
+                            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
 
                         setTimeout(() => {
@@ -8916,7 +8916,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Administrador")
+                .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
             if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -9088,7 +9088,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Administrador")
+                .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
             if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -9589,14 +9589,14 @@ client.on("messageCreate", async msg => {
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embTopP], components: [botones1] })
                                 } else {
                                     cps1 -= 10, cps2 -= 10, pagina--
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embTopP], components: [botones2] })
                                 }
                             }
@@ -9606,14 +9606,14 @@ client.on("messageCreate", async msg => {
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embTopP], components: [botones3] })
                                 } else {
                                     cps1 += 10, cps2 += 10, pagina++
 
                                     embTopP
                                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                                        .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                        .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embTopP], components: [botones2] })
                                 }
                             }
@@ -9649,7 +9649,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Administrador")
+                .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
             if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -9827,7 +9827,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Administrador")
+                .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
             if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -9917,7 +9917,7 @@ client.on("messageCreate", async msg => {
                 .setTitle(`${emojis.negativo} Error`)
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando.`)
                 .setColor(ColorError)
-                .setFooter("Permiso requerido:  Administrador")
+                .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
             if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
@@ -10507,7 +10507,7 @@ client.on("messageCreate", async msg => {
                     .setTitle("🧾 Lista de servidores en los que estoy.")
                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                     .setColor(colorEmb)
-                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embServidores] })
@@ -10593,14 +10593,14 @@ client.on("messageCreate", async msg => {
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 return await botn.update({ embeds: [embServidores], components: [botones1] })
                             } else {
                                 s0 -= 10, s1 -= 10, pagina--
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 await botn.update({ embeds: [embServidores], components: [botones2] })
                             }
                         }
@@ -10610,14 +10610,14 @@ client.on("messageCreate", async msg => {
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 await botn.update({ embeds: [embServidores], components: [botones3] })
                             } else {
                                 s0 += 10, s1 += 10, pagina++
     
                                 embServidores
                                     .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
-                                    .setFooter(`Pagina - ${pagina}/${segPage}`, msg.guild.iconURL())
+                                    .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 await botn.update({ embeds: [embServidores], components: [botones2] })
                             }
                         }
@@ -10762,7 +10762,7 @@ process.on("unhandledRejection", err => {
     .setDescription(`\`\`\`js\n${err}\n\nGuild: ${guild.id}\nChannel: ${guild.channelId}\`\`\``)
     .setColor("ff0000")
     .setTimestamp()
-    .setFooter({text: server.name, iconURL: server.iconURL()})
+    if(server) embErr.setFooter({text: server.name, iconURL: server.iconURL()})
     client.channels.cache.get("960294374258933821").send({ embeds: [embErr] })
     console.error(err)
 })
@@ -10774,7 +10774,7 @@ client.on("shardError", async err => {
     .setDescription(`\`\`\`js\n${err.name}\n${err.message}\n${err.stack}\n\nGuild: ${guild.id}\nChannel: ${guild.channelId}\`\`\``)
     .setColor("ff0000")
     .setTimestamp()
-    .setFooter({text: server.name, iconURL: server.iconURL()})
+    if(server) embErr.setFooter({text: server.name, iconURL: server.iconURL()})
     client.channels.cache.get("960294374258933821").send({ embeds: [embErr] })
     console.error(err)
 })
