@@ -71,10 +71,10 @@ client.on("ready", async () => {
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
-    // canalLogStart.sendTyping()
-    // setTimeout(()=> {
-    //     canalLogStart.send({ embeds: [embReady] })
-    // }, 1000)
+    canalLogStart.sendTyping()
+    setTimeout(()=> {
+        canalLogStart.send({ embeds: [embReady] })
+    }, 1000)
 
 
     function presencias() {
@@ -938,7 +938,7 @@ client.on("interactionCreate", async int => {
             const embPointsSystem = new EmbedBuilder()
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`<:status:957353077650886716> Estado del sistema de puntos`)
-                .addFields(
+                .setFields(
                     { name: `👥 **Miembros que han utilizado el sistema:**`, value: `**${dataSP.miembros.length.toLocaleString()}**`, inline: true },
                     { name: `🔢 **Comandos del sistema usados:**`, value: `**${dataSP.datos.comandosUsos.toLocaleString()}**`, inline: true },
                     { name: `${dataSP.datos.emoji} **Puntos agregados y eliminados:** ${totalPuntos.toLocaleString()}`, value: `${totalPuntos >= 1 ? `Agregados: **${dataSP.datos.puntosAgregados}** | ${(dataSP.datos.puntosAgregados * 100 / totalPuntos).toFixed(2)}%\nEliminados: **${dataSP.datos.puntosEliminados}** | ${(dataSP.datos.puntosEliminados * 100 / totalPuntos).toFixed(2)}%` : "*No se ha agregado ni eliminado ningún punto*"}`, inline: true },
@@ -2020,7 +2020,9 @@ client.on("messageCreate", async msg => {
             .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL() })
             .setTitle("📑 Comandos")
             .setDescription(`Un **comando** es una orden/instrucción que les das al Bot y a la que el Bot responde de cierta forma de acuerdo a la orden o nombre del comando.`)
-            .addField(`🌎 **Comandos generales:** *14*`, `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`)
+            .setFields(
+                {name: `🌎 **Comandos generales:** *14*`, value: `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`}
+            )
             .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
             .setColor(colorEmb)
             .setTimestamp()
@@ -2118,7 +2120,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando afk`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}afk <Razón>\`\`` },
                     { name: "Ejemplo:", value: `${prefijo}afk Necesito descansar.` },
                     { name: "Alias:", value: `\`\`afk\`\`` },
@@ -2272,7 +2274,7 @@ client.on("messageCreate", async msg => {
             let alias = ["user", "usuario", "userinfo"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}userinfo <Usuario>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}userinfo ${msg.author}\n${prefijo}userinfo ${msg.author.id}\n${prefijo}userinfo ${msg.author.tag}` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -2304,7 +2306,7 @@ client.on("messageCreate", async msg => {
                 .setThumbnail(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                 .setImage(bannerUser.bannerURL({ dynamic: true, format: "jpg" || "gif", size: 4096 }))
                 .setDescription(miembro ? miembro.id == msg.author.id ? `👤 Tu: ${msg.author}` : miembro.user.bot ? `🤖 Bot: ${miembro}` : `👤 Miembro: ${miembro}` : `👤 Tu: ${msg.author}`)
-                .addFields(
+                .setFields(
                     { name: "🏷 **Tag:**", value: `${miembro ? miembro.id == msg.author.id ? msg.author.tag : miembro.user.tag : msg.author.tag}`, inline: true },
                     { name: "🆔 **ID:**", value: `${miembro ? miembro.id == msg.author.id ? msg.author.id : miembro.id : msg.author.id}`, inline: true },
                     { name: "📌 **Apodo:**", value: `${miembro ? miembro.nickname !== null ? `${miembro.nickname}` : "*Ninguno*" : msg.member.nickname !== null ? `${msg.member.nickname}` : "*Ninguno*"}`, inline: true },
@@ -2342,7 +2344,7 @@ client.on("messageCreate", async msg => {
                         .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setImage(usuario.bannerURL({ dynamic: true, format: "jpg" || "gif", size: 4096 }))
                         .setDescription(usuario.bot ? `🤖 Bot externo: ${usuario}` : `👤 Usuario externo: ${usuario}`)
-                        .addFields(
+                        .setFields(
                             { name: "🏷 **Tag:**", value: `${usuario.tag}`, inline: true },
                             { name: "🆔 **ID:**", value: `${usuario.id}`, inline: true },
                             { name: usuario.bot ? "📅 **Fue creado:**" : "📅 **Creo la cuenta:**", value: `<t:${Math.round(usuario.createdAt / 1000)}:R>`, inline: true },
@@ -2382,7 +2384,7 @@ client.on("messageCreate", async msg => {
             const embStats = new EmbedBuilder()
                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("<:grafica:958856872981585981> Estadisticas")
-                .addFields(
+                .setFields(
                     { name: "<:wer:920166217086537739> **Servidores:**", value: `${client.guilds.cache.size.toLocaleString()}`, inline: true },
                     { name: "📑 **Comandos:**", value: `43`, inline: true },
                     { name: "<:cronometro:948693729588441149> **Uptime:**", value: `${ms(client.uptime)}`, inline: true },
@@ -2407,7 +2409,7 @@ client.on("messageCreate", async msg => {
             let emR = Math.floor(Math.random() * emojisSV.length)
             const embInfo = new EmbedBuilder()
                 .setAuthor({name: `${emojis.lupa} Comando jumbo`})
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}jumbo <Emoji>\`\`` },
                     { name: "Ejemplo:", value: `${prefijo}jumbo ${emojisSV[emR]}` },
                     { name: "Alias:", value: `\`\`jumbo\`\`` },
@@ -2755,7 +2757,7 @@ client.on("messageCreate", async msg => {
             let alias = ["avatar", "icon", "icono"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}avatar <Usuario o servidor>\`\`` },
                     { name: "Ejemplos: **4**", value: `${prefijo}avatar ${msg.author}\n${prefijo}avatar ${msg.author.id}\n${prefijo}avatar ${msg.author.tag}\n${prefijo}avatar *servidor*` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -2896,7 +2898,7 @@ client.on("messageCreate", async msg => {
                 .setTimestamp()
 
             if (msg.guild.features.length >= 1 && msg.guild.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
-                embServer.addFields(
+                embServer.setFields(
                     { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                     { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
                     { name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true },
@@ -2920,7 +2922,7 @@ client.on("messageCreate", async msg => {
 
             } else {
                 if (msg.guild.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
-                    embServer.addFields(
+                    embServer.setFields(
                         { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                         { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
                         { name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true },
@@ -2943,7 +2945,7 @@ client.on("messageCreate", async msg => {
 
                 } else {
                     if (msg.guild.me.permissions.has("BAN_MEMBERS")) {
-                        embServer.addFields(
+                        embServer.setFields(
                             { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                             { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
                             { name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true },
@@ -2965,7 +2967,7 @@ client.on("messageCreate", async msg => {
 
                     } else {
                         if (msg.guild.me.permissions.has("MANAGE_GUILD")) {
-                            embServer.addFields(
+                            embServer.setFields(
                                 { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                                 { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
                                 { name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true },
@@ -2986,7 +2988,7 @@ client.on("messageCreate", async msg => {
                             )
 
                         } else {
-                            embServer.addFields(
+                            embServer.setFields(
                                 { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                                 { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
                                 { name: "👑 **Propiedad de:**", value: `<@${msg.guild.ownerId}>`, inline: true },
@@ -3049,7 +3051,7 @@ client.on("messageCreate", async msg => {
                 if (msg.guild.me.permissions.has("MANAGE_GUILD")) {
                     const embInfo = new EmbedBuilder()
                         .setTitle(`${emojis.lupa} Comando qrcode`)
-                        .addFields(
+                        .setFields(
                             { name: "Uso:", value: `\`\`${prefijo}qrcode <URL o link>\`\`` },
                             { name: "Ejemplo:", value: `${prefijo}qrcode ${(await msg.guild.invites.fetch()).map(mi => mi.url).slice(0, 1)}` },
                             { name: "Alias:", value: `\`\`qrcode\`\`, \`\`qr\`\`` },
@@ -3063,7 +3065,7 @@ client.on("messageCreate", async msg => {
                 } else {
                     const embInfo = new EmbedBuilder()
                         .setTitle(`${emojis.lupa} Comando qrcode`)
-                        .addFields(
+                        .setFields(
                             { name: "Uso:", value: `\`\`${prefijo}qrcode <URL o link>\`\`` },
                             { name: "Ejemplo", value: `${prefijo}qrcode https://discord.gg/yKfWU4uykc` },
                             { name: "Alias:", value: `\`\`${prefijo}qrcode\`\`, \`\`${prefijo}qr\`\`` },
@@ -3116,7 +3118,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando reportbug`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}reportbug <Reporte>\`\`` },
                     { name: "Ejemplos: **2**", value: `${prefijo}reportbug El comando say no funciona.` },
                     { name: "Alias: **3**", value: `\`\`reportbug\`\`, \`\`reportarerror\`\`, \`\`repbug\`\`` },
@@ -3185,7 +3187,7 @@ client.on("messageCreate", async msg => {
                                 .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                 .setThumbnail(msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                                 .setTitle(`<:report:959201948169564210> Nuevo reporte`)
-                                .addFields(
+                                .setFields(
                                     { name: `👤 **Reporte de:**`, value: `${msg.author.tag}\n${msg.author.id}`, inline: true },
                                     { name: `📤 **Desde:**`, value: `${msg.guild.name}\n${msg.guild.id}`, inline: true },
                                     { name: `📄 **Reporte:**`, value: `${args.join(" ")}`, inline: true },
@@ -3215,7 +3217,7 @@ client.on("messageCreate", async msg => {
                 .setThumbnail(client.user.displayAvatarURL())
                 .setTitle(`<:util:947316902647189554> ${client.user.username}`)
                 .setDescription(`Soy un bot enfocado en serte de lo mas útil posible en tu servidor contando con comandos de moderación, administración, comandos de sistemas que te pueden ser de gran utilidad en tu servidor, *si tienes alguna duda o necesitas información adicional sobre mi pueden entrar en mi [servidor](${serverSuport}) de soporte, para conocer mis términos de servicio en mi [pagina](${webPage}) web*.\n📅 Creado <t:${Math.floor(client.user.createdAt / 1000)}:R> por ${client.users.cache.get(creadorID).tag}\n`)
-                .addFields(
+                .setFields(
                     { name: `\u200B`, value: `<:status:957353077650886716> **Sistema:**`, inline: false },
                     { name: `<:node:958824377166737428> **Node:**`, value: `${process.version}`, inline: true },
                     { name: `<:discordjs:958825301624881162> **Discord.js:**`, value: `v${version}`, inline: true },
@@ -3250,7 +3252,7 @@ client.on("messageCreate", async msg => {
             let alias = ["invites", "invs", "invitaciones"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}invites <Miembro>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}invites ${msg.author}\n${prefijo}invites ${msg.author.id}\n${prefijo}invites ${msg.author.tag}` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -3389,7 +3391,7 @@ client.on("messageCreate", async msg => {
             let alias = ["inviteinfo", "invinfo"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando invites`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}inviteinfo <Invitación>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}inviteinfo https://discord.gg/G7GUD7eNCb\n${prefijo}inviteinfo G7GUD7eNCb\n${prefijo}inviteinfo https://discord.com/invite/G7GUD7eNCb` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -3407,7 +3409,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 }) })
                     .setTitle(`<a:Info:926972188018479164> Información de invitación`)
                     // .setDescription(`Invitación creada por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 1024})}), ID: \`\`${invite.inviterId}\`\``} en el canal **${invite.guild.id==msg.guildId ? invite.channel : invite.channel.name}** ${invite.guild.id==msg.guildId ? "*en este servidor.*" : `en el servidor **${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount-invite.presenceCount).toLocaleString()}** desconectados.`}`)
-                    .addFields(
+                    .setFields(
                         { name: `<:servidores:954823483794276383> **Servidor:**`, value: `${invite.guild.id == msg.guildId ? "*de este servidor*" : `**${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount - invite.presenceCount).toLocaleString()}** desconectados.`}` },
                         { name: `<:calendario:952037404561264661> **Creada:**`, value: `en el canal **${invite.guild.id == msg.guildId ? invite.channel : invite.channel.name}**, por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 })}), ID: \`\`${invite.inviterId}\`\``}` },
                         // {name: ``, value: ``},
@@ -3464,7 +3466,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando record`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}record <Mencion del miembro>\`\`\n\`\`${prefijo}record <ID del miembro>\`\`\n\`\`${prefijo}record <Etiqueta del miembro>\`\`` },
                     { name: "Ejemplos: **2**", value: `${prefijo}record ${msg.author}\n${prefijo}record ${msg.author.id}\n${prefijo}record ${msg.author.tag}` },
                     { name: "Alias: **1**", value: `\`\`record\`\`, \`\`historial\`\`` },
@@ -3873,7 +3875,7 @@ client.on("messageCreate", async msg => {
             let alias = ["deleterecord", "delrecord", "eliminarregistro", "delregistro"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando deleterecord`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}deleterecord <Miembro> <Tipo de sanción> <Cantidad de sanciones a eliminar>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}deleterecord ${msg.author} advertencias ${Math.floor(Math.random() * (20 - 1) + 1)}\n${prefijo}deleterecord ${msg.author.id} aislamientos ${Math.floor(Math.random() * (20 - 1) + 1)}\n${prefijo}deleterecord ${msg.author.tag} expulsiones ${Math.floor(Math.random() * (20 - 1) + 1)}` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -4036,7 +4038,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando warn`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}warn <Mencion del miembro> <Razón>\`\`\n\`\`${prefijo}warn <ID del miembro> <Razón>\`\`\n\`\`${prefijo}warn <Tag/etiqueta del miembro> <Razón>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}warn ${msg.author} Mal uso de canales.\n${prefijo}warn ${msg.author.id} Uso de palabras in adecuadas.\n${prefijo}warn ${msg.author.tag} Crear un conflicto.` },
                     { name: "Alias: **2**", value: `\`\`warn\`\`, \`\`advertir\`\`` },
@@ -4334,7 +4336,7 @@ client.on("messageCreate", async msg => {
             let tiempos = ["1m", "5m", "10m", "30m", "1h", "2h", "4h", "8h", "16h", "1d", "2d", "4d", "10d", "20d"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando mute`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}mute <Mencion del miembro> <Tiempo del aislamiento> <Razón>\`\`\n\`\`${prefijo}mute <ID del miembro> <Tiempo del aislamiento> <Razón>\`\`\n\`\`${prefijo}mute <Etiqueta del miembro> <Tiempo del aislamiento> <Razón>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}mute ${msg.author} ${tiempos[Math.floor(Math.random() * tiempos.length)]} Mal uso de canales.\n${prefijo}mute ${msg.author.id} ${tiempos[Math.floor(Math.random() * tiempos.length)]} Uso de palabras in adecuadas.\n${prefijo}mute ${msg.author.tag} ${tiempos[Math.floor(Math.random() * tiempos.length)]} Publicar enlaces.` },
                     { name: "Alias: **2**", value: `\`\`mute\`\`, \`\`aislar\`\`` },
@@ -4712,7 +4714,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando unmute`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}unmute <Mencion del miembro>\`\`\n\`\`${prefijo}unmute <ID del miembro>\`\`\n\`\`${prefijo}unmute <Etiqueta del miembro>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}unmute ${msg.author}\n${prefijo}unmute ${msg.author.id}\n${prefijo}unmute ${msg.author.tag}` },
                     { name: "Alias: **1**", value: `\`\`unmute\`\`` },
@@ -5085,7 +5087,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
             .setTitle(`${emojis.lupa} Comando kick`)
-            .addFields(
+            .setFields(
                 { name: "Uso:", value: `\`\`${prefijo}kick <Mencion del miembro> <Razón>\`\`\n\`\`${prefijo}kick <ID del miembro> <Razón>\`\`\n\`\`${prefijo}kick <Etiqueta del miembro> <Razón>\`\`` },
                 { name: "Ejemplos: **3**", value: `${prefijo}kick ${msg.author} Romper una regla.\n${prefijo}kick ${msg.author.id} Flood en canales.\n${prefijo}kick ${msg.author.tag} Spam al MD.` },
                 { name: "Alias: **2**", value: `\`\`kick\`\`, \`\`expulsar\`\`` },
@@ -5525,7 +5527,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
             .setAuthor({name: `${emojis.lupa} Comanod ban`})
-            .addFields(
+            .setFields(
                 { name: "Uso:", value: `\`\`${prefijo}ban <Mencion del miembro> <Razón>\`\`\n\`\`${prefijo}ban <ID del miembro o usuario externo> <Razón>\`\`\n\`\`${prefijo}ban <Etiqueta del miembro> <Razón>\`\`` },
                 { name: "Ejemplo:", value: `${prefijo}ban ${msg.author} Publicar URLs maliciosas.\n${prefijo}ban ${msg.author.id} Romper múltiples reglas en el servidor.\n${prefijo}ban ${msg.author.tag} Incumplimiento del ToS de Discord` },
                 { name: "Alias: **2**", value: `\`\`ban\`\`, \`\`prohibir\`\`` },
@@ -6015,7 +6017,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando unban`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}unban <ID del usuario baneado>\`\`` },
                     { name: "Ejemplo:", value: `${prefijo}unban ${(await msg.guild.bans.fetch()).map(mb => mb.user.id).slice(0, 1)}` },
                     { name: "Alias:", value: `\`\`unban\`\`` },
@@ -6216,7 +6218,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando clear`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}clear <Cantidad de emensajes>\`\`\n\`\`${prefijo}clear <Mencion del miembro> <Cantidad de emensajes>\`\`\n\`\`${prefijo}clear <ID del miembro> <Cantidad de emensajes>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}clear ${Math.floor(Math.random(1) * 100)}\n${prefijo}clear ${msg.author} ${Math.floor(Math.random(1) * 100)}\n${prefijo}clear ${msg.author.id} ${Math.floor(Math.random(1) * 100)}` },
                     { name: "Alias: **4**", value: `\`\`clear\`\`, \`\`cl\`\`, \`\`delete\`\`, \`\`eliminar\`\`` },
@@ -6583,7 +6585,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle("🔎 Comando dmsend")
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}dmsend <Mencion del miembro> <Mensaje>\`\`\n\`\`${prefijo}dmsend <ID del miembro> <Mensaje>\`\`\n\`\`${prefijo}dmsend <Etiqueta del miembro> <Mensaje>\`\`` },
                     { name: "Ejemplos: **3**", value: `${prefijo}dmsend ${msg.author} Mensaje a enviar.\n${prefijo}dmsend ${msg.author.id} Mensaje a enviar.\n${prefijo}dmsend ${msg.author.tag} Mensaje a enviar` },
                     { name: "Alias: **3**", value: `\`\`dmsend\`\`, \`\`dm\`\`, \`\`md\`\`` },
@@ -6743,7 +6745,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setPrefix`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}setprefix <Nuevo prefijo>\`\`` },
                     { name: "Ejemplo:", value: `${prefijo}setprefix u/` },
                     { name: "Alias:", value: `\`\`setprefix\`\`` },
@@ -6910,7 +6912,7 @@ client.on("messageCreate", async msg => {
             let tiempos = ["10s", "2m", "30m", "1h", "6h", "12h"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setSlowMode`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}setSlowMode <Mención del canal> <Tiempo a establecer el modo pausado>\`\`\n\`\`${prefijo}setSlowMode <ID del canal> <Tiempo a establecer el modo pausado>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}setSlowMode ${msg.channel} ${tiempos[Math.floor(Math.random() * tiempos.length)]}\n${prefijo}setSlowMode ${msg.channelId} ${tiempos[Math.floor(Math.random() * tiempos.length)]}` },
                     { name: "Alias:", value: `\`\`setslowmode\`\`, \`\`setslow\`\`, \`\`slowmode\`\`` },
@@ -7051,7 +7053,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando addrol`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}addrol <Mencion del miembro> <Mencion del rol>\`\`\n\`\`${prefijo}addrol <ID del miembro> <ID del rol>\`\`\n\`\`${prefijo}addrol <Mención o ID del rol> <palabra *all* o *todos*>\`\`` },
                     { name: "Ejemplos: ", value: `${prefijo}addrol ${msg.author} ${roles[random]}\n${prefijo}addrol ${msg.author} ${roles[random].id}\n${prefijo}addrol ${msg.author.id} ${roles[random].id}\n${prefijo}addrol ${msg.author.id} ${roles[random]}\n${prefijo}addrol ${roles[random]} all\n${prefijo}addrol todos ${roles[random].id}` },
                     { name: "Alias: *2*", value: `\`\`addrol\`\`, \`\`addr\`\`` },
@@ -7432,7 +7434,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando removerol`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}removerol <Mencion del miembro> <Mencion del rol>\`\`\n\`\`${prefijo}removerol <ID del miembro> <ID del rol>\`\`` },
                     { name: "Ejemplos: ", value: `${prefijo}removerol ${msg.author} ${roles[random]}\n${prefijo}removerol ${msg.author} ${roles[random].id}\n${prefijo}removeRol ${msg.author.id} ${roles[random].id}\n${prefijo}removeRol ${msg.author.id} ${roles[random]}` },
                     { name: "Alias: *3*", value: `\`\`removerol\`\`, \`\`remover\`\`, \`\`rmr\`\`` },
@@ -7825,7 +7827,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando createchannel`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}createchannel <Nombre del canal>\`\`\n\`\`${prefijo}createchannel <Nombre del canal> <Tipo de canal (texto o voz)>\`\`\n\`\`${prefijo}createchannel <Nombre del canal> <Tipo de canal (texto o voz)> <ID de la categoría en la que se creara>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}createchannel Chat\n${prefijo}createchannel Reglas texto\n${prefijo}createchannel Musica voz ${categoriasGMS[randomCat]}` },
                     { name: "Alias: *3*", value: `\`\`createchannel\`\`, \`\`createcha\`\`, \`\`crech\`\`` },
@@ -8074,7 +8076,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando deletechannel`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}deletechannel <Mencion del canal>\`\`\n\`\`${prefijo}deletechannel <ID del canal>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}deletechannel ${canalesAlDel[randomChanne]}\n${prefijo}deletechannel ${canalesAlDel[randomChanne].id}` },
                     { name: "Alias: *3*", value: `\`\`deletechannel\`\`, \`\`deletecha\`\`, \`\`delch\`\`` },
@@ -8175,7 +8177,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando memberswithrole`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}memberswithrole <Mención del rol>\`\`\n\`\`${prefijo}memberswithrole <ID del rol>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}memberswithrole ${roles[Math.floor(Math.random() * roles.length)]}\n${prefijo}memberswithrole ${roles[Math.floor(Math.random() * roles.length)].id}` },
                     { name: "Alias:", value: `\`\`memberswithrole\`\`, \`\`memberswr\`\`, \`\`miembrosconelrol\`\`, \`\`mcer\`\`` },
@@ -8430,7 +8432,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando memberswithouttherole`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}memberswithouttherole <Mención del rol>\`\`\n\`\`${prefijo}memberswithouttherole <ID del rol>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}memberswithouttherole ${roles[Math.floor(Math.random() * roles.length)]}\n${prefijo}memberswithouttherole ${roles[Math.floor(Math.random() * roles.length)].id}` },
                     { name: "Alias:", value: `\`\`memberswithouttherole\`\`, \`\`mwtr\`\`, \`\`miembrossinelrol\`\`, \`\`mser\`\`` },
@@ -8953,7 +8955,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setstaffrole`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}setstaffrole <Mención del rol>\`\`\n\`\`${prefijo}setstaffrole <ID del rol>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}setstaffrole ${roles[Math.floor(Math.random() * roles.length)]}\n${prefijo}setstaffrole ${roles[Math.floor(Math.random() * roles.length)].id}` },
                     { name: "Alias: **3**", value: `\`\`setstaffrole\`\`, \`\`establecerrolstaff\`\`, \`\`setstaffr\`\`, ` },
@@ -9125,7 +9127,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando deletestaffrole`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}deletestaffrole <Mención del rol>\`\`\n\`\`${prefijo}deletestaffrole <ID del rol>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}deletestaffrole ${roles[Math.floor(Math.random() * roles.length)]}\n${prefijo}deletestaffrole ${roles[Math.floor(Math.random() * roles.length)].id}` },
                     { name: "Alias: **3**", value: `\`\`deletestaffrole\`\`, \`\`eliminarrolstaff\`\`, \`\`deletestaffr\`\`, ` },
@@ -9240,7 +9242,7 @@ client.on("messageCreate", async msg => {
             let alias = ["añadirpuntos", "addpoints", "addp"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando addpoints`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}addpoints <Miembro> <Puntos a dar>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}addpoints ${msg.author} ${Math.round(Math.random() * (200 - 1) + 1)}\n${prefijo}addpoints ${msg.author.id} ${Math.round(Math.random(1) * 200)}\n${prefijo}addpoints ${msg.author.tag} ${Math.round(Math.random(1) * 200)}` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -9338,7 +9340,7 @@ client.on("messageCreate", async msg => {
             let alias = ["quitarpuntos", "removepoints", "removep"]
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando addpoints`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}addpoints <Miembro> <Puntos a dar>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}addpoints ${msg.author} ${Math.round(Math.random() * (200 - 1) + 1)}\n${prefijo}addpoints ${msg.author.id} ${Math.round(Math.random(1) * 200)}\n${prefijo}addpoints ${msg.author.tag} ${Math.round(Math.random(1) * 200)}` },
                     { name: `Alias: **${alias.length}**`, value: alias.map(m => `\`\`${m}\`\``).join(`, `) },
@@ -9686,7 +9688,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando setemojipoints`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}setemojipoints <Emoji a establecer>\`\`` },
                     { name: "Ejemplo:", value: `${prefijo}setemojipoints ${emojisR[Math.floor(Math.random() * emojisR.length)]}` },
                     { name: "Alias: **3**", value: `\`\`setemojipoints\`\`, \`\`setemojip\`\`, \`\`setep\`\`, ` },
@@ -9777,7 +9779,7 @@ client.on("messageCreate", async msg => {
                 const embPointsSystem = new EmbedBuilder()
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`<:status:957353077650886716> Estado del sistema de puntos`)
-                    .addFields(
+                    .setFields(
                         { name: `👥 **Miembros que han utilizado el sistema:**`, value: `**${dataSP.miembros.length.toLocaleString()}**`, inline: true },
                         { name: `🔢 **Comandos del sistema usados:**`, value: `**${dataSP.datos.comandosUsos.toLocaleString()}**`, inline: true },
                         { name: `${dataSP.datos.emoji} **Puntos agregados y eliminados:** ${totalPuntos.toLocaleString()}`, value: `${totalPuntos >= 1 ? `Agregados: **${dataSP.datos.puntosAgregados}** | ${(dataSP.datos.puntosAgregados * 100 / totalPuntos).toFixed(2)}%\nEliminados: **${dataSP.datos.puntosEliminados}** | ${(dataSP.datos.puntosEliminados * 100 / totalPuntos).toFixed(2)}%` : "*No se ha agregado ni eliminado ningún punto*"}`, inline: true },
@@ -9954,7 +9956,7 @@ client.on("messageCreate", async msg => {
 
             const embInfo = new EmbedBuilder()
                 .setTitle(`${emojis.lupa} Comando removeusersystemp`)
-                .addFields(
+                .setFields(
                     { name: "Uso:", value: `\`\`${prefijo}removeusersystemp <Mención del miembro>\`\`\n\`\`${prefijo}removeusersystemp <ID del miembro>\`\`\n\`\`${prefijo}removeusersystemp <Etiqueta del miembro>\`\`` },
                     { name: "Ejemplos:", value: `${prefijo}removeusersystemp ${msg.author}\n${prefijo}removeusersystemp ${msg.author.id}\n${prefijo}removeusersystemp ${msg.author.tag}` },
                     { name: "Alias:", value: `\`\`removeusersystemp\`\`` },
@@ -10438,7 +10440,7 @@ client.on("messageCreate", async msg => {
                         .setImage(servidor.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle(`<a:Info:926972188018479164> Información del servidor ${servidor.name}`)
                         .setDescription(servidor.description ? "📄 **Descripción:**\n" + servidor.description : "*El servidor no tiene descripción.*")
-                        .addFields(
+                        .setFields(
                             { name: `<:wer:920166217086537739> **servidor:**`, value: `ID: ${servidor.id}\nCreado: <t:${Math.floor(servidor.createdAt / 1000)}:R>\nMiembros: ${servidor.members.cache.size.toLocaleString()}\nUsuarios: ${servidor.members.cache.filter(f => !f.user.bot).size.toLocaleString()}\nBots: ${servidor.members.cache.filter(f => f.user.bot).size.toLocaleString()}`, inline: true },
                             { name: `👑 **Creador:**`, value: `Tag: ${creador.user.tag}\nID: ${creador.id}\nCreo su cuenta: <t:${Math.floor(creador.user.createdAt / 1000)}:R>`, inline: true },
                             { name: `📨 **Invitaciones:** ${(await servidor.invites.fetch()).size.toLocaleString()}`, value: `${(await servidor.invites.fetch()).map(m => `Creada por: [${m.inviter.tag}](${m.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) | Usos:${m.uses.toLocaleString()}  | Code: ${m.code} | Creada: <t:${Math.floor(m.createdAt / 1000)}:R>`).slice(0, 4).join("\n\n")}`, inline: true },
@@ -10459,7 +10461,7 @@ client.on("messageCreate", async msg => {
                         .setImage(servidor.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle(`<a:Info:926972188018479164> Información del servidor ${servidor.name}`)
                         .setDescription(servidor.description ? "📄 **Descripción:**\n" + servidor.description : "*El servidor no tiene descripción.*")
-                        .addFields(
+                        .setFields(
                             { name: `<:wer:920166217086537739> **servidor:**`, value: `ID: ${servidor.id}\nCreado: <t:${Math.floor(servidor.createdAt / 1000)}:R>\nMiembros: ${servidor.members.cache.size.toLocaleString()}\nUsuarios: ${servidor.members.cache.filter(f => !f.user.bot).size.toLocaleString()}\nBots: ${servidor.members.cache.filter(f => f.user.bot).size.toLocaleString()}`, inline: true },
                             { name: `👑 **Creador:**`, value: `Tag: ${creador.user.tag}\nID: ${creador.id}\nCreo su cuenta: <t:${Math.floor(creador.user.createdAt / 1000)}:R>`, inline: true },
                             { name: `📃 **Permisos:** ${servidor.me.permissions.toArray().length}`, value: `${servidor.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
@@ -10690,7 +10692,7 @@ client.on("guildCreate", async gc => {
             .setImage(gc.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
             .setTitle("➕ Añadido en un nuevo servidor")
             .setDescription(`${gc.name}\n${gc.description ? gc.description : "No tiene descripción"}`)
-            .addFields(
+            .setFields(
                 { name: `<:wer:920166217086537739> **Servidor:**`, value: `🆔 ID: ${gc.id}\n📅 Creado el <t:${Math.floor(gc.createdAt / 1000)}:F> *(<t:${Math.floor(gc.createdAt / 1000)}:R>)*`, inline: true },
                 { name: `👥 **Miembros:** ${gc.members.cache.size.toLocaleString()}`, value: `👤 Usuarios: ${gc.members.cache.filter(fm => !fm.user.bot).size}\n🤖 Bots: ${gc.members.cache.filter(fb => fb.user.bot).size.toLocaleString()}`, inline: true },
                 { name: `🌈 **Roles:** ${gc.roles.cache.size}`, value: `${gc.roles.cache.filter(f => !f.managed && f.id != gc.id).map(m => Object({ posicion: m.position, nombre: m.name })).slice(0, 10).sort((a, b) => b.posicion - a.posicion).map(r => r.nombre).slice(0, 10).join(", ")}`, inline: true },
@@ -10709,7 +10711,7 @@ client.on("guildCreate", async gc => {
             .setImage(gc.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
             .setTitle("➕ Añadido en un nuevo servidor")
             .setDescription(`${gc.name}\n${gc.description ? gc.description : "No tiene descripción"}`)
-            .addFields(
+            .setFields(
                 { name: `<:wer:920166217086537739> **Servidor:**`, value: `🆔 ID: ${gc.id}\n📅 Creado el <t:${Math.floor(gc.createdAt / 1000)}:F> *(<t:${Math.floor(gc.createdAt / 1000)}:R>)*`, inline: true },
                 { name: `👥 **Miembros:** ${gc.members.cache.size.toLocaleString()}`, value: `👤 Usuarios: ${gc.members.cache.filter(fm => !fm.user.bot).size}\n🤖 Bots: ${gc.members.cache.filter(fb => fb.user.bot).size.toLocaleString()}`, inline: true },
                 { name: `🌈 **Roles:** ${gc.roles.cache.size}`, value: `${gc.roles.cache.filter(f => !f.managed && f.id != gc.id).map(m => Object({ posicion: m.position, nombre: m.name })).slice(0, 10).sort((a, b) => b.posicion - a.posicion).map(r => r.nombre).slice(0, 10).join(", ")}`, inline: true },
@@ -10732,7 +10734,7 @@ client.on("guildDelete", async gd => {
         .setImage(gd.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
         .setTitle("➖ Expulsado de un servidor")
         .setDescription(`${gd.name}\n${gd.description ? gd.description : "No tiene descripción"}`)
-        .addFields(
+        .setFields(
             { name: `<:wer:920166217086537739> **Servidor:**`, value: `🆔 ID: ${gd.id}\n📅 Creado el <t:${Math.floor(gd.createdAt / 1000)}:F> *(<t:${Math.floor(gd.createdAt / 1000)}:R>)*`, inline: true },
             { name: `👥 **Miembros:** ${gd.members.cache.size.toLocaleString()}`, value: `👤 Usuarios: ${gd.members.cache.filter(fm => !fm.user.bot).size}\n🤖 Bots: ${gd.members.cache.filter(fb => fb.user.bot).size.toLocaleString()}`, inline: true },
             { name: `🌈 **Roles:** ${gd.roles.cache.size}`, value: `${gd.roles.cache.filter(f => !f.managed && f.id != gd.id).map(m => Object({ posicion: m.position, nombre: m.name })).slice(0, 10).sort((a, b) => b.posicion - a.posicion).map(r => r.nombre).slice(0, 10).join(", ")}`, inline: true },
@@ -10760,7 +10762,7 @@ process.on("unhandledRejection", err => {
     .setDescription(`\`\`\`js\n${err}\n\nGuild: ${guild.id}\nChannel: ${guild.channelId}\`\`\``)
     .setColor("ff0000")
     .setTimestamp()
-    .setFooter({text: server.name, iconURL: server.iconURL({dynamic: true})})
+    .setFooter({text: server.name, iconURL: server.iconURL()})
     client.channels.cache.get("960294374258933821").send({ embeds: [embErr] })
     console.error(err)
 })
@@ -10772,7 +10774,7 @@ client.on("shardError", async err => {
     .setDescription(`\`\`\`js\n${err.name}\n${err.message}\n${err.stack}\n\nGuild: ${guild.id}\nChannel: ${guild.channelId}\`\`\``)
     .setColor("ff0000")
     .setTimestamp()
-    .setFooter({text: server.name, iconURL: server.iconURL({dynamic: true})})
+    .setFooter({text: server.name, iconURL: server.iconURL()})
     client.channels.cache.get("960294374258933821").send({ embeds: [embErr] })
     console.error(err)
 })
