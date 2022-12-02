@@ -1,4 +1,4 @@
-const { Client, EmbedBuilder, Collection, ButtonBuilder, ActionRowBuilder, AttachmentBuilder, SelectMenuBuilder, version } = require("discord.js")
+const { Client, EmbedBuilder, Collection, ButtonBuilder, ActionRowBuilder, AttachmentBuilder, SelectMenuBuilder, version, MessageType, ActivityType } = require("discord.js")
 const client = new Client({ intents: 32767, ws: { properties: { $browser: "Discord Android" } } });
 const ms = require("ms"), mongoose = require("mongoose"), { SlashCommandBuilder, ContextMenuCommandBuilder } = require("@discordjs/builders"), Canvas = require("canvas"), isURL = require("isurl");
 const creadorID = "717420870267830382", creadoresID = ["717420870267830382", "825186118050775052"], colorEmb = "#2c889f", colorEmbInfo = "#2c889f", ColorError = "#ff0000", emojis = { negativo: "<a:negativo:856967325505159169>", acierto: "<a:afirmativo:856966728806432778>", puntos: "<:StaffPoint:957357854120116234>", lupa: "<:lupa:958820188457930892>" }, invitacion = "https://discord.com/api/oauth2/authorize?client_id=935707268090056734&permissions=1239568329975&scope=bot%20applications.commands", serverSuport = "https://discord.gg/G7GUD7eNCb", webPage = "https://util-bot.netlify.app/"
@@ -71,10 +71,10 @@ client.on("ready", async () => {
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
-    canalLogStart.sendTyping()
-    setTimeout(()=> {
-        canalLogStart.send({ embeds: [embReady] })
-    }, 1000)
+    // canalLogStart.sendTyping()
+    // setTimeout(()=> {
+    //     canalLogStart.send({ embeds: [embReady] })
+    // }, 1000)
 
 
     function presencias() {
@@ -84,49 +84,49 @@ client.on("ready", async () => {
                 id: 1,
                 estado: {
                     name: `${client.guilds.cache.size.toLocaleString()} servidores.`,
-                    type: "WATCHING"
+                    type: ActivityType.Watching
                 }
             },
             {
                 id: 2,
                 estado: {
                     name: "u!help",
-                    type: "LISTENING"
+                    type: ActivityType.Listening
                 }
             },
             {
                 id: 3,
                 estado: {
                     name: `${client.users.cache.size.toLocaleString()} usuarios.`,
-                    type: "WATCHING"
+                    type: ActivityType.Watching
                 }
             },
             {
                 id: 4,
                 estado: {
                     name: "u!invite",
-                    type: "LISTENING"
+                    type: ActivityType.Listening
                 }
             },
             {
                 id: 5,
                 estado: {
                     name: `${svsp.name} mi servidor de origen.`,
-                    type: "WATCHING"
+                    type: ActivityType.Watching
                 }
             },
             {
                 id: 6,
                 estado: {
                     name: `moderar con mi hermanó ${hermano.username}`,
-                    type: "PLAYING"
+                    type: ActivityType.Playing
                 }
             },
             {
                 id: 7,
                 estado: {
                     name: `mis 42 comandos.`,
-                    type: "WATCHING"
+                    type: ActivityType.Watching
                 }
             },
         ]
@@ -136,14 +136,14 @@ client.on("ready", async () => {
                 id: 1,
                 estado: {
                     name: `mis sueños, estoy durmiendo.`,
-                    type: "WATCHING"
+                    type: ActivityType.Watching
                 }
             },
             {
                 id: 2,
                 estado: {
                     name: `a los usuarios y durmiendo.`,
-                    type: "LISTENING"
+                    type: ActivityType.Listening
                 }
             }
         ]
@@ -1937,11 +1937,8 @@ client.on("messageCreate", async msg => {
         }
     }
 
-    try{
-        if (!msg.guild.me.permissionsIn(msg.channel).has("SEND_MESSAGES")) return;
-    }catch{
-        ""
-    }
+    if (!msg.guild.members.me.permissionsIn(msg.channel).has('SendMessages')) return;
+    
     if (msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))) {
         msg.channel.sendTyping()
         const emb = new EmbedBuilder()
@@ -1960,6 +1957,7 @@ client.on("messageCreate", async msg => {
 
     if (msg.channelId == "940075586771111936") {
         // Boost/mejoras
+        // MessageType.GuildBoostTier1
         let msgTypes = ["USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1", "USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2", "USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3"]
         if (msgTypes.concat("USER_PREMIUM_GUILD_SUBSCRIPTION").some(s => msg.type == s)) {
             const embBoost = new EmbedBuilder()
@@ -1996,6 +1994,7 @@ client.on("messageCreate", async msg => {
 
 
     if (["help", "ayuda"].some(s => comando == s)) {
+        console.log('aaaa')
         msg.channel.sendTyping()
         botDB.comandos.usos++
 
