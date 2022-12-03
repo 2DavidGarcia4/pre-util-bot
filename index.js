@@ -402,7 +402,7 @@ client.on("interactionCreate", async int => {
                 const tiempoUltimo = datosComando.get(int.user.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */add-points*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return int.reply({ ephemeral: true, embeds: [embEnfriarse] })
             }
@@ -419,7 +419,7 @@ client.on("interactionCreate", async int => {
                     .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setTitle(`${emojis.acierto} Puntos agregados al miembro`)
                     .setDescription(`Se ${int.user.id == miembro.id ? "te" : "le"} han agregado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${int.user.id == miembro.id ? "." : `a **${miembro}**.`}`)
-                    .setColor("GREEN")
+                    .setColor('Green')
                     .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                     .setTimestamp()
                 setTimeout(async () => {
@@ -439,7 +439,7 @@ client.on("interactionCreate", async int => {
                     .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setTitle(`${emojis.acierto} Puntos agregados al miembro`)
                     .setDescription(`Se ${int.user.id == miembro.id ? "te" : "le"} han agregado ${emojis.puntos} **${cantidad.toLocaleString()}** puntos ${int.user.id == miembro.id ? "." : `a **${miembro}**.`}`)
-                    .setColor("GREEN")
+                    .setColor('Green')
                     .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                     .setTimestamp()
                 setTimeout(async () => {
@@ -478,7 +478,7 @@ client.on("interactionCreate", async int => {
                 const tiempoUltimo = datosComando.get(int.user.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */remove-points*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return int.reply({ ephemeral: true, embeds: [embEnfriarse] })
             }
@@ -505,7 +505,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.negativo} Puntos del miembro eliminados`)
                 .setDescription(`Se ${int.user.id == miembro.id ? "te" : "le"} han eliminado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${int.user.id == miembro.id ? "." : `a **${miembro}**.`}`)
-                .setColor("RED")
+                .setColor('Red')
                 .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                 .setTimestamp()
             setTimeout(async () => {
@@ -539,7 +539,7 @@ client.on("interactionCreate", async int => {
                 const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */set-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return int.reply({ ephemeral: true, embeds: [embEnfriarse] })
             }
@@ -564,7 +564,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Rol del personal establecido`)
                 .setDescription(`El rol ${rol} ha sido establecido como rol del personal del servidor en el sistema de puntos.`)
-                .setColor("GREEN")
+                .setColor('Green')
                 .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
@@ -600,7 +600,7 @@ client.on("interactionCreate", async int => {
                 const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */delete-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return int.reply({ ephemeral: true, embeds: [embEnfriarse] })
             }
@@ -625,7 +625,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.negativo} Se ha eliminado un rol`)
                 .setDescription(`Se ha eliminado el rol ${rol} anterior mente establecido en el sistema como un rol del personal del servidor.`)
-                .setColor("RED")
+                .setColor('Red')
                 .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
@@ -659,7 +659,7 @@ client.on("interactionCreate", async int => {
                 const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */delete-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return int.reply({ ephemeral: true, embeds: [embEnfriarse] })
             }
@@ -685,7 +685,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Símbolo establecido`)
                 .setDescription(`El emoji ${emoji} se a establecido como símbolo del sistema de puntos.`)
-                .setColor("GREEN")
+                .setColor('Green')
                 .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(async () => {
@@ -723,7 +723,7 @@ client.on("interactionCreate", async int => {
                 const tiempoUltimo = datosComando.get(int.user.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando */delete-staff-role*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return int.reply({ ephemeral: true, embeds: [embEnfriarse] })
             }
@@ -3138,22 +3138,22 @@ msg.member.permissions.has('Administrator')
             const embAdvertencia = new EmbedBuilder()
                 .setTitle(`<:advertencia:929204500739268608> Advertencia`)
                 .setDescription(`¿Estás seguro/a ${msg.author} de enviar tu reporte?\n\n<:report:959201948169564210> **Reporte:**\n${args.join(" ")}`)
-                .setColor("YELLOW")
+                .setColor('Yellow')
 
             const embConfirmar = new EmbedBuilder()
                 .setTitle(`${emojis.acierto} Reporte enviado`)
                 .setDescription(`Tu reporte ha sido enviado a mi [servidor](${serverSuport}) de soporte para que le eche un vistazo mi creador y arregle el problema, gracias por reportar.`)
-                .setColor("GREEN")
+                .setColor('Green')
 
             const embCancelar = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Reporte cancelado`)
                 .setDescription(`Has cancelado tu reporte, no dudes en reportar cualquier fallo, es muy importante para mi que muestren mis errores a mi creador.`)
-                .setColor("RED")
+                .setColor('Red')
 
             const embAccionCancelada = new EmbedBuilder()
                 .setTitle(`${emojis.negativo} Acción cancelada`)
                 .setDescription(`Se ha cancelado la acción por que has demorado mucho en responder.`)
-                .setColor("RED")
+                .setColor('Red')
 
             const botones = new ActionRowBuilder()
                 .addComponents(
@@ -3925,7 +3925,7 @@ msg.member.permissions.has('Administrator')
 
             const embDeleteHis = new EmbedBuilder()
                 .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
-                .setColor("GREEN")
+                .setColor('Green')
                 .setFooter(miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() })
                 .setTimestamp()
 
@@ -4024,7 +4024,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando warn")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -4326,7 +4326,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando mute")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -4700,7 +4700,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando unmute")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -4792,7 +4792,7 @@ msg.member.permissions.has('Administrator')
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<a:afirmativo:856966728806432778> Aislamiento temporal eliminado del miembro")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
-                        .setColor("GREEN")
+                        .setColor('Green')
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.timeout(null, `Aislamiento temporal eliminado del miembro por: ${msg.author.tag}`).then(ta => {
@@ -4805,7 +4805,7 @@ msg.member.permissions.has('Administrator')
                         .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<a:afirmativo:856966728806432778> Tu aislamiento temporal ha sido eliminado")
                         .setDescription(`👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
-                        .setColor("GREEN")
+                        .setColor('Green')
                         .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
@@ -4852,7 +4852,7 @@ msg.member.permissions.has('Administrator')
                         .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                         .setTitle("<a:afirmativo:856966728806432778> Aislamiento temporal eliminado del miembro")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
-                        .setColor("GREEN")
+                        .setColor('Green')
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.timeout(null, `Aislamiento temporal eliminado del miembro por: ${msg.author.tag}`).then(ta => {
@@ -4865,7 +4865,7 @@ msg.member.permissions.has('Administrator')
                         .setAuthor({name: miembro.user.tag, iconURL: miembro.user.displayAvatarURL()})
                         .setTitle("<a:afirmativo:856966728806432778> Tu aislamiento temporal ha sido eliminado")
                         .setDescription(`👮 **Por el moderador:**\n${msg.author}\n**ID:**${msg.author.id}`)
-                        .setColor("GREEN")
+                        .setColor('Green')
                         .setFooter({text: `En el servidor: ${msg.guild.name}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     miembro.send({ embeds: [embMDMencion] }).catch(c => {
@@ -5074,7 +5074,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando kick")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -5514,7 +5514,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando ban")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -6105,7 +6105,7 @@ msg.member.permissions.has('Administrator')
                             .setThumbnail(usuario.displayAvatarURL())
                             .setTitle("<a:afirmativo:856966728806432778> Bot des baneado")
                             .setDescription(`🤖 ${usuario.tag}\n${usuario.id}\n\n👮 **Por el moderador:**\n${msg.author}\n${msg.author.id}`)
-                            .setColor("GREEN")
+                            .setColor('Green')
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         msg.guild.members.unban(usuario.id).then(un => {
@@ -6135,7 +6135,7 @@ msg.member.permissions.has('Administrator')
                             .setThumbnail(usuario.displayAvatarURL())
                             .setTitle("<a:afirmativo:856966728806432778> Usuario des baneado")
                             .setDescription(`👤 ${usuario.tag}\n${usuario.id}\n\n👮 **Por el moderador:**\n${msg.author}\n${msg.author.id}`)
-                            .setColor("GREEN")
+                            .setColor('Green')
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         msg.guild.members.unban(usuario.id).then(un => {
@@ -6205,7 +6205,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando clear")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -6572,7 +6572,7 @@ msg.member.permissions.has('Administrator')
                 const embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando dmsend")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -6732,7 +6732,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 4 * 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setprefix*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -6818,7 +6818,7 @@ msg.member.permissions.has('Administrator')
                 const embErr2 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
                     .setDescription(`El nuevo prefijo que has proporcionado *(${args[0]})* es el mismo prefijo que el actual.`)
-                    .setColor("RED")
+                    .setColor('Red')
                     .setTimestamp()
                 if (dataPre.servidores[posicion].prefijo === args[0]) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr2] }).then(tm => setTimeout(() => {
@@ -6898,7 +6898,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setslowmode*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -7040,7 +7040,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *addrol*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -7102,7 +7102,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`Te he agregado el rol ${rol}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
@@ -7113,7 +7113,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`El rol ${rol} ha sido agregado al miembro ${miembro}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
@@ -7143,7 +7143,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`Te he agregado el rol ${rol}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
@@ -7170,7 +7170,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol agregado al miembro`)
                                 .setDescription(`El rol ${rol} ha sido agregado al miembro ${miembro}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.add(rol.id).then(() => setTimeout(() => {
@@ -7238,7 +7238,7 @@ msg.member.permissions.has('Administrator')
                                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol agregado a todos los miembros`)
                                                 .setDescription(descripcion)
-                                                .setColor("GREEN")
+                                                .setColor('Green')
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRoladd] }).then(td => {
                                                 botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol = false
@@ -7296,7 +7296,7 @@ msg.member.permissions.has('Administrator')
                                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol agregado a todos los miembros`)
                                                 .setDescription(descripcion)
-                                                .setColor("GREEN")
+                                                .setColor('Green')
                                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRoladd] }).then(td => {
@@ -7421,7 +7421,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removerol*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -7483,7 +7483,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`Te he removido el rol ${rol}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
@@ -7494,7 +7494,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`El rol ${rol} ha sido removido del miembro ${miembro}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
@@ -7524,7 +7524,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`Te he removido el rol ${rol}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
@@ -7551,7 +7551,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Rol removido del miembro`)
                                 .setDescription(`El rol ${rol} ha sido removido del miembro ${miembro}.`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                                 .setTimestamp()
                             miembro.roles.remove(rol.id).then(() => setTimeout(() => {
@@ -7619,7 +7619,7 @@ msg.member.permissions.has('Administrator')
                                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol removido de todos los miembros`)
                                                 .setDescription(descripcion)
-                                                .setColor("GREEN")
+                                                .setColor('Green')
                                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRolRemove] }).then(td => {
@@ -7678,7 +7678,7 @@ msg.member.permissions.has('Administrator')
                                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                                 .setTitle(`${emojis.acierto} Rol removido de todos los miembros`)
                                                 .setDescription(descripcion)
-                                                .setColor("GREEN")
+                                                .setColor('Green')
                                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                                 .setTimestamp()
                                             tm.edit({ embeds: [embRolRemove] }).then(td => {
@@ -7814,7 +7814,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *createchannel*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -7904,7 +7904,7 @@ msg.member.permissions.has('Administrator')
                                     .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle(`${emojis.acierto} Canal creado`)
                                     .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
-                                    .setColor("GREEN")
+                                    .setColor('Green')
                                     .setTimestamp()
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCreateCha] })
                             }, 300))
@@ -7925,7 +7925,7 @@ msg.member.permissions.has('Administrator')
                                     .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                     .setTitle(`${emojis.acierto} Canal creado`)
                                     .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
-                                    .setColor("GREEN")
+                                    .setColor('Green')
                                     .setTimestamp()
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCreateCha] })
                             }, 300))
@@ -7960,7 +7960,7 @@ msg.member.permissions.has('Administrator')
                                 .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                                 .setTitle(`${emojis.acierto} Canal creado`)
                                 .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
-                                .setColor("GREEN")
+                                .setColor('Green')
                                 .setTimestamp()
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCreateCha] })
                         }, 300))
@@ -7987,7 +7987,7 @@ msg.member.permissions.has('Administrator')
                             .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle(`${emojis.acierto} Canal creado`)
                             .setDescription(`**Canal:** ${cc}\n**Nombre:** ${cc.name}\n**ID:** ${cc.id}\n\n**Tipo:** ${tiposDeCanales[cc.type]}\n\n**Categoría:** ${cc.parent ? cc.parent : "*Sin categoría*"}`)
-                            .setColor("GREEN")
+                            .setColor('Green')
                             .setTimestamp()
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCreateCha] })
                     }, 300))
@@ -8063,7 +8063,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *deletechannel*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -8096,7 +8096,7 @@ msg.member.permissions.has('Administrator')
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⭕ Canal eliminado")
                     .setDescription(`**Nombre:** ${canal.name}\n**ID:** ${canal.id}\n**Tipo:** ${tiposDeCanales[canal.type]}\n**Categoría:** ${canal.parent ? canal.parent : "*Sin categoría*"}`)
-                    .setColor("RED")
+                    .setColor('Red')
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 canal.delete().then(ch => setTimeout(() => {
@@ -8164,7 +8164,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *memberswithrole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -8419,7 +8419,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *memberswithouttherole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -8942,7 +8942,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setstaffrole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -9043,7 +9043,7 @@ msg.member.permissions.has('Administrator')
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle(`${emojis.acierto} Rol del personal establecido`)
                         .setDescription(`El rol ${rol} ha sido establecido como rol del personal del servidor en el sistema de puntos.`)
-                        .setColor("GREEN")
+                        .setColor('Green')
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     await nuevaDataSP.save()
@@ -9114,7 +9114,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *deletestaffrole*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -9200,7 +9200,7 @@ msg.member.permissions.has('Administrator')
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle(`${emojis.negativo} Se ha eliminado un rol`)
                         .setDescription(`Se ha eliminado el rol ${rol} anterior mente establecido en el sistema como un rol del personal del servidor.`)
-                        .setColor("RED")
+                        .setColor('Red')
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -9292,7 +9292,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *addpoints*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -9306,7 +9306,7 @@ msg.member.permissions.has('Administrator')
                 .setAuthor({ name: msg.member.nick ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Puntos agregados al miembro`)
                 .setDescription(`Se ${msg.author.id == miembro.id ? "te" : "le"} han agregado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${msg.author.id == miembro.id ? "." : `a **${miembro}**.`}`)
-                .setColor("GREEN")
+                .setColor('Green')
                 .setFooter({ text: miembro.id == msg.author.id ? msg.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == msg.author.id ? msg.guild.iconURL() : miembro.user.displayAvatarURL() })
                 .setTimestamp()
             setTimeout(() => {
@@ -9390,7 +9390,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 10000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removepoints*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -9408,7 +9408,7 @@ msg.member.permissions.has('Administrator')
                 .setAuthor({ name: msg.member.nick ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                 .setTitle(`${emojis.negativo} Puntos del miembro eliminados`)
                 .setDescription(`Se ${msg.author.id == miembro.id ? "te" : "le"} han eliminado ${dataSP.datos.emoji} **${cantidad.toLocaleString()}** puntos ${msg.author.id == miembro.id ? "." : `a **${miembro}**.`}`)
-                .setColor("RED")
+                .setColor('Red')
                 .setFooter({ text: miembro.id == msg.author.id ? msg.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == msg.author.id ? msg.guild.iconURL() : miembro.user.displayAvatarURL() })
                 .setTimestamp()
             setTimeout(() => {
@@ -9675,7 +9675,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *setemojipoints*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -9736,7 +9736,7 @@ msg.member.permissions.has('Administrator')
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("<a:afirmativo:856966728806432778> Símbolo establecido")
                     .setDescription(`El emoji ${args[0]} se a establecido como símbolo del sistema de puntos.`)
-                    .setColor("GREEN")
+                    .setColor('Green')
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embSetE] })
@@ -9753,7 +9753,7 @@ msg.member.permissions.has('Administrator')
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("<a:afirmativo:856966728806432778> Símbolo establecido")
                     .setDescription(`El emoji ${args[0]} se a establecido como el símbolo del sistema de puntos.`)
-                    .setColor("GREEN")
+                    .setColor('Green')
                     .setTimestamp()
                 await nuevaDataSP.save()
                 setTimeout(() => {
@@ -9943,7 +9943,7 @@ msg.member.permissions.has('Administrator')
                 const tiempoUltimo = datosComando.get(msg.author.id) + 60000, enfriamiento = Math.floor((tiempoUltimo - tiempoActual) / 1000), embEnfriarse = new EmbedBuilder()
                     .setTitle("<:cronometro:948693729588441149> Enfriamiento/cooldown del comando *removeusersystemp*")
                     .setDescription(`Espera **${enfriamiento}** segundos para volver a utilizar el comando.`)
-                    .setColor("BLUE")
+                    .setColor('Blue')
 
                 if (tiempoActual < tiempoUltimo) return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embEnfriarse] }).then(tf => setTimeout(() => {
@@ -10704,7 +10704,7 @@ client.on("guildCreate", async gc => {
                 { name: `📨 **Invitaciones:**`, value: `${(await gc.invites.fetch()).size.toLocaleString()}`, inline: true },
                 { name: `🗒️ **Permisos:** ${gc.members.me.permissions.toArray().length}`, value: `${gc.members.me.permissions.toArray().map(m => permisos[m]).join(", ")}`, inline: true }
             )
-            .setColor("GREEN")
+            .setColor('Green')
             .setTimestamp()
         servidorSP.channels.cache.get("940078302880743505").send({ embeds: [embGC], content: `${invite}` })
     } else {
@@ -10722,7 +10722,7 @@ client.on("guildCreate", async gc => {
                 { name: `👑 **Dueño:**`, value: `${dueño.user.tag}\n🆔 ${dueño.id}`, inline: true },
                 { name: `🗒️ **Permisos:** ${gc.members.me.permissions.toArray().length}`, value: `${gc.members.me.permissions.toArray().map(m => permisos[m]).join(", ")}`, inline: true }
             )
-            .setColor("GREEN")
+            .setColor('Green')
             .setTimestamp()
         servidorSP.channels.cache.get("940078302880743505").send({ embeds: [embGC], content: `No pude obtener ninguna invitación al servidor.` })
     }
@@ -10743,7 +10743,7 @@ client.on("guildDelete", async gd => {
             { name: `🌈 **Roles:** ${gd.roles.cache.size}`, value: `${gd.roles.cache.filter(f => !f.managed && f.id != gd.id).map(m => Object({ posicion: m.position, nombre: m.name })).slice(0, 10).sort((a, b) => b.posicion - a.posicion).map(r => r.nombre).slice(0, 10).join(", ")}`, inline: true },
             { name: `👑 **Dueño:**`, value: `${dueño.user.tag}\n🆔 ${dueño.id}` },
         )
-        .setColor("RED")
+        .setColor('Red')
         .setTimestamp()
     servidorSP.channels.cache.get("940078302880743505").send({ embeds: [embGD] })
 
