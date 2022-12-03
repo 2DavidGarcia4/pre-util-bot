@@ -1,5 +1,5 @@
 const { Client, EmbedBuilder, Collection, ButtonBuilder, ActionRowBuilder, AttachmentBuilder, SelectMenuBuilder, version, MessageType, ActivityType } = require("discord.js")
-const client = new Client({ intents: 32767, ws: { properties: { $browser: "Discord Android" } } });
+const client = new Client({ intents: 131071, ws: { properties: { $browser: "Discord Android" } } });
 const ms = require("ms"), mongoose = require("mongoose"), { SlashCommandBuilder, ContextMenuCommandBuilder } = require("@discordjs/builders"), Canvas = require("canvas"), isURL = require("isurl");
 const creadorID = "717420870267830382", creadoresID = ["717420870267830382", "825186118050775052"], colorEmb = "#2c889f", colorEmbInfo = "#2c889f", ColorError = "#ff0000", emojis = { negativo: "<a:negativo:856967325505159169>", acierto: "<a:afirmativo:856966728806432778>", puntos: "<:StaffPoint:957357854120116234>", lupa: "<:lupa:958820188457930892>" }, invitacion = "https://discord.com/api/oauth2/authorize?client_id=935707268090056734&permissions=1239568329975&scope=bot%20applications.commands", serverSuport = "https://discord.gg/G7GUD7eNCb", webPage = "https://util-bot.netlify.app/"
 const { token, mongoUrl } = require('./config')
@@ -71,10 +71,10 @@ client.on("ready", async () => {
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
-    // canalLogStart.sendTyping()
-    // setTimeout(()=> {
-    //     canalLogStart.send({ embeds: [embReady] })
-    // }, 1000)
+    canalLogStart.sendTyping()
+    setTimeout(()=> {
+        canalLogStart.send({ embeds: [embReady] })
+    }, 1000)
 
 
     function presencias() {
@@ -91,6 +91,13 @@ client.on("ready", async () => {
                 id: 2,
                 estado: {
                     name: "u!help",
+                    type: ActivityType.Listening
+                }
+            },
+            {
+                id: 2,
+                estado: {
+                    name: "/help",
                     type: ActivityType.Listening
                 }
             },
@@ -324,7 +331,7 @@ client.on("interactionCreate", async int => {
         }
         if (int.commandName == "points") {
             botDB.comandos.usos++
-            let dataSP = await puntosDB.findById(int.guildId), puntos = 0, miembro = int.options.getUser("miembro") ? int.guild.members.cache.get(int.options.getUser("miembro").id) : false
+            let dataSP = await puntosDB.findById(int.guildId), puntos = 0, miembro = int.options.getUser("miembro") ? int.guild.members.members.cache.get(int.options.getUser("miembro").id) : false
 
             let erroresP = [
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema de puntos.` },
@@ -334,7 +341,7 @@ client.on("interactionCreate", async int => {
             ]
             if (erroresInt(int, erroresP)) return;
 
-            int.deferReply()
+            await int.deferReply()
             if (!dataSP) {
                 let nuevaDataSP = new puntosDB({
                     _id: int.guildId,
@@ -349,7 +356,7 @@ client.on("interactionCreate", async int => {
                 const embPuntos = new EmbedBuilder()
                     .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setDescription(`${miembro.id == int.user.id ? "Tienes" : `${miembro} tiene`} ${dataSP ? dataSP.datos.emoji : emojis.puntos} **${puntos.toLocaleString()}** puntos.`)
-                    .setColor(int.guild.me.displayHexColor)
+                    .setColor(int.guild.members.me.displayHexColor)
                     .setFooter({ text: miembro.id == int.user.id ? int.guild.name : miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.id == int.user.id ? int.guild.iconURL() : miembro.user.displayAvatarURL() })
                     .setTimestamp()
                 setTimeout(async () => {
@@ -361,7 +368,7 @@ client.on("interactionCreate", async int => {
                 const embPuntos = new EmbedBuilder()
                     .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setDescription(`Tienes ${dataSP ? dataSP.datos.emoji : emojis.puntos} **${puntos.toLocaleString()}** puntos.`)
-                    .setColor(int.guild.me.displayHexColor)
+                    .setColor(int.guild.members.me.displayHexColor)
                     .setFooter({text: int.guild.name, iconURL: int.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(async () => {
@@ -371,7 +378,7 @@ client.on("interactionCreate", async int => {
         }
         if (int.commandName == "add-points") {
             botDB.comandos.usos++
-            let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.cache.get(int.options.getUser("miembro").id), cantidad = int.options.getInteger("cantidad"), puntosMiembro = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
+            let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.members.cache.get(int.options.getUser("miembro").id), cantidad = int.options.getInteger("cantidad"), puntosMiembro = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
 
             let erroresP = [
                 { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
@@ -447,7 +454,7 @@ client.on("interactionCreate", async int => {
         }
         if (int.commandName == "remove-points") {
             botDB.comandos.usos++
-            let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.cache.get(int.options.getUser("miembro").id), cantidad = int.options.getInteger("cantidad"), puntosMiembro = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
+            let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.members.cache.get(int.options.getUser("miembro").id), cantidad = int.options.getInteger("cantidad"), puntosMiembro = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
 
             let erroresP = [
                 { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
@@ -692,7 +699,7 @@ client.on("interactionCreate", async int => {
         }
         if (int.commandName == "remove-system-user") {
             botDB.comandos.usos++
-            let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.cache.get(int.options.getUser("usuario").id), puntos = 0
+            let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.members.cache.get(int.options.getUser("usuario").id), puntos = 0
 
             let erroresP = [
                 { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
@@ -731,7 +738,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle("🗑️ Miembro eliminado del sistema")
                 .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos en el cual tenia ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setTimestamp()
                 .setFooter({ text: miembro.nickname ? miembro.nickname : miembro.user.username, iconURL: miembro.displayAvatarURL() })
             setTimeout(async () => {
@@ -779,7 +786,7 @@ client.on("interactionCreate", async int => {
                     const embTopP = new EmbedBuilder()
                         .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                         .setDescription(descripcion + top.slice(0, 10).join("\n\n"))
-                        .setColor(int.guild.me.displayHexColor)
+                        .setColor(int.guild.members.me.displayHexColor)
                         .setFooter({ text: `Pagina - 1/${segPage}`, iconURL: int.guild.iconURL() })
                         .setTimestamp()
                     setTimeout(async () => {
@@ -791,7 +798,7 @@ client.on("interactionCreate", async int => {
                     const embTopP = new EmbedBuilder()
                         .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                         .setDescription(descripcion + top.slice(cps1, cps2).join("\n\n"))
-                        .setColor(int.guild.me.displayHexColor)
+                        .setColor(int.guild.members.me.displayHexColor)
                         .setFooter({ text: `Pagina - ${pagina}/${segPage}`, iconURL: int.guild.iconURL() })
                         .setTimestamp()
 
@@ -911,7 +918,7 @@ client.on("interactionCreate", async int => {
                 const embSinRegistro = new EmbedBuilder()
                     .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                     .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema utiliza el comando \`\`/points-info\`\`.`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                     .setTimestamp()
                 setTimeout(async () => {
@@ -934,7 +941,7 @@ client.on("interactionCreate", async int => {
             await puntosDB.findByIdAndUpdate(int.guildId, { datos: objeto })
             let totalPuntos = dataSP.datos.puntosAgregados + dataSP.datos.puntosEliminados
 
-            int.deferReply()
+            await int.deferReply()
             const embPointsSystem = new EmbedBuilder()
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`<:status:957353077650886716> Estado del sistema de puntos`)
@@ -946,7 +953,7 @@ client.on("interactionCreate", async int => {
                     { name: `👮 **Roles del personal:** ${dataSP.datos.rolesPersonal.length >= 1 ? dataSP.datos.rolesPersonal.length : ""}`, value: `${dataSP.datos.rolesPersonal.length >= 1 ? dataSP.datos.rolesPersonal.map(m => `<@&${m}>`).join(", ") : `*Sin roles*`}`, inline: true },
                     // {name: ``, value: ``, inline: true},
                 )
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
             setTimeout(async () => {
                 await int.editReply({ embeds: [embPointsSystem] })
@@ -954,7 +961,7 @@ client.on("interactionCreate", async int => {
         }
         if (int.commandName == "update-points-system") {
             botDB.comandos.usos++
-            let dataSP = await puntosDB.findById(int.guildId), objeto = dataSP.datos, arrayMs = dataSP ? dataSP.miembros : [], falsosMiembros = dataSP ? arrayMs.filter(f => !int.guild.members.cache.get(f.id)) : false
+            let dataSP = await puntosDB.findById(int.guildId), objeto = dataSP.datos, arrayMs = dataSP ? dataSP.miembros : [], falsosMiembros = dataSP ? arrayMs.filter(f => !int.guild.members.members.cache.get(f.id)) : false
 
             let erroresP = [
                 { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
@@ -977,7 +984,7 @@ client.on("interactionCreate", async int => {
                 .setAuthor({ name: int.member.nick ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`${emojis.acierto} Sistema actualizado`)
                 .setDescription(`Se han eliminado datos de **${falsosMiembros.length.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setFooter({ text: int.guild.name, iconURL: int.guild.iconURL() })
                 .setTimestamp()
             setTimeout(() => {
@@ -990,7 +997,7 @@ client.on("interactionCreate", async int => {
         if (int.customId == "advertencias") {
             int.deferUpdate()
             let dataHis = await historialesDB.findById(client.user.id), hisBotDB = botDB.historial.find(f => f.mensajeID == int.message.id), usuario = dataHis.usuarios.find(f => f.id == hisBotDB.miembroID), servidor = usuario.servidores.some(s => s.id == int.guildId) ? usuario.servidores.find(f => f.id == int.guildId) : undefined
-            let miembro = int.guild.members.cache.get(hisBotDB.miembroID), historial = [], descripcion = "", cantidad = 0
+            let miembro = int.guild.members.members.cache.get(hisBotDB.miembroID), historial = [], descripcion = "", cantidad = 0
 
             function condicionText(parTexto) {
                 if (historial[cantidad].length < 1900 && (historial[cantidad].length + parTexto.length) < 1900) {
@@ -1016,7 +1023,7 @@ client.on("interactionCreate", async int => {
                     let svsAdv = usuario.servidores.filter(f => f.advertencias.length > 0 && f.id != int.guildId).length
                     descripcion = svsAdv >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidor.advertencias.length}** advertencias en este servidor y en otros **${svsAdv}** servidores tambien tienes y son las siguientes.\n\n` : `El miembro ${miembro} tiene **${servidor.advertencias.length}** advertencias en este servidor y en otros **${svsAdv}** servidores tambien tiene y son las siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidor.advertencias.length}** advertencias en este servidor, las cuales son las siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidor.advertencias.length}** advertencias en este servidor, las cuales son las siguientes.\n\n`
 
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidor.advertencias.length; i++) {
                         let moderador = await client.users.fetch(servidor.advertencias[i].autor, { force: true })
                         let texto = `**${i + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.advertencias[i].tiempo}:F> *(<t:${servidor.advertencias[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidor.advertencias[i].razon}*\n`
@@ -1065,7 +1072,7 @@ client.on("interactionCreate", async int => {
             const embHistorial = new EmbedBuilder()
                 .setAuthor({ name: int.member.nickname ? int.member.nickname : int.user.username, iconURL: int.user.displayAvatarURL() })
                 .setTitle(`<:advertencia:929204500739268608> Advertencias`)
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
@@ -1171,7 +1178,7 @@ client.on("interactionCreate", async int => {
         if (int.customId == "aislamientos") {
             int.deferUpdate()
             let dataHis = await historialesDB.findById(client.user.id), hisBotDB = botDB.historial.find(f => f.mensajeID == int.message.id), usuario = dataHis.usuarios.find(f => f.id == hisBotDB.miembroID), servidor = usuario.servidores.some(s => s.id == int.guildId) ? usuario.servidores.find(f => f.id == int.guildId) : undefined
-            let miembro = int.guild.members.cache.get(hisBotDB.miembroID), descripcion = "", historial = [], cantidad = 0
+            let miembro = int.guild.members.members.cache.get(hisBotDB.miembroID), descripcion = "", historial = [], cantidad = 0
 
             function condicionText(parTexto) {
                 if (historial[cantidad].length < 1900 && (historial[cantidad].length + parTexto.length) < 1900) {
@@ -1196,7 +1203,7 @@ client.on("interactionCreate", async int => {
                 if (servidor.aislamientos.length > 0) {
                     let svsAis = usuario.servidores.filter(f => f.aislamientos.length > 0 && f.id != int.guildId).length
                     descripcion = svsAis >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidor.aislamientos.length}** aislamientos en este servidor y en otros **${svsAis}** servidores tambien tienes y son los siguientes.\n\n` : `El miembro ${miembro} tiene **${servidor.aislamientos.length}** aislamientos en este servidor y en otros **${svsAis}** servidores tambien tiene y son los siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidor.aislamientos.length}** aislamientos en este servidor, las cuales son los siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidor.aislamientos.length}** aislamientos en este servidor, las cuales son los siguientes.\n\n`
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidor.aislamientos.length; i++) {
                         let moderador = await client.user.fetch(servidor.aislamientos[i].autor, { force: true })
                         let texto = `**${i + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.aislamientos[i].tiempo}:F> *(<t:${servidor.aislamientos[i].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[i].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[i].razon}*\n`
@@ -1246,7 +1253,7 @@ client.on("interactionCreate", async int => {
             const embHistorial = new EmbedBuilder()
                 .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`<:aislacion:947965052772814848> Aislamientos`)
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
@@ -1352,7 +1359,7 @@ client.on("interactionCreate", async int => {
         if (int.customId == "expulsiones") {
             int.deferUpdate()
             let dataHis = await historialesDB.findById(client.user.id), hisBotDB = botDB.historial.find(f => f.mensajeID == int.message.id), usuario = dataHis.usuarios.find(f => f.id == hisBotDB.miembroID), servidor = usuario.servidores.some(s => s.id == int.guildId) ? usuario.servidores.find(f => f.id == int.guildId) : undefined
-            let miembro = int.guild.members.cache.get(hisBotDB.miembroID), historial = [], descripcion = "", cantidad = 0
+            let miembro = int.guild.members.members.cache.get(hisBotDB.miembroID), historial = [], descripcion = "", cantidad = 0
 
             function condicionText(parTexto) {
                 if (historial[cantidad].length < 1900 && (historial[cantidad].length + parTexto.length) < 1900) {
@@ -1377,7 +1384,7 @@ client.on("interactionCreate", async int => {
                 if (servidor.expulsiones.length > 0) {
                     let svsExp = usuario.servidores.filter(f => f.expulsiones.length > 0 && f.id != int.guildId).length
                     descripcion = svsExp >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidor.expulsiones.length}** expulsiones en este servidor y en otros **${svsExp}** servidores tambien tienes y son las siguientes.\n\n` : `El miembro ${miembro} tiene **${servidor.expulsiones.length}** expulsiones en este servidor y en otros **${svsExp}** servidores tambien tiene y son las siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidor.expulsiones.length}** expulsiones en este servidor, las cuales son las siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidor.expulsiones.length}** expulsiones en este servidor, las cuales son las siguientes.\n\n`
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidor.expulsiones.length; i++) {
                         let moderador = await client.users.fetch(servidor.expulsiones[i].autor, { force: true })
                         let texto = `**${i + 1}.** 👮 Expulsado por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.expulsiones[i].tiempo}:F> *(<t:${servidor.expulsiones[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidor.expulsiones[i].razon}*\n`
@@ -1427,7 +1434,7 @@ client.on("interactionCreate", async int => {
             const embHistorial = new EmbedBuilder()
                 .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`<:salir12:879519859694776360> Expulsiones`)
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
@@ -1531,7 +1538,7 @@ client.on("interactionCreate", async int => {
         if (int.customId == "baneos") {
             int.deferUpdate()
             let dataHis = await historialesDB.findById(client.user.id), hisBotDB = botDB.historial.find(f => f.mensajeID == int.message.id), usuario = dataHis.usuarios.find(f => f.id == hisBotDB.miembroID), servidorDB = usuario.servidores.some(s => s.id == int.guildId) ? usuario.servidores.find(f => f.id == int.guildId) : undefined
-            let miembro = int.guild.members.cache.get(hisBotDB.miembroID), historial = [], descripcion = "", cantidad = 0
+            let miembro = int.guild.members.members.cache.get(hisBotDB.miembroID), historial = [], descripcion = "", cantidad = 0
 
             function condicionText(parTexto) {
                 if (historial[cantidad].length < 1900 && (historial[cantidad].length + parTexto.length) < 1900) {
@@ -1556,7 +1563,7 @@ client.on("interactionCreate", async int => {
                 if (servidorDB.baneos.length > 0) {
                     let svsBan = usuario.servidores.filter(f => f.baneos.length > 0 && f.id != int.guildId).length
                     descripcion = svsBan >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidorDB.baneos.length}** baneos en este servidor y en otros **${svsBan}** servidores tambien tienes y son los siguientes.\n\n` : `El miembro ${miembro} tiene **${servidorDB.baneos.length}** baneos en este servidor y en otros **${svsBan}** servidores tambien tiene y son los siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidorDB.baneos.length}** baneos en este servidor, las cuales son los siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidorDB.baneos.length}** baneos en este servidor, las cuales son los siguientes.\n\n`
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidorDB.baneos.length; i++) {
                         let moderador = await client.users.fetch(servidorDB.baneos[i].autor, { force: true })
                         let texto = `**${i + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidorDB.baneos[i].tiempo}:F> *(<t:${servidorDB.baneos[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidorDB.baneos[i].razon}*\n`
@@ -1605,7 +1612,7 @@ client.on("interactionCreate", async int => {
             const embHistorial = new EmbedBuilder()
                 .setAuthor({name: int.member.nickname || int.user.username, iconURL: int.user.displayAvatarURL()})
                 .setTitle(`⛔ Baneos`)
-                .setColor(int.guild.me.displayHexColor)
+                .setColor(int.guild.members.me.displayHexColor)
                 .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: 1/${totalPag}`, iconURL: miembro.displayAvatarURL()})
                 .setTimestamp()
             if (historial.length <= 1) {
@@ -1743,7 +1750,7 @@ client.on("interactionCreate", async int => {
                             const embTienesUnRol = new EmbedBuilder()
                                 .setTitle(`🔁 Cambio de roles`)
                                 .setDescription(`Se te ${rolesEliminar.length == 1 ? "ha removido el rol" : "han removido los roles"} ${rolesEliminar.map(m => `**<@&${m}>**`).join(`, `)} y se te ha agregado el rol **<@&${opcion.rolID}>** ya que no puedes tener **2** o mas roles de colores.`)
-                                .setColor(int.guild.me.displayHexColor)
+                                .setColor(int.guild.members.me.displayHexColor)
                             rolesEliminar.map(m => int.member.roles.remove(m))
                             int.member.roles.add(opcion.rolID)
                             int.reply({ ephemeral: true, embeds: [embTienesUnRol] })
@@ -1879,7 +1886,7 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("💤 Estado AFK removido")
                 .setDescription(`${msg.author} tu estado AFK se a removido.`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
@@ -1928,7 +1935,7 @@ client.on("messageCreate", async msg => {
                 const embAvisoAFK = new EmbedBuilder()
                     .setTitle("💤 AFK")
                     .setDescription(`<@${dataAFK.miembros[i].id}> se encuentra AFK desde <t:${dataAFK.miembros[i].tiempo}:R> por la razón \`\`${dataAFK.miembros[i].razon}\`\``)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ embeds: [embAvisoAFK] })
@@ -2142,7 +2149,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -2165,7 +2172,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -2195,7 +2202,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -2219,7 +2226,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("💤 AFK establecido")
                         .setDescription(`${msg.author} se ha establecido tu estado AFK\n\n📝 **Razón:** ${args.join(" ") ? args.join(" ") : "*No has proporcionado una razón*"}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -2285,7 +2292,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args.join(" "))
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args.join(" "))
 
             let actyvidad = null
             let miemPresence = miembro ? miembro.presence : msg.member.presence
@@ -2317,7 +2324,7 @@ client.on("messageCreate", async msg => {
                     { name: `🎖 **Insignias:** ${miembro ? miembro.user.flags.toArray().length : msg.author.flags.toArray().length}`, value: `${miembro ? miembro.user.flags.toArray().length ? miembro.user.flags.toArray().map(i => insignias[i]).join("\n") : miembro.id == msg.author.id ? "*No tienes insignias*" : "*No tiene insignias*" : msg.author.flags.toArray().length ? msg.author.flags.toArray().map(i => insignias[i]).join("\n") : "*No tienes insignias*"}`, inline: true },
                     { name: "🔍 **Estado:**", value: `${presencia[miemPresence?.status]}\n${actyvidad}`, inline: true },
                 )
-                .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.me.displayHexColor)
+                .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.members.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.members.me.displayHexColor)
                 .setFooter( miembro ? miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() } : { text: msg.guild.name, iconURL: msg.guild.iconURL() })
                 .setTimestamp()
             miembro ? miembro.user.bot ? embMiembro.fields.splice(6, 1) : null : null
@@ -2350,7 +2357,7 @@ client.on("messageCreate", async msg => {
                             { name: `🎖 **Insignias:** ${usuario.flags.toArray().length}`, value: `${usuario.flags.toArray().length ? usuario.flags.toArray().map(i => insignias[i]).join("\n") : "*No tiene insignias*"}`, inline: true },
                             { name: "⛔ **Baneado:**", value: `${(await msg.guild.bans.fetch()).find(f => f.user.id === usuario.id) ? `__Si, por la razón:__ *${(await msg.guild.bans.fetch()).find(f => f.user.id === usuario.id).reason}*` : "*No*"}`, inline: true },
                         )
-                        .setColor(usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.me.displayHexColor)
+                        .setColor(usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.members.me.displayHexColor)
                         .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
                         .setTimestamp()
                     setTimeout(() => {
@@ -2393,7 +2400,7 @@ client.on("messageCreate", async msg => {
                     { name: `👥 **Usuarios: ${client.users.cache.size.toLocaleString()}**`, value: `👤 ${client.users.cache.filter(fu => !fu.bot).size.toLocaleString()} miembros\n🤖 ${client.users.cache.filter(fb => fb.bot).size.toLocaleString()} bots`, inline: true },
                     { name: ` **Canales: ${(textCh + voiseCH + cateCh).toLocaleString()}**`, value: `<:canaldetexto:904812801925738557> ${textCh.toLocaleString()} texto\n <:canaldevoz:904812835295596544> ${voiseCH.toLocaleString()} voz\n<:carpeta:920494540111093780> ${cateCh.toLocaleString()} categorías`, inline: true },
                 )
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
             setTimeout(() => {
@@ -2448,7 +2455,7 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setImage(emoji.url)
                 .setDescription(`[**${emoji.name}**](${emoji.url})`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
             setTimeout(() => {
@@ -2465,7 +2472,7 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                 .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                 .setDescription(`*Este servidor no tiene emojis propios.*`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setTimestamp()
             if (emojis.size <= 0) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embNoEmojis] })
@@ -2476,7 +2483,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                     .setDescription(`Emojis: **${emojis.size}**\n\n${emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(0, 10).join("\n\n")}`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: `Pagina - 1/1`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
@@ -2497,7 +2504,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`${emojisAl[emojRandom]} Emojis del servidor`)
                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
@@ -2596,7 +2603,7 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
                 .setDescription(`*Este servidor no tiene stickers propios.*`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setTimestamp()
             if (stikers.size <= 0) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embNoStikers] })
@@ -2607,7 +2614,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(0, 10).join("\n\n")}`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: `Pagina - 1/1`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
@@ -2628,7 +2635,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`<:sticker:920136186687795262> Stickers del servidor`)
                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
@@ -2724,7 +2731,7 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("🤖 Bots lists")
                 .setDescription(`[<:topgg:934246215342772234> Top.gg](https://top.gg/bot/841531159778426910)\n[<:CDBotList:934253710446559242> CDBotList](https://www.cdbotlist.xyz/bots/841531159778426910)`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
@@ -2768,7 +2775,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args.join(" "))
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args.join(" "))
 
             let erroresP = [
                 { condicion: args[0] && !["server", "servidor", "guild", "sv"].some(s => args[0] == s) && !miembro && !isNaN(args[0]) && args[0].length < 18, descripcion: `El argumento numérico  ingresado (*${args[0]}*) no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.` },
@@ -2783,7 +2790,7 @@ client.on("messageCreate", async msg => {
                 .setTitle("Avatar")
                 .setURL(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
                 .setImage(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.me.displayHexColor)
+                .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.members.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.members.me.displayHexColor)
                 .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
                 .setTimestamp()
             if (args[0] ? ["server", "servidor", "guild", "sv"].some(s => args[0] == s) || miembro ? true : false : true) return setTimeout(() => {
@@ -2795,7 +2802,7 @@ client.on("messageCreate", async msg => {
                     embAvatar.author = { name: `Avatar de ${usuario.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL() }
                     embAvatar.url = usuario.displayAvatarURL({ dynamic: true, format: "png", size: 4096 })
                     embAvatar.image = { url: usuario.displayAvatarURL({ dynamic: true, format: "png", size: 4096 }) }
-                    embAvatar.color = usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.me.displayHexColor
+                    embAvatar.color = usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.members.me.displayHexColor
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAvatar] })
                     }, 500)
@@ -2878,12 +2885,12 @@ client.on("messageCreate", async msg => {
             msg.guild.discoverySplashURL() ? imgs.push(`[Splash](${msg.guild.splashURL({ size: 4096, format: "png" })})`) : ""
             msg.guild.splashURL() ? imgs.push(`[Discovery](${msg.guild.discoverySplashURL({ size: 4096, format: "png" })})`) : ""
 
-            let mgmc = msg.guild.members.cache
+            let mgmc = msg.guild.members.members.cache
             let enlinea = mgmc.filter(fm => fm.presence?.status === "online").size
             let ausente = mgmc.filter(fm => fm.presence?.status === "idle").size
             let nomolestar = mgmc.filter(fm => fm.presence?.status === "dnd").size
-            let todos = msg.guild.members.cache.size
-            let bots = msg.guild.members.cache.filter(fb => fb.user.bot).size.toLocaleString()
+            let todos = msg.guild.members.members.cache.size
+            let bots = msg.guild.members.members.cache.filter(fb => fb.user.bot).size.toLocaleString()
 
             let chText = msg.guild.channels.cache.filter(t => t.type === "GUILD_TEXT").size, chVoize = msg.guild.channels.cache.filter(v => v.type === "GUILD_VOICE").size, chCategorie = msg.guild.channels.cache.filter(c => c.type === "GUILD_CATEGORY").size
 
@@ -2892,11 +2899,11 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setImage(msg.guild.bannerURL({ format: "png", size: 4096 }))
                 .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
-            if (msg.guild.features.length >= 1 && msg.guild.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
+            if (msg.guild.features.length >= 1 && msg.guild.members.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
                 embServer.setFields(
                     { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                     { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2915,12 +2922,12 @@ client.on("messageCreate", async msg => {
                     { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                     { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
                     { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                    { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                    { name: `👥 **Miembros:** ${msg.guild.members.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                     { name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.map(f => feat[f]).join(" **|** ")}`, inline: false },
                 )
 
             } else {
-                if (msg.guild.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
+                if (msg.guild.members.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
                     embServer.setFields(
                         { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                         { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2939,11 +2946,11 @@ client.on("messageCreate", async msg => {
                         { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                         { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
                         { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                        { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                        { name: `👥 **Miembros:** ${msg.guild.members.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                     )
 
                 } else {
-                    if (msg.guild.me.permissions.has("BAN_MEMBERS")) {
+                    if (msg.guild.members.me.permissions.has("BAN_MEMBERS")) {
                         embServer.setFields(
                             { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                             { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2961,11 +2968,11 @@ client.on("messageCreate", async msg => {
                             { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                             { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
                             { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                            { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                            { name: `👥 **Miembros:** ${msg.guild.members.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                         )
 
                     } else {
-                        if (msg.guild.me.permissions.has("MANAGE_GUILD")) {
+                        if (msg.guild.members.me.permissions.has("MANAGE_GUILD")) {
                             embServer.setFields(
                                 { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                                 { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2983,7 +2990,7 @@ client.on("messageCreate", async msg => {
                                 { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                                 { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
                                 { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                                { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                                { name: `👥 **Miembros:** ${msg.guild.members.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                             )
 
                         } else {
@@ -3003,7 +3010,7 @@ client.on("messageCreate", async msg => {
                                 { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                                 { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
                                 { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                                { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                                { name: `👥 **Miembros:** ${msg.guild.members.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                             )
                         }
                     }
@@ -3047,7 +3054,7 @@ client.on("messageCreate", async msg => {
             console.log(isURL.lenient(args[0]))
 
             if (!args[0]) {
-                if (msg.guild.me.permissions.has("MANAGE_GUILD")) {
+                if (msg.guild.members.me.permissions.has("MANAGE_GUILD")) {
                     const embInfo = new EmbedBuilder()
                         .setTitle(`${emojis.lupa} Comando qrcode`)
                         .setFields(
@@ -3101,7 +3108,7 @@ client.on("messageCreate", async msg => {
             const embQR = new EmbedBuilder()
                 .setAuthor({name: `Codigo QR creado por ${msg.member.nickname || msg.author.tag}`, iconURL: msg.author.displayAvatarURL()})
                 .setImage(`attachment://imagen.png`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
@@ -3191,7 +3198,7 @@ client.on("messageCreate", async msg => {
                                     { name: `📤 **Desde:**`, value: `${msg.guild.name}\n${msg.guild.id}`, inline: true },
                                     { name: `📄 **Reporte:**`, value: `${args.join(" ")}`, inline: true },
                                 )
-                                .setColor(msg.guild.me.displayHexColor)
+                                .setColor(msg.guild.members.me.displayHexColor)
                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             canalReportes.send({ embeds: [embReporte] })
@@ -3235,12 +3242,12 @@ client.on("messageCreate", async msg => {
         }
 
         if (["invites", "invs", "invitaciones"].some(s => comando == s)) {
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args.join(" ")), invitaciones = miembro ? (await msg.guild.invites.fetch()).filter(f => f.inviterId == miembro.id).map(m => m) : (await msg.guild.invites.fetch()).filter(f => f.inviterId == msg.author.id).map(m => m), tabla = []
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag == args.join(" ")), invitaciones = miembro ? (await msg.guild.invites.fetch()).filter(f => f.inviterId == miembro.id).map(m => m) : (await msg.guild.invites.fetch()).filter(f => f.inviterId == msg.author.id).map(m => m), tabla = []
             msg.channel.sendTyping()
             botDB.comandos.usos++
 
             let erroresP = [
-                { condicion: !msg.guild.me.permissions.has("MANAGE_GUILD"), descripcion: `No tengo los permisos suficientes para ejecutar el comando, requiero del permiso \`\`Gestionar servidor\`\`.` },
+                { condicion: !msg.guild.members.me.permissions.has("MANAGE_GUILD"), descripcion: `No tengo los permisos suficientes para ejecutar el comando, requiero del permiso \`\`Gestionar servidor\`\`.` },
                 { condicion: args[0] && !["help", "ayuda", "info"].some(s => args[0] == s) && !miembro, descripcion: `El argumento que has proporcionado *(${args.join(" ")})* no se reconoce como un miembro del servido, asegúrate de ingresar bien al miembro.` },
                 { condicion: !miembro && invitaciones.length == 0, descripcion: `No has creado ninguna invitación en este servidor.` },
                 { condicion: miembro && invitaciones.length == 0, descripcion: `El miembro que has proporcionado *(${miembro})* no ha creado ninguna invitación.` },
@@ -3275,7 +3282,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                     .setTitle(`✉️ Invitaciones`)
                     .setDescription(descripcion + tabla.slice(0, 10).join("\n\n"))
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({ text: `Pagina - 1/1`, iconURL: miembro ? miembro.id == msg.author.id ? msg.guild.iconURL() : miembro.displayAvatarURL() : msg.guild.iconURL() })
                     .setTimestamp()
                 setTimeout(() => {
@@ -3296,7 +3303,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL() })
                     .setTitle(`✉️ Invitaciones`)
                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({ text: `Pagina - 1/1`, iconURL: miembro ? miembro.id == msg.author.id ? msg.guild.iconURL() : msg.author.displayAvatarURL() : msg.guild.iconURL() })
                     .setTimestamp()
 
@@ -3407,14 +3414,14 @@ client.on("messageCreate", async msg => {
                 const embInviteInfo = new EmbedBuilder()
                     .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 }) })
                     .setTitle(`<a:Info:926972188018479164> Información de invitación`)
-                    // .setDescription(`Invitación creada por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 1024})}), ID: \`\`${invite.inviterId}\`\``} en el canal **${invite.guild.id==msg.guildId ? invite.channel : invite.channel.name}** ${invite.guild.id==msg.guildId ? "*en este servidor.*" : `en el servidor **${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount-invite.presenceCount).toLocaleString()}** desconectados.`}`)
+                    // .setDescription(`Invitación creada por ${msg.guild.members.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 1024})}), ID: \`\`${invite.inviterId}\`\``} en el canal **${invite.guild.id==msg.guildId ? invite.channel : invite.channel.name}** ${invite.guild.id==msg.guildId ? "*en este servidor.*" : `en el servidor **${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount-invite.presenceCount).toLocaleString()}** desconectados.`}`)
                     .setFields(
                         { name: `<:servidores:954823483794276383> **Servidor:**`, value: `${invite.guild.id == msg.guildId ? "*de este servidor*" : `**${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount - invite.presenceCount).toLocaleString()}** desconectados.`}` },
-                        { name: `<:calendario:952037404561264661> **Creada:**`, value: `en el canal **${invite.guild.id == msg.guildId ? invite.channel : invite.channel.name}**, por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 })}), ID: \`\`${invite.inviterId}\`\``}` },
+                        { name: `<:calendario:952037404561264661> **Creada:**`, value: `en el canal **${invite.guild.id == msg.guildId ? invite.channel : invite.channel.name}**, por ${msg.guild.members.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 })}), ID: \`\`${invite.inviterId}\`\``}` },
                         // {name: ``, value: ``},
                         // {name: ``, value: ``},
                     )
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({ text: invite.guild.name, iconURL: invite.guild.iconURL() })
                     .setTimestamp()
                 setTimeout(() => {
@@ -3498,7 +3505,7 @@ client.on("messageCreate", async msg => {
             let botones14 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
             let botones15 = new ActionRowBuilder().addComponents([new ButtonBuilder().setCustomId("advertencias").setEmoji("929204500739268608").setLabel("Advertencias").setStyle("SUCCESS")], [new ButtonBuilder().setCustomId("aislamientos").setEmoji("947965052772814848").setLabel("Aislamientos").setStyle("PRIMARY")], [new ButtonBuilder().setCustomId("expulsiones").setEmoji("879519859694776360").setLabel("Expulsiones").setStyle("SECONDARY")], [new ButtonBuilder().setCustomId("baneos").setEmoji("⛔").setLabel("Baneos").setStyle("DANGER")])
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args.join(" "))
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args.join(" "))
 
             if (miembro) {
                 if (msg.author.id === miembro.id) {
@@ -3869,7 +3876,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             msg.channel.sendTyping()
             let dataHis = await historialesDB.findById(client.user.id)
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args.join(" ")) || false, sancion = args[1]
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag == args.join(" ")) || false, sancion = args[1]
 
             let alias = ["deleterecord", "delrecord", "eliminarregistro", "delregistro"]
             const embInfo = new EmbedBuilder()
@@ -4050,12 +4057,12 @@ client.on("messageCreate", async msg => {
             }, 500);
 
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args[0])
             let razon = args.slice(1).join(" ")
 
             if (!miembro) {
                 let descripciones = [`El argumento numérico  ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`, `El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`, `El argumento proporcionado (*${args[0]}*) no se reconoce como una mención, ID o etiqueta de un miembro del servidor, proporciona una mención, ID o etiqueta valida de un miembro del servidor.`, `El argumento proporcionado *(${args[0]})* tiene las características de una ID, es numérico, contiene **18** caracteres pero no es una ID de ningún miembro del servidor.`]
-                let condicionales = [!isNaN(args[0]) && args[0].length < 18, !isNaN(args[0]) && args[0].length > 18, isNaN(args[0]), !msg.guild.members.cache.find(f => f.id == args[0])]
+                let condicionales = [!isNaN(args[0]) && args[0].length < 18, !isNaN(args[0]) && args[0].length > 18, isNaN(args[0]), !msg.guild.members.members.cache.find(f => f.id == args[0])]
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
@@ -4284,7 +4291,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            let condicionalesP = [!msg.member.permissions.has("MODERATE_MEMBERS"), !msg.guild.me.permissions.has("MODERATE_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has("MODERATE_MEMBERS"), !msg.guild.members.me.permissions.has("MODERATE_MEMBERS")]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -4347,7 +4354,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500);
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args[0])
             let tiempo = args.slice(1)[0]
             let razon = args.slice(2).join(" ")
 
@@ -4519,7 +4526,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                     let descripciones = [`El usuario proporcionado soy yo, no me puedo aislar a mi mismo.`, `El usuario proporcionado es un bot, no se puede aislar a un bot.`, `¿Por que quieres aislarte a ti mismo?, no puedo realizar esa acción.`, `El miembro proporcionado es el dueño del servidor, no puedes aislar temporalmente al dueño del servidor, nadie puede.`, `El miembro proporcionado es un administrador en el servidor o tiene permiso de administrador, no lo puedo aislar.`, `El miembro proporcionado tiene un rol igual o mayor al tuyo por lo tanto no lo puedes aislar temporalmente.`, `El miembro proporcionado tiene un rol igual o mayor al mío por lo tanto no lo puedo aislar temporalmente.`, `El miembro proporcionado ya esta aislado temporalmente y su aislamiento temporal termina <t:${Math.floor(miembro.communicationDisabledUntilTimestamp / 1000)}:R>`, `No proporcionaste el tiempo que estará aislado el miembro.`]
-                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, miembro.permissions.has("ADMINISTRATOR"), msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, miembro.isCommunicationDisabled(), !tiempo]
+                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, miembro.permissions.has("ADMINISTRATOR"), msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, miembro.isCommunicationDisabled(), !tiempo]
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
@@ -4658,7 +4665,7 @@ client.on("messageCreate", async msg => {
         if (comando == "unmute") {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let condicionalesP = [!msg.member.permissions.has("MODERATE_MEMBERS"), !msg.guild.me.permissions.has("MODERATE_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has("MODERATE_MEMBERS"), !msg.guild.members.me.permissions.has("MODERATE_MEMBERS")]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -4725,7 +4732,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500);
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args[0])
 
             if (!miembro) {
                 let descripciones = [`El argumento numérico  ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`, `El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`, `El argumento proporcionado (*${args[0]}*) no se reconoce como una mención, ID o etiqueta de un miembro del servidor, proporciona una mención, ID o etiqueta valida de un miembro del servidor.`, `El argumento proporcionado *(${args[0]})* tiene las caracteristicas de una **ID**, es numérico, contiene **18** caracteres pero no coresponde con la **ID** de ningun miembro del servidor.`]
@@ -4820,7 +4827,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                     let descripciones = [`El miembro proporcionado soy yo, no estoy aislado.`, `El miembro proporcionado es un bot, no se puede aislar a un bot por lo tanto ese bot no esta aislado.`, `El miembro que has proporcionado eres tu, tu no estas aislado temporalmente.`, `El miembro proporcionado es el dueño del servidor, nadie lo puede aislar por lo tanto no tiene aislamiento que puedas eliminarle.`, `El miembro proporcionado tiene un rol igual o mayor al tuyo por lo tanto no le puedes eliminar el aislamiento.`, `El miembro proporcionado tiene un rol igual o mayor al mío por lo tanto no le puedo eliminar el aislamiento.`, `El miembro proporcionado no esta aislado temporalmente.`, `El miembro proporcionado es administrador o tiene permiso de administrador, no le puedo eliminar el aislamiento.`]
-                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !miembro.isCommunicationDisabled(), miembro.permissions.has("ADMINISTRATOR")]
+                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !miembro.isCommunicationDisabled(), miembro.permissions.has("ADMINISTRATOR")]
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
@@ -4884,7 +4891,7 @@ client.on("messageCreate", async msg => {
         if (["mutelist", "aislados"].some(s => comando == s)) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let aislados = msg.guild.members.cache.filter(f => f.isCommunicationDisabled())
+            let aislados = msg.guild.members.members.cache.filter(f => f.isCommunicationDisabled())
 
             const embMuteList = new EmbedBuilder()
                 .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
@@ -5032,7 +5039,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            let condicionalesP = [!msg.member.permissions.has("KICK_MEMBERS"), !msg.guild.me.permissions.has("KICK_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has("KICK_MEMBERS"), !msg.guild.members.me.permissions.has("KICK_MEMBERS")]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -5099,7 +5106,7 @@ client.on("messageCreate", async msg => {
             }, 500)
 
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args[0])
             let razon = args.slice(1).join(" ")
 
             if (!miembro) {
@@ -5155,7 +5162,7 @@ client.on("messageCreate", async msg => {
 
                     if (miembro.user.bot) {
                         let descripcionesB = [`El miembro proporcionado es un bot y tiene un rol igual o mayor que el mío por lo tanto no puedo expulsarlo.`, `No has proporcionado la razón por la que expulsaras a ese bot, proporciona la razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesB = [msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesB = [msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
@@ -5197,7 +5204,7 @@ client.on("messageCreate", async msg => {
                             .setTimestamp()
 
                         let descripcionesU = [`El miembro proporcionado tiene un rol igual o mayor que el mío por lo tanto no puedo expulsarlo.`, `No has proporcionado la razón por la que expulsaras al miembro, proporciona la razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesU = [msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesU = [msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let o = 0; o < descripcionesU.length; o++) {
                             if (condicionalesU[o]) {
@@ -5310,7 +5317,7 @@ client.on("messageCreate", async msg => {
 
                     if (miembro.user.bot) {
                         let descripcionesB = [`El bot proporcionado tiene un rol igual o mayor que el tuyo por lo tanto no puedes expulsarlo.`, `El miembro proporcionado es un bot y tiene un rol igual o mayor que el mío por lo tanto no puedo expulsarlo.`, `No has proporcionado la razón por la que expulsaras a ese bot, proporciona la razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesB = [msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesB = [msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
@@ -5354,7 +5361,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                         let descripcionesB = [`El miembro proporcionado tiene un rol igual o mayor que el tuyo por lo tanto no puedes expulsarlo.`, `El miembro proporcionado tiene un rol igual o mayor que el mío por lo tanto no puedo expulsarlo.`, `No has proporcionado la razón por la que expulsaras a ese miembro, proporciona la razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesB = [msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesB = [msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
@@ -5472,7 +5479,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            let condicionalesP = [!msg.member.permissions.has("BAN_MEMBERS"), !msg.guild.me.permissions.has("BAN_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has("BAN_MEMBERS"), !msg.guild.members.me.permissions.has("BAN_MEMBERS")]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -5538,7 +5545,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args[0])
             let razon = args.slice(1).join(" ")
 
             if (miembro) {
@@ -5568,7 +5575,7 @@ client.on("messageCreate", async msg => {
 
                     if (miembro.user.bot) {
                         let descripcionesB = [`El bot proporcionado tiene un rol igual o mayor al mío por lo tanto no lo puedo banear del servidor.`, `No has proporcionado la razón por la que banearas al bot, proporciona una razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesB = [msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesB = [msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let o = 0; o < descripcionesB.length; o++) {
                             if (condicionalesB[o]) {
@@ -5606,7 +5613,7 @@ client.on("messageCreate", async msg => {
 
                     } else {
                         let descripcionesU = [`El miembro proporcionado tiene un rol igual o mayor al mío por lo tanto no lo puedo banear del servidor.`, `No has proporcionado la razón por la que banearas al miembro, proporciona una razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesU = [msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesU = [msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let o = 0; o < descripcionesU.length; o++) {
                             if (condicionalesU[o]) {
@@ -5715,7 +5722,7 @@ client.on("messageCreate", async msg => {
 
                     if (miembro.user.bot) {
                         let descripcionesBb = [`El bot proporcionado tiene un rol igual o mayor al mío por lo tanto no lo puedo banear del servidor.`, `No puedes banear a un bot con el mismo rol o mayor que tu.`, `No has proporcionado la razón por que banearas a ese bot, proporciona una razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesBb = [msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesBb = [msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let i = 0; i < descripcionesBb.length; i++) {
                             if (condicionalesBb[i]) {
@@ -5750,7 +5757,7 @@ client.on("messageCreate", async msg => {
                         })
                     } else {
                         let descripcionesBb = [`El miembro proporcionado es el dueño del servidor, nadie puede banear el dueño del servidor.`, `El miembro proporcionado tiene un rol igual o mayor al mío por lo tanto no lo puedo banear del servidor.`, `El miembro propocionado tiene un rol igual o mayor al tuyo por lo tanto no lo puedes banear del servidor.`, `No has proporcionado la razón por que banearas al miembro, proporciona una razón.`, `La razón que has proporcionado supera los **1000** caracteres, proporciona una razón mas corta.`]
-                        let condicionalesBb = [miembro.id === msg.guild.ownerId, msg.guild.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
+                        let condicionalesBb = [miembro.id === msg.guild.ownerId, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !razon, razon.length > 1000]
 
                         for (let i = 0; i < descripcionesBb.length; i++) {
                             if (condicionalesBb[i]) {
@@ -5869,7 +5876,7 @@ client.on("messageCreate", async msg => {
                         .setColor("#ff0000")
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
-                        msg.guild.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
+                        msg.guild.members.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBaneo] })
                         })
                     } else {
@@ -5905,7 +5912,7 @@ client.on("messageCreate", async msg => {
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
-                        msg.guild.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
+                        msg.guild.members.members.ban(usuario.id, { reason: `Razón: ${razon} | Por: ${msg.author.tag}/ID: ${msg.author.id} | Fecha: ${msg.createdAt.toLocaleDateString()}` }).then(ban => {
                             setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBaneo] })
                             }, 500)
@@ -5975,7 +5982,7 @@ client.on("messageCreate", async msg => {
         if (comando == "unban") {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let condicionalesP = [!msg.member.permissions.has("BAN_MEMBERS"), !msg.guild.me.permissions.has("BAN_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has("BAN_MEMBERS"), !msg.guild.members.me.permissions.has("BAN_MEMBERS")]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -6053,9 +6060,9 @@ client.on("messageCreate", async msg => {
                 }
             }
 
-            if (msg.guild.members.cache.get(args)) {
-                let descripcionesM = [`La ID proporcionada es mía, yo no estoy baneado.`, `La ID proporcionada es tuya y tu eres el dueño del servidor, claramente no estas baneado.`, `La ID proporcionada es tuya, claramente no estas baneado.`, `La ID proporcionada es del dueño/a del servidor, es imposible que este baneado/a de su propio servidor`, `La ID proporcionada es de <@${msg.guild.members.cache.get(args).id}> un bot del servidor que no esta baneado.`, `La ID proporcionada es de <@${msg.guild.members.cache.get(args).id}> un miembro del servidor que no esta baneado.`]
-                let condicionalesM = [args === client.user.id, args === msg.author.id && msg.author.id === msg.guild.ownerId, args === msg.author.id, !msg.author.id === msg.guild.ownerId && args === msg.guild.ownerId, msg.guild.members.cache.get(args).user.bot, !msg.guild.members.cache.get(args).user.bot]
+            if (msg.guild.members.members.cache.get(args)) {
+                let descripcionesM = [`La ID proporcionada es mía, yo no estoy baneado.`, `La ID proporcionada es tuya y tu eres el dueño del servidor, claramente no estas baneado.`, `La ID proporcionada es tuya, claramente no estas baneado.`, `La ID proporcionada es del dueño/a del servidor, es imposible que este baneado/a de su propio servidor`, `La ID proporcionada es de <@${msg.guild.members.members.cache.get(args).id}> un bot del servidor que no esta baneado.`, `La ID proporcionada es de <@${msg.guild.members.members.cache.get(args).id}> un miembro del servidor que no esta baneado.`]
+                let condicionalesM = [args === client.user.id, args === msg.author.id && msg.author.id === msg.guild.ownerId, args === msg.author.id, !msg.author.id === msg.guild.ownerId && args === msg.guild.ownerId, msg.guild.members.members.cache.get(args).user.bot, !msg.guild.members.members.cache.get(args).user.bot]
 
 
                 for (let i = 0; i < descripcionesM.length; i++) {
@@ -6104,7 +6111,7 @@ client.on("messageCreate", async msg => {
                             .setColor("GREEN")
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
-                        msg.guild.members.unban(usuario.id).then(un => {
+                        msg.guild.members.members.unban(usuario.id).then(un => {
                             setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embUban] })
                             }, 500)
@@ -6134,7 +6141,7 @@ client.on("messageCreate", async msg => {
                             .setColor("GREEN")
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
-                        msg.guild.members.unban(usuario.id).then(un => {
+                        msg.guild.members.members.unban(usuario.id).then(un => {
                             setTimeout(() => {
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embUban] })
                             }, 500)
@@ -6163,7 +6170,7 @@ client.on("messageCreate", async msg => {
         if (["clear", "cl", "delete", "eliminar"].some(s => comando == s)) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let condicionalesP = [!msg.member.permissions.has("MANAGE_MESSAGES"), !msg.guild.me.permissions.has("MANAGE_MESSAGES")]
+            let condicionalesP = [!msg.member.permissions.has("MANAGE_MESSAGES"), !msg.guild.members.me.permissions.has("MANAGE_MESSAGES")]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let c = 0; c < descripcionesP.length; c++) {
                 if (condicionalesP[c]) {
@@ -6229,7 +6236,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args.join(" "))
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args.join(" "))
 
             if (miembro) {
                 let condicionalesCM = [!args[1], isNaN(args[1]), args[1] <= 1, args[1] > 100]
@@ -6364,7 +6371,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Banear miembros."})
                 .setTimestamp()
-            if (!msg.guild.me.permissions.has("BAN_MEMBERS")) return msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has("BAN_MEMBERS")) return msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                 msg.delete().catch(c => {
                     return;
                 })
@@ -6396,7 +6403,7 @@ client.on("messageCreate", async msg => {
                 .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                 .setTitle("🧾 Miembros baneados")
                 .setDescription(`*No hay miembros baneados en este servidor.*`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
                 .setTimestamp()
             if (gb.size <= 0) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBans0] })
@@ -6407,7 +6414,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Miembros baneados")
                     .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).join("\n\n")}`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embBanlist10] })
@@ -6426,7 +6433,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Miembros baneados")
                     .setDescription(`Hay un total de **${gb.size}** usuarios baneados en este servidor.\n\n${gb.map(m => m).map((bm, i) => `**${i + 1}. [${bm.user.tag}](${bm.user.displayAvatarURL()})**\n**ID:** ${bm.user.id}\n**Razón del baneo:**\n${bm.reason}`).slice(ba1, ba2).join("\n\n")}`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
 
@@ -6596,7 +6603,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag === args[0])
             let mensaje = args.slice(1).join(" ")
 
             if (!miembro) {
@@ -6797,7 +6804,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⚙️ Prefijo cambiado")
                     .setDescription(`Nuevo prefijo: \`\`${args[0]}\`\``)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPrefix] })
@@ -6833,7 +6840,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⚙️ Prefijo cambiado")
                     .setDescription(`Nuevo prefijo: \`\`${args[0]}\`\``)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setTimestamp()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPrefix] })
@@ -6873,7 +6880,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido: Gestionar canales"})
                 .setTimestamp()
-            if (!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -6952,7 +6959,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("⏲ Modo pausado")
                     .setDescription(`El modo pausado del canal ${canal} se ha establecido a **${args[1]}**.`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setTimestamp()
                 canal.setRateLimitPerUser(ms(args[1]) / 1000, `Modo pausado de ${args[1]} establecido en el canal por ${msg.author.tag}.`).then(tm => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embSlow] })
@@ -7015,7 +7022,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7065,13 +7072,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             let rol = msg.mentions.roles.first() || msg.guild.roles.cache.get(args[0]) || msg.guild.roles.cache.get(args[1])
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.get(args[1])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.get(args[1])
 
 
             if (rol) {
                 if (miembro) {
                     let descripciones = [`El rol proporcionado *(${rol})* es exclusivo para un bot, no se le puede agregar a ningún miembro.`, `El rol proporcionado *(${rol})* tiene una posición igual o mayor a la de mi rol mas alto por lo tanto no puedo agregar ese rol a ningún miembro.`, `El miembro proporcionado *(${miembro})* eres tu y ya tienes el rol ${rol}.`, `El miembro proporcionado *(${miembro})* ya tiene el rol ${rol}.`]
-                    let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, miembro.id == msg.author.id && miembro.roles.cache.find(f => f.id == rol.id), miembro.roles.cache.find(f => f.id == rol.id)]
+                    let condicionales = [rol.managed, msg.guild.members.me.roles.highest.comparePositionTo(rol) <= 0, miembro.id == msg.author.id && miembro.roles.cache.find(f => f.id == rol.id), miembro.roles.cache.find(f => f.id == rol.id)]
                     for (let d in descripciones) {
                         if (condicionales[d]) {
                             const embErr = new EmbedBuilder()
@@ -7184,7 +7191,7 @@ client.on("messageCreate", async msg => {
                     if (args[0] && args[1]) {
                         if (["all", "todos"].some(s => s == args[0].toLowerCase()) || ["all", "todos"].some(s => s == args[1].toLowerCase())) {
                             let descripciones = [`El rol proporcionado *(${rol})* es exclusivo para un bot, no se le puede agregar a ningún miembro.`, `El rol proporcionado *(${rol})* tiene una posición igual o mayor a la de mi rol mas alto por lo tanto no puedo agregar ese rol a ningún miembro.`, `Ahora estoy agregando un rol a todos los miembros del servidor, no puedo agregar **2** o mas roles a todos los miembros a la vez.`]
-                            let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, botDB.servidor.some(s => s.id == msg.guildId) && botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol]
+                            let condicionales = [rol.managed, msg.guild.members.me.roles.highest.comparePositionTo(rol) <= 0, botDB.servidor.some(s => s.id == msg.guildId) && botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol]
                             for (let d in descripciones) {
                                 if (condicionales[d]) {
                                     const embErr = new EmbedBuilder()
@@ -7206,12 +7213,12 @@ client.on("messageCreate", async msg => {
                             }
 
                             if (msg.guild.ownerId == msg.author.id) {
-                                let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
+                                let noLoTienen = msg.guild.members.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
                                 const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Agregando el rol a todos..`)
                                     .setDescription(`Se esta agregando el rol ${rol} a todos lo miembros, tenga paciencia esto puede tardar aproximadamente ${ms(noLoTienen.length * 1000)}.`)
-                                    .setColor(msg.guild.me.displayHexColor)
+                                    .setColor(msg.guild.members.me.displayHexColor)
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCargando] }).then(tm => {
                                     if (botDB.servidor.some(s => s.id == msg.guildId)) {
                                         botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol = true
@@ -7264,12 +7271,12 @@ client.on("messageCreate", async msg => {
                                     }, 30000))
                                 }, 500)
 
-                                let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
+                                let noLoTienen = msg.guild.members.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
                                 const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Agregando el rol a todos..`)
                                     .setDescription(`Se esta agregando el rol ${rol} a todos los miembros, tenga paciencia esto puede tardar aproximadamente ${ms(noLoTienen.length * 1000)}.`)
-                                    .setColor(msg.guild.me.displayHexColor)
+                                    .setColor(msg.guild.members.me.displayHexColor)
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCargando] }).then(tm => {
                                     if (botDB.servidor.some(s => s.id == msg.guildId)) {
                                         botDB.servidor.find(f => f.id == msg.guildId).comandos.addrol = true
@@ -7396,7 +7403,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7446,13 +7453,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             let rol = msg.mentions.roles.first() || msg.guild.roles.cache.get(args[0]) || msg.guild.roles.cache.get(args[1])
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.get(args[1])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.get(args[1])
 
 
             if (rol) {
                 if (miembro) {
                     let descripciones = [`El rol proporcionado *(${rol})* es exclusivo para un bot, no se le puede remover de ningún miembro ya que solo lo puede tener un bot.`, `El rol proporcionado *(${rol})* tiene una posición igual o mayor a la de mi rol mas alto por lo tanto no puedo remover ese rol de ningún miembro.`, `El miembro proporcionado *(${miembro})* eres tu y no tienes el rol ${rol}.`, `El miembro proporcionado *(${miembro})* no tiene el rol ${rol}.`]
-                    let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, miembro.id == msg.author.id && !miembro.roles.cache.find(f => f.id == rol.id), !miembro.roles.cache.find(f => f.id == rol.id)]
+                    let condicionales = [rol.managed, msg.guild.members.me.roles.highest.comparePositionTo(rol) <= 0, miembro.id == msg.author.id && !miembro.roles.cache.find(f => f.id == rol.id), !miembro.roles.cache.find(f => f.id == rol.id)]
                     for (let d in descripciones) {
                         if (condicionales[d]) {
                             const embError = new EmbedBuilder()
@@ -7565,7 +7572,7 @@ client.on("messageCreate", async msg => {
                     if (args[0] && args[1]) {
                         if (["all", "todos"].some(s => s == args[0].toLowerCase()) || ["all", "todos"].some(s => s == args[1].toLowerCase())) {
                             let descripciones = [`El rol proporcionado *(${rol})* es exclusivo para un bot, no se le puede remover de ningún miembro ya que solo lo puede tener un bot.`, `El rol proporcionado *(${rol})* tiene una posición igual o mayor a la de mi rol mas alto por lo tanto no puedo remover ese rol de ningún miembro.`, `Ahora estoy agregando un rol a todos los miembros del servidor, no puedo agregar **2** o mas roles a todos los miembros a la vez.`]
-                            let condicionales = [rol.managed, msg.guild.me.roles.highest.comparePositionTo(rol) <= 0, botDB.servidor.some(s => s.id == msg.guildId) && botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol]
+                            let condicionales = [rol.managed, msg.guild.members.me.roles.highest.comparePositionTo(rol) <= 0, botDB.servidor.some(s => s.id == msg.guildId) && botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol]
                             for (let d in descripciones) {
                                 if (condicionales[d]) {
                                     const embError = new EmbedBuilder()
@@ -7587,12 +7594,12 @@ client.on("messageCreate", async msg => {
                             }
 
                             if (msg.guild.ownerId == msg.author.id) {
-                                let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
+                                let noLoTienen = msg.guild.members.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
                                 const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Rremoviendo el rol de todos..`)
                                     .setDescription(`Se esta removiendo el rol ${rol} de todos los miembros, tenga paciencia esto puede tardar aproximadamente ${ms(siLoTienen.length * 1000)}`)
-                                    .setColor(msg.guild.me.displayHexColor)
+                                    .setColor(msg.guild.members.me.displayHexColor)
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCargando] }).then(tm => {
                                     if (botDB.servidor.some(s => s.id == msg.guildId)) {
                                         botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol = true
@@ -7646,12 +7653,12 @@ client.on("messageCreate", async msg => {
                                     }, 30000))
                                 }, 500)
 
-                                let noLoTienen = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
+                                let noLoTienen = msg.guild.members.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(n => n), siLoTienen = msg.guild.members.members.cache.filter(f => f.roles.cache.has(rol.id)).map(s => s), cantidad = 0, descripcion = ""
 
                                 const embCargando = new EmbedBuilder()
                                     .setTitle(`<a:loading:958171113370828830> Rremoviendo el rol de todos..`)
                                     .setDescription(`Se esta removiendo el rol ${rol} de todos los miembros, tenga paciencia esto puede tardar aproximadamente ${ms(siLoTienen.length * 1000)}`)
-                                    .setColor(msg.guild.me.displayHexColor)
+                                    .setColor(msg.guild.members.me.displayHexColor)
                                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embCargando] }).then(tm => {
                                     if (botDB.servidor.some(s => s.id == msg.guildId)) {
                                         botDB.servidor.find(f => f.id == msg.guildId).comandos.removerol = true
@@ -7789,7 +7796,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8038,7 +8045,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8193,7 +8200,7 @@ client.on("messageCreate", async msg => {
             if (rol) {
                 const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
-                    .setDescription(`El rol proporcionado ${rol} es un rol exclusivo de un bot, solo un bot puede tener ese rol el cual es ${msg.guild.members.cache.find(f => f.roles.cache.has(rol.id))}`)
+                    .setDescription(`El rol proporcionado ${rol} es un rol exclusivo de un bot, solo un bot puede tener ese rol el cual es ${msg.guild.members.members.cache.find(f => f.roles.cache.has(rol.id))}`)
                     .setColor(ColorError)
                     .setTimestamp()
                 if (rol.managed) return setTimeout(() => {
@@ -8209,13 +8216,13 @@ client.on("messageCreate", async msg => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embError2] })
                 }, 500)
 
-                let miembros = msg.guild.members.cache.filter(f => f.roles.cache.has(rol.id)).map(r => r)
+                let miembros = msg.guild.members.members.cache.filter(f => f.roles.cache.has(rol.id)).map(r => r)
 
                 const embNoMiembros = new EmbedBuilder()
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("👥 Miembros con el rol")
                     .setDescription(`${rol}\n*No hay miembros con ese rol.*`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 if (miembros.length <= 0) return setTimeout(() => {
@@ -8234,7 +8241,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros con el rol")
                         .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -8247,7 +8254,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros con el rol")
                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
@@ -8448,7 +8455,7 @@ client.on("messageCreate", async msg => {
             if (rol) {
                 const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
-                    .setDescription(`El rol proporcionado ${rol} es un rol exclusivo de un bot, solo un bot puede tener ese rol el cual es ${msg.guild.members.cache.find(f => f.roles.cache.has(rol.id))}, todos los demás miembros no tienen el rol.`)
+                    .setDescription(`El rol proporcionado ${rol} es un rol exclusivo de un bot, solo un bot puede tener ese rol el cual es ${msg.guild.members.members.cache.find(f => f.roles.cache.has(rol.id))}, todos los demás miembros no tienen el rol.`)
                     .setColor(ColorError)
                     .setTimestamp()
                 if (rol.managed) return setTimeout(() => {
@@ -8464,13 +8471,13 @@ client.on("messageCreate", async msg => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embError2] })
                 }, 500)
 
-                let miembros = msg.guild.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(r => r)
+                let miembros = msg.guild.members.members.cache.filter(f => !f.roles.cache.has(rol.id)).map(r => r)
 
                 const embNoMiembros = new EmbedBuilder()
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("👥 Miembros sin el rol")
                     .setDescription(`${rol}\n*Todos los miembros tienen el rol.*`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 if (miembros.length == 0) return setTimeout(() => {
@@ -8489,7 +8496,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros sin el rol")
                         .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -8502,7 +8509,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros sin el rol")
                         .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
@@ -8671,7 +8678,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataSP = await puntosDB.findOne({ _id: msg.guildId }), puntos = 0
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag == args[0])
             if (miembro) {
                 let descripciones = [`El miembro proporcionado *(${miembro})* soy yo, yo no puedo usar el sistema de puntos.`, `El miembro proporcionado *(${miembro})* es un bot, los bots no pueden usar el sistema de puntos.`]
                 let condicionales = [miembro.id == client.user.id, miembro.user.bot]
@@ -8728,7 +8735,7 @@ client.on("messageCreate", async msg => {
                             const embPMi = new EmbedBuilder()
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: miembro.user.displayAvatarURL()})
                                 .setDescription(`Tienes ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
-                                .setColor(msg.guild.me.displayHexColor)
+                                .setColor(msg.guild.members.me.displayHexColor)
                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
                             setTimeout(() => {
@@ -8742,7 +8749,7 @@ client.on("messageCreate", async msg => {
                             const embPMi = new EmbedBuilder()
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setDescription(`Tienes ${dataSP.datos.emoji} **0** puntos.`)
-                                .setColor(msg.guild.me.displayHexColor)
+                                .setColor(msg.guild.members.me.displayHexColor)
                                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                                 .setTimestamp()
 
@@ -8761,7 +8768,7 @@ client.on("messageCreate", async msg => {
                             const embPMi = new EmbedBuilder()
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
-                                .setColor(msg.guild.me.displayHexColor)
+                                .setColor(msg.guild.members.me.displayHexColor)
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.user.displayAvatarURL()})
                                 .setTimestamp()
                             setTimeout(() => {
@@ -8776,7 +8783,7 @@ client.on("messageCreate", async msg => {
                             const embPMi = new EmbedBuilder()
                                 .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                                 .setDescription(`${miembro} tiene ${dataSP.datos.emoji} **0** puntos.`)
-                                .setColor(msg.guild.me.displayHexColor)
+                                .setColor(msg.guild.members.me.displayHexColor)
                                 .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.user.displayAvatarURL()})
                                 .setTimestamp()
 
@@ -8798,7 +8805,7 @@ client.on("messageCreate", async msg => {
                         const embPMi = new EmbedBuilder()
                             .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: miembro.user.displayAvatarURL()})
                             .setDescription(`Tienes ${emojis.puntos} **0** puntos.`)
-                            .setColor(msg.guild.me.displayHexColor)
+                            .setColor(msg.guild.members.me.displayHexColor)
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         await nuevaDataSP.save()
@@ -8818,7 +8825,7 @@ client.on("messageCreate", async msg => {
                         const embPMi = new EmbedBuilder()
                             .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`${miembro} tiene ${emojis.puntos} **0** puntos.`)
-                            .setColor(msg.guild.me.displayHexColor)
+                            .setColor(msg.guild.members.me.displayHexColor)
                             .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.user.displayAvatarURL()})
                             .setTimestamp()
                         await nuevaDataSP.save()
@@ -8860,7 +8867,7 @@ client.on("messageCreate", async msg => {
                         const embPAu = new EmbedBuilder()
                             .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`Tienes ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
-                            .setColor(msg.guild.me.displayHexColor)
+                            .setColor(msg.guild.members.me.displayHexColor)
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
                         setTimeout(() => {
@@ -8875,7 +8882,7 @@ client.on("messageCreate", async msg => {
                         const embPAu = new EmbedBuilder()
                             .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setDescription(`Tienes ${dataSP.datos.emoji} **0** puntos.`)
-                            .setColor(msg.guild.me.displayHexColor)
+                            .setColor(msg.guild.members.me.displayHexColor)
                             .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                             .setTimestamp()
 
@@ -8895,7 +8902,7 @@ client.on("messageCreate", async msg => {
                     const embPAu = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setDescription(`Tienes ${emojis.puntos} **0** puntos.`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     await nuevaDataSP.save()
@@ -9020,7 +9027,7 @@ client.on("messageCreate", async msg => {
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle(`${emojis.acierto} Rol del personal establecido`)
                         .setDescription(`El rol ${rol} ha sido establecido como rol del personal del servidor en el sistema de puntos.`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
@@ -9253,7 +9260,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let dataSP = await puntosDB.findById(msg.guildId), miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args[0]), cantidad = isNaN(args[1]) ? args[1] : Math.floor(args[1]), puntosMiembro = dataSP && miembro ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
+            let dataSP = await puntosDB.findById(msg.guildId), miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag == args[0]), cantidad = isNaN(args[1]) ? args[1] : Math.floor(args[1]), puntosMiembro = dataSP && miembro ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
 
             let erroresP = [
                 { condicion: args[0] && !miembro && !isNaN(args[0]) && args[0].length < 18, descripcion: `El argumento numérico  ingresado (*${args[0]}*) no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.` },
@@ -9351,7 +9358,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let dataSP = await puntosDB.findById(msg.guildId), miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args[0]), cantidad = isNaN(args[1]) ? args[1] : Math.floor(args[1]), puntosMiembro = dataSP && miembro ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
+            let dataSP = await puntosDB.findById(msg.guildId), miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag == args[0]), cantidad = isNaN(args[1]) ? args[1] : Math.floor(args[1]), puntosMiembro = dataSP && miembro ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
 
             let erroresP = [
                 { condicion: args[0] && !miembro && !isNaN(args[0]) && args[0].length < 18, descripcion: `El argumento numérico  ingresado (*${args[0]}*) no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.` },
@@ -9464,7 +9471,7 @@ client.on("messageCreate", async msg => {
                 const embed = new EmbedBuilder()
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setDescription(`No hay ningún miembro en la base de datos del sistema de puntos de este servidor, para saber mas sobre el sistema utiliza el comando \`\`${prefijo}pointsinfo\`\`.`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 if (dataSP.miembros.length <= 0) return setTimeout(() => {
@@ -9500,7 +9507,7 @@ client.on("messageCreate", async msg => {
                     const embTopP = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(0, 10).join("\n\n")}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -9512,7 +9519,7 @@ client.on("messageCreate", async msg => {
                     const embTopP = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setDescription(`Total de miembros que han usado el sistema: **${ordenPs.length}**\n\n${top.slice(cps1, cps2).join("\n\n")}`)
-                        .setColor(msg.guild.me.displayHexColor)
+                        .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
 
@@ -9630,7 +9637,7 @@ client.on("messageCreate", async msg => {
                 const embed = new EmbedBuilder()
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setDescription(`No se ha registrado ningún miembro de este servidor al sistema de puntos, para saber mas del sistema utiliza el comando \`\`${prefijo}pointsinfo\`\`.`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                 await nuevaDataSP.save()
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embed] })
@@ -9786,7 +9793,7 @@ client.on("messageCreate", async msg => {
                         { name: `👮 **Roles del personal:** ${dataSP.datos.rolesPersonal.length >= 1 ? dataSP.datos.rolesPersonal.length : ""}`, value: `${dataSP.datos.rolesPersonal.length >= 1 ? dataSP.datos.rolesPersonal.map(m => `<@&${m}>`).join(", ") : `*Sin roles*`}`, inline: true },
                         // {name: ``, value: ``, inline: true},
                     )
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embPointsSystem] })
@@ -9846,7 +9853,7 @@ client.on("messageCreate", async msg => {
                 objeto.comandosUsos++
                 let arrayMs = dataSP.miembros
 
-                let falsosMiembros = arrayMs.filter(f => !msg.guild.members.cache.get(f.id))
+                let falsosMiembros = arrayMs.filter(f => !msg.guild.members.members.cache.get(f.id))
 
                 const embError1 = new EmbedBuilder()
                     .setTitle(`${emojis.negativo} Error`)
@@ -9875,7 +9882,7 @@ client.on("messageCreate", async msg => {
                     .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle(`${emojis.acierto} Sistema actualizado`)
                     .setDescription(`Se han eliminado datos de **${falsosMiembros.length.toLocaleString()}** usuarios que no se encontraron en el servidor.`)
-                    .setColor(msg.guild.me.displayHexColor)
+                    .setColor(msg.guild.members.me.displayHexColor)
                     .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
                 setTimeout(() => {
@@ -9968,7 +9975,7 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             let dataSP = await puntosDB.findOne({ _id: msg.guildId })
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args[0])
+            let miembro = msg.mentions.members.first() || msg.guild.members.members.cache.get(args[0]) || msg.guild.members.members.cache.find(f => f.user.tag == args[0])
 
             if (miembro) {
                 if (msg.author.id == msg.guild.ownerId) {
@@ -10014,7 +10021,7 @@ client.on("messageCreate", async msg => {
                             .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("🗑️ Miembro eliminado del sistema")
                             .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos en el cual tenia ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
-                            .setColor(msg.guild.me.displayHexColor)
+                            .setColor(msg.guild.members.me.displayHexColor)
                             .setFooter({text: miembro.nickname || miembro.user.username, iconURL: miembro.displayAvatarURL()})
                             .setTimestamp()
                         setTimeout(() => {
@@ -10092,7 +10099,7 @@ client.on("messageCreate", async msg => {
                             .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("🗑️ Miembro eliminado del sistema")
                             .setDescription(`El miembro ${miembro} ha sido eliminado del sistema de puntos en el cual tenia ${dataSP.datos.emoji} **${puntos.toLocaleString()}** puntos.`)
-                            .setColor(msg.guild.me.displayHexColor)
+                            .setColor(msg.guild.members.me.displayHexColor)
                             .setTimestamp()
                         setTimeout(() => {
                             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embRemoveUserSystem] })
@@ -10127,7 +10134,7 @@ client.on("messageCreate", async msg => {
                 }
             } else {
                 let descripciones = [`El argumento proporcionado (*${args[0]}*) no se reconoce como una mención, ID o etiqueta de un miembro del servidor, proporciona una mención, ID o etiqueta valida de un miembro.`, `El argumento numérico  ingresado *(${args[0]})* no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`, `El argumento numérico  ingresado *(${args[0]})* no es una ID ya que contiene mas de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.`, `El argumento proporcionado *(${args[0]})* tiene las caracteristicas de una **ID**, es numérico, contiene **18** caracteres pero no coresponde con la **ID** de ningun miembro del servidor.`]
-                let condicionales = [isNaN(args[0]), args[0].length < 18, args[0].length > 18, !msg.guild.members.cache.find(f => f.id == args[0])]
+                let condicionales = [isNaN(args[0]), args[0].length < 18, args[0].length > 18, !msg.guild.members.members.cache.find(f => f.id == args[0])]
 
                 for (let i = 0; i < descripciones.length; i++) {
                     if (condicionales[i]) {
@@ -10165,7 +10172,7 @@ client.on("messageCreate", async msg => {
             const embAutoRoles = new EmbedBuilder()
                 .setTitle(`🌈 Roles de colores`)
                 .setDescription(`Estos roles pueden cambiar el color de tu nombre dentro del servidor solo elije uno en el menú de abajo.\n\n${rolesColores.map(m => `> **<@&${m}>**`).join("\n")}`)
-                .setColor(msg.guild.me.displayHexColor)
+                .setColor(msg.guild.members.me.displayHexColor)
     
             const menuAutoRoles = new ActionRowBuilder()
                 .addComponents(
@@ -10275,7 +10282,7 @@ client.on("messageCreate", async msg => {
             const embTiempo = new EmbedBuilder()
             .setTitle(`⌚ Tiempo`)
             .setDescription(`Son las ${tiempo.getHours()}:${tiempo.getMinutes()}:${tiempo.getSeconds()}`)
-            .setColor(msg.guild.me.displayHexColor)
+            .setColor(msg.guild.members.me.displayHexColor)
             msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embTiempo] })
         }
         if(comando == "eval"){
