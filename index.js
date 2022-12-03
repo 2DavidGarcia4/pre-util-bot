@@ -1871,13 +1871,11 @@ client.on("messageCreate", async msg => {
     if (msg.author.bot) return;
     guild.id = msg.guildId
     guild.channelId = msg.channelId
-    let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "|"
+    let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "u!"
 
-    // if (dataPre.servidores.some(s => s.id == msg.guildId)) {
-    //     prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
-    // } else {
-    //     prefijo = "u!"
-    // }
+    if (dataPre.servidores.some(s => s.id == msg.guildId)) {
+        prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
+    }
 
     if (dataAFK) {
         if (dataAFK.miembros.some(s => s.id == msg.author.id)) {
