@@ -1,4 +1,4 @@
-const { Client, EmbedBuilder, Collection, ButtonBuilder, ActionRowBuilder, AttachmentBuilder, SelectMenuBuilder, version, MessageType, ActivityType } = require("discord.js")
+const { Client, EmbedBuilder, Collection, ButtonBuilder, ActionRowBuilder, AttachmentBuilder, SelectMenuBuilder, version, MessageType, ActivityType, ChannelType } = require("discord.js")
 const client = new Client({ intents: 131071, ws: { properties: { $browser: "Discord Android" } } });
 const ms = require("ms"), mongoose = require("mongoose"), { SlashCommandBuilder, ContextMenuCommandBuilder } = require("@discordjs/builders"), Canvas = require("canvas"), isURL = require("isurl");
 const creadorID = "717420870267830382", creadoresID = ["717420870267830382", "825186118050775052"], colorEmb = "#2c889f", colorEmbInfo = "#2c889f", ColorError = "#ff0000", emojis = { negativo: "<a:negativo:856967325505159169>", acierto: "<a:afirmativo:856966728806432778>", puntos: "<:StaffPoint:957357854120116234>", lupa: "<:lupa:958820188457930892>" }, invitacion = "https://discord.com/api/oauth2/authorize?client_id=935707268090056734&permissions=1239568329975&scope=bot%20applications.commands", serverSuport = "https://discord.gg/G7GUD7eNCb", webPage = "https://util-bot.netlify.app/"
@@ -74,7 +74,7 @@ client.on("ready", async () => {
     canalLogStart.sendTyping()
     setTimeout(()=> {
         canalLogStart.send({ embeds: [embReady] })
-    }, 1000)
+    }, 2000)
 
 
     function presencias() {
@@ -381,7 +381,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.cache.get(int.options.getUser("miembro").id), cantidad = int.options.getInteger("cantidad"), puntosMiembro = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema de puntos.` },
                 { condicion: miembro && miembro.user.bot, descripcion: `El miembro que has proporcionado *(${miembro})* es un bot, un bot no puede utilizar el sistema de puntos.` },
                 { condicion: int.user.id != int.guild.ownerId && miembro.id == int.guild.ownerId, descripcion: `El miembro proporcionado *(${miembro})* es el dueño del servidor, no puedes agregarle puntos.` },
@@ -457,7 +457,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.cache.get(int.options.getUser("miembro").id), cantidad = int.options.getInteger("cantidad"), puntosMiembro = dataSP ? dataSP.miembros.some(s => s.id == miembro.id) ? dataSP.miembros.find(f => f.id == miembro.id).puntos : 0 : 0
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema de puntos.` },
                 { condicion: miembro && miembro.user.bot, descripcion: `El miembro que has proporcionado *(${miembro})* es un bot, un bot no puede utilizar el sistema de puntos.` },
                 { condicion: int.user.id != int.guild.ownerId && miembro.id == int.guild.ownerId, descripcion: `El miembro proporcionado *(${miembro})* es el dueño del servidor, no puedes agregarle puntos.` },
@@ -522,7 +522,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), rol = int.options.getRole("rol")
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: rol.managed, descripcion: `El rol proporcionado *(${rol})* es exclusivo para un bot, proporciona otro rol.` },
                 { condicion: rol.id == int.guildId, descripcion: `El rol proporcionado *(${rol})* el el rol @everyone un rol invisible que todos tienen, proporciona otro rol.` },
                 { condicion: dataSP && dataSP.datos.rolesPersonal.length >= 3, descripcion: `Ya se han establecido **3** roles del personal de este servidor en el sistema de puntos, no puedes agregar mas roles.` },
@@ -581,7 +581,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), rol = int.options.getRole("rol")
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: !dataSP, descripcion: `En este servidor no se ha utilizado el sistema de puntos por lo tanto no hay roles del personal del servidor establecidos que puedas eliminar.` },
                 { condicion: dataSP.datos.rolesPersonal.length == 0, descripcion: `No hay roles establecidos como roles del personal del servidor en el sistema.` },
                 { condicion: rol.managed, descripcion: `El rol proporcionado *(${rol})* es exclusivo para un bot por lo tanto no esta establecido como rol del personal de este servidor en el sistema.` },
@@ -642,7 +642,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), emoji = int.options.getString("emoji")
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: !isNaN(emoji), descripcion: `No puedes establecer números como símbolo del sistema de puntos.` },
                 { condicion: !/\p{Emoji}/gu.test(emoji), descripcion: `El argumento proporcionado *(${emoji})* no es un emoji.` },
                 { condicion: ["<", ">"].some(s => emoji.includes(s)) ? !int.guild.emojis.cache.find(f => f.id == emoji.split(":")[2].substring(0, 18)) : false, descripcion: `El argumento proporcionado *(${emoji})* es un emoji de un servidor el cual no estoy por lo tanto no puedes establecerlo como símbolo del sistema.` },
@@ -702,7 +702,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), miembro = int.guild.members.cache.get(int.options.getUser("usuario").id), puntos = 0
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema por lo tanto no estoy en el.` },
                 { condicion: miembro.user.bot, descripcion: `El miembro proporcionado *(${miembro})* es un bot, un bot no puede utilizar el sistema de puntos.` },
                 { condicion: int.user.id != int.guild.ownerId && miembro.id == int.user.id, descripcion: `El miembro proporcionado *(${miembro})* eres tu mismo, no te puedes eliminar a ti mismo del sistema.` },
@@ -964,7 +964,7 @@ client.on("interactionCreate", async int => {
             let dataSP = await puntosDB.findById(int.guildId), objeto = dataSP.datos, arrayMs = dataSP ? dataSP.miembros : [], falsosMiembros = dataSP ? arrayMs.filter(f => !int.guild.members.cache.get(f.id)) : false
 
             let erroresP = [
-                { condicion: !int.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !int.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: !dataSP, descripcion: `No se ha utilizado el sistema en este servidor por lo tanto no hay usuarios que eliminar.` },
                 { condicion: falsosMiembros.length <= 0, descripcion: `No hay usuarios en el sistema que no estén en el servidor.` },
                 // {condicion: "", descripcion: ``},
@@ -1787,7 +1787,7 @@ client.on("guildMemberAdd", async gma => {
 
     context.beginPath();
     context.arc(500, 160, 145, 0, Math.PI * 2, true);
-    context.fillStyle = `${miServidor.me.displayHexColor}`;
+    context.fillStyle = `${miServidor.members.me.displayHexColor}`;
     context.stroke();
     context.fill();
 
@@ -1806,7 +1806,7 @@ client.on("guildMemberAdd", async gma => {
 
     context.beginPath();
     context.arc(500, 160, 140, 0, Math.PI * 2, true);
-    context.fillStyle = `${miServidor.me.displayHexColor}`;
+    context.fillStyle = `${miServidor.members.me.displayHexColor}`;
     context.closePath();
     context.clip();
 
@@ -1820,7 +1820,7 @@ client.on("guildMemberAdd", async gma => {
     .setImage(`attachment://imagen.png`)
     .setTitle("👋 ¡Bienvenido/a!")
     .setDescription(`🌈 Pasate por el canal <#940070777032675338> en el podrás obtener roles que cambiarán el color de tu nombre dentro del servidor.\n\n📏 También pásate por el canal <#940034044819828770> el canal de reglas, léelas para evitar sanciones.`)
-    .setColor(miServidor.me.displayHexColor)
+    .setColor(miServidor.members.me.displayHexColor)
     .setFooter({text: `Bienvenido/a a ${miServidor.name}`, iconURL: miServidor.iconURL({dynamic: true})})
     .setTimestamp()
     welcomeChannel.send({embeds: [embBienvenida], files: [finalImg], content: `**¡Hola <@${gma.user.id}>!**`})
@@ -1871,13 +1871,13 @@ client.on("messageCreate", async msg => {
     if (msg.author.bot) return;
     guild.id = msg.guildId
     guild.channelId = msg.channelId
-    let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "u!"
+    let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "|"
 
-    if (dataPre.servidores.some(s => s.id == msg.guildId)) {
-        prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
-    } else {
-        prefijo = "u!"
-    }
+    // if (dataPre.servidores.some(s => s.id == msg.guildId)) {
+    //     prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
+    // } else {
+    //     prefijo = "u!"
+    // }
 
     if (dataAFK) {
         if (dataAFK.miembros.some(s => s.id == msg.author.id)) {
@@ -1943,7 +1943,7 @@ client.on("messageCreate", async msg => {
             }
         }
     }
-
+msg.member.permissions.has('Administrator')
     if (!msg.guild.members.me.permissionsIn(msg.channel).has('SendMessages')) return;
     
     if (msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))) {
@@ -2001,7 +2001,6 @@ client.on("messageCreate", async msg => {
 
 
     if (["help", "ayuda"].some(s => comando == s)) {
-        console.log('aaaa')
         msg.channel.sendTyping()
         botDB.comandos.usos++
 
@@ -2075,38 +2074,38 @@ client.on("messageCreate", async msg => {
 
             colector.on("collect", async menu => {
                 if (menu.values[0] == "generales") {
-                    embComandos.fields[0].name = `🌎 **Comandos generales:** *14*`
-                    embComandos.fields[0].value = `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`
+                    embComandos.data.fields[0].name = `🌎 **Comandos generales:** *14*`
+                    embComandos.data.fields[0].value = `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.default).default = false
-                    menuComandos.components[0].options.find(f => f.value == "generales").default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "generales").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
                 if (menu.values[0] == "moderacion") {
-                    embComandos.fields[0].name = `👮 **Comandos de moderacion:** *11*`
-                    embComandos.fields[0].value = `*Comandos que solo los moderadores pueden utilizar*.\n\n\`\`${prefijo}record\`\` **|** Muestra el historial de sanciones de un miembro.\n\`\`${prefijo}deleterecord\`\` **|** Elimina una o varias sanciones del historial de un miembro.\n\`\`${prefijo}warn\`\` **|** Advierte a un miembro.\n\`\`${prefijo}mute\`\` **|** Aísla temporalmente a un miembro.\n\`\`${prefijo}unmute\`\` **|** Elimina el aislamiento temporal de un miembro.\n\`\`${prefijo}mutelist\`\` **|** Muestra una lista de todos los miembros que están aislados en el servidor.\n\`\`${prefijo}kick\`\` **|** Expulsa a un miembro del servidor.\n\`\`${prefijo}ban\`\` **|** Prohíbe a un usuario entrar al servidor.\n\`\`${prefijo}unban\`\` **|** Elimina la prohibición de un miembro al servidor.\n\`\`${prefijo}clear\`\` **|** Elimina múltiples mensajes en un canal o de un miembro.\n\`\`${prefijo}banlist\`\` **|** Te muestra una lista de los usuarios baneados en el servidor.`
+                    embComandos.data.fields[0].name = `👮 **Comandos de moderacion:** *11*`
+                    embComandos.data.fields[0].value = `*Comandos que solo los moderadores pueden utilizar*.\n\n\`\`${prefijo}record\`\` **|** Muestra el historial de sanciones de un miembro.\n\`\`${prefijo}deleterecord\`\` **|** Elimina una o varias sanciones del historial de un miembro.\n\`\`${prefijo}warn\`\` **|** Advierte a un miembro.\n\`\`${prefijo}mute\`\` **|** Aísla temporalmente a un miembro.\n\`\`${prefijo}unmute\`\` **|** Elimina el aislamiento temporal de un miembro.\n\`\`${prefijo}mutelist\`\` **|** Muestra una lista de todos los miembros que están aislados en el servidor.\n\`\`${prefijo}kick\`\` **|** Expulsa a un miembro del servidor.\n\`\`${prefijo}ban\`\` **|** Prohíbe a un usuario entrar al servidor.\n\`\`${prefijo}unban\`\` **|** Elimina la prohibición de un miembro al servidor.\n\`\`${prefijo}clear\`\` **|** Elimina múltiples mensajes en un canal o de un miembro.\n\`\`${prefijo}banlist\`\` **|** Te muestra una lista de los usuarios baneados en el servidor.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.default).default = false
-                    menuComandos.components[0].options.find(f => f.value == "moderacion").default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "moderacion").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
                 if (menu.values[0] == "administracion") {
-                    embComandos.fields[0].name = `💎 **Comandos de administración:** *8*`
-                    embComandos.fields[0].value = `*Comandos que solo los administradores pueden utilizar*.\n\n\`\`${prefijo}setprefix\`\` **|** Establece un prefijo personalizado en este servidor.\n\`\`${prefijo}addrol\`\` **|** Añade un rol a un miembro o mas en el servidor.\n\`\`${prefijo}removerol\`\` **|** Remueve un rol de un miembro o mas en el servidor.\n\`\`${prefijo}createchannel\`\` **|** Crea un canal en el servidor.\n\`\`${prefijo}deletechannel\`\` **|** Elimina un canal del servidor.\n\`\`${prefijo}setslowmode\`\` **|** Establece el modo pausado de un canal de texto.\n\`\`${prefijo}memberswithrole\`\` **|** Muestra una lista con todos los miembros que tienen un rol.\n\`\`${prefijo}memberswithouttherole\`\` **|** Muestra una lista con todos los miembros que no tienen un rol.`
+                    embComandos.data.fields[0].name = `💎 **Comandos de administración:** *8*`
+                    embComandos.data.fields[0].value = `*Comandos que solo los administradores pueden utilizar*.\n\n\`\`${prefijo}setprefix\`\` **|** Establece un prefijo personalizado en este servidor.\n\`\`${prefijo}addrol\`\` **|** Añade un rol a un miembro o mas en el servidor.\n\`\`${prefijo}removerol\`\` **|** Remueve un rol de un miembro o mas en el servidor.\n\`\`${prefijo}createchannel\`\` **|** Crea un canal en el servidor.\n\`\`${prefijo}deletechannel\`\` **|** Elimina un canal del servidor.\n\`\`${prefijo}setslowmode\`\` **|** Establece el modo pausado de un canal de texto.\n\`\`${prefijo}memberswithrole\`\` **|** Muestra una lista con todos los miembros que tienen un rol.\n\`\`${prefijo}memberswithouttherole\`\` **|** Muestra una lista con todos los miembros que no tienen un rol.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.default).default = false
-                    menuComandos.components[0].options.find(f => f.value == "administracion").default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "administracion").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
                 if (menu.values[0] == "puntos") {
-                    embComandos.fields[0].name = `${emojis.puntos} **Comandos del sistem de puntos:** *10*`
-                    embComandos.fields[0].value = `*Algunos comandos sólo los pueden utilizar los administradores o miembros del staff*.\n\n\`\`${prefijo}points\`\` **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n\`\`${prefijo}addpoints\`\` **|** Agrega puntos a un miembro.\n\`\`${prefijo}removepoints\`\` **|** Elimina puntos a un miembro.\n\`\`${prefijo}setstaffrole\`\` **|** Establece un rol del staff o personal del servidor.\n\`\`${prefijo}deletestaffrole\`\` **|** Elimina un rol establecido como rol del staff del servidor.\n\`\`${prefijo}setemojipoints\`\` **|** Establece un símbolo o emoji personalizado para el sistema de puntos.\n\`\`${prefijo}pointsleaderboard\`\` **|** Muestra una tabla de clasificaciones con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n\`\`${prefijo}pointsystemstatus\`\` **|** Muestra el estado del sistema en el servidor.\n\`\`${prefijo}removeusersystemp\`\` **|** Elimina a un miembro del sistema de puntos del servidor.\n\`\`${prefijo}updatepointssystem\`\` **|** Actualiza el sistema de puntos en el servidor eliminando del sistema a todos los usuarios que se han ido del servidor.`
+                    embComandos.data.fields[0].name = `${emojis.puntos} **Comandos del sistem de puntos:** *10*`
+                    embComandos.data.fields[0].value = `*Algunos comandos sólo los pueden utilizar los administradores o miembros del staff*.\n\n\`\`${prefijo}points\`\` **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n\`\`${prefijo}addpoints\`\` **|** Agrega puntos a un miembro.\n\`\`${prefijo}removepoints\`\` **|** Elimina puntos a un miembro.\n\`\`${prefijo}setstaffrole\`\` **|** Establece un rol del staff o personal del servidor.\n\`\`${prefijo}deletestaffrole\`\` **|** Elimina un rol establecido como rol del staff del servidor.\n\`\`${prefijo}setemojipoints\`\` **|** Establece un símbolo o emoji personalizado para el sistema de puntos.\n\`\`${prefijo}pointsleaderboard\`\` **|** Muestra una tabla de clasificaciones con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n\`\`${prefijo}pointsystemstatus\`\` **|** Muestra el estado del sistema en el servidor.\n\`\`${prefijo}removeusersystemp\`\` **|** Elimina a un miembro del sistema de puntos del servidor.\n\`\`${prefijo}updatepointssystem\`\` **|** Actualiza el sistema de puntos en el servidor eliminando del sistema a todos los usuarios que se han ido del servidor.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.default).default = false
-                    menuComandos.components[0].options.find(f => f.value == "puntos").default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "puntos").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
             })
@@ -2903,7 +2902,7 @@ client.on("messageCreate", async msg => {
                 .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
                 .setTimestamp()
 
-            if (msg.guild.features.length >= 1 && msg.guild.members.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
+            if (msg.guild.features.length >= 1 && msg.guild.members.me.permissions.has(['BanMembers', 'ManageGuild'])) {
                 embServer.setFields(
                     { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                     { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2927,7 +2926,7 @@ client.on("messageCreate", async msg => {
                 )
 
             } else {
-                if (msg.guild.members.me.permissions.has(["BAN_MEMBERS", "MANAGE_GUILD"])) {
+                if (msg.guild.members.me.permissions.has(['BanMembers', 'ManageGuild'])) {
                     embServer.setFields(
                         { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                         { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2950,7 +2949,7 @@ client.on("messageCreate", async msg => {
                     )
 
                 } else {
-                    if (msg.guild.members.me.permissions.has("BAN_MEMBERS")) {
+                    if (msg.guild.members.me.permissions.has('BanMembers')) {
                         embServer.setFields(
                             { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                             { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -2972,7 +2971,7 @@ client.on("messageCreate", async msg => {
                         )
 
                     } else {
-                        if (msg.guild.members.me.permissions.has("MANAGE_GUILD")) {
+                        if (msg.guild.members.me.permissions.has('ManageGuild')) {
                             embServer.setFields(
                                 { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
                                 { name: "🆔 **ID:**", value: `${msg.guild.id}`, inline: true },
@@ -3054,7 +3053,7 @@ client.on("messageCreate", async msg => {
             console.log(isURL.lenient(args[0]))
 
             if (!args[0]) {
-                if (msg.guild.members.me.permissions.has("MANAGE_GUILD")) {
+                if (msg.guild.members.me.permissions.has('ManageGuild')) {
                     const embInfo = new EmbedBuilder()
                         .setTitle(`${emojis.lupa} Comando qrcode`)
                         .setFields(
@@ -3247,7 +3246,7 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
 
             let erroresP = [
-                { condicion: !msg.guild.members.me.permissions.has("MANAGE_GUILD"), descripcion: `No tengo los permisos suficientes para ejecutar el comando, requiero del permiso \`\`Gestionar servidor\`\`.` },
+                { condicion: !msg.guild.members.me.permissions.has('ManageGuild'), descripcion: `No tengo los permisos suficientes para ejecutar el comando, requiero del permiso \`\`Gestionar servidor\`\`.` },
                 { condicion: args[0] && !["help", "ayuda", "info"].some(s => args[0] == s) && !miembro, descripcion: `El argumento que has proporcionado *(${args.join(" ")})* no se reconoce como un miembro del servido, asegúrate de ingresar bien al miembro.` },
                 { condicion: !miembro && invitaciones.length == 0, descripcion: `No has creado ninguna invitación en este servidor.` },
                 { condicion: miembro && invitaciones.length == 0, descripcion: `El miembro que has proporcionado *(${miembro})* no ha creado ninguna invitación.` },
@@ -3459,7 +3458,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido: Banear miembros, Expulsar miembros o Aislar miembros."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("KICK_MEMBERS" || "BAN_MEMBERS" || "MODERATE_MEMBERS")) return setTimeout(() => {
+            if (!['KickMembers' || 'BanMembers' || 'ModerateMembers'].some(s=> msg.member.permissions.has(s))) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(dt => setTimeout(() => {
                     msg.delete().catch(c => {
                         return;
@@ -3903,7 +3902,7 @@ client.on("messageCreate", async msg => {
 
             let miembData = miembro ? dataHis.usuarios.some(s => s.id == miembro.id) : false, serverUserData = miembData ? dataHis.usuarios.find(f => f.id == miembro.id).servidores.some(s => s.id == msg.guildId) ? true : false : false
             let erroresP2 = [
-                { condicion: !msg.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
+                { condicion: !msg.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando.` },
                 { condicion: miembro && miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo soy un bot por lo tanto no tengo historial de sanciones.` },
                 { condicion: miembro && miembro.user.bot, descripcion: `El miembro proporcionado *(${miembro})* es un bot, los bots no tienen historial de sanciones.` },
                 { condicion: miembro && msg.author.id != msg.guild.ownerId && miembro.id != msg.author.id && msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, descripcion: `El rol con la posicion mas alta del miembro proporcionado *(${miembro})* tiene una posicion igual o mayor a tu rol mas alto por lo tanto no le puedes eliminar ninguna sancion de su historial.` },
@@ -3999,7 +3998,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido: Aislar miembros, Expulsar miembros o Banear miembros."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MODERATE_MEMBERS") && !msg.member.permissions.has("KICK_MEMBERS") && !msg.member.permissions.has("BAN_MEMBERS")) {
+            if (!msg.member.permissions.has('ModerateMembers') && !msg.member.permissions.has('KickMembers') && !msg.member.permissions.has('BanMembers')) {
                 return setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr1] }).then(dt => setTimeout(() => {
                         msg.delete().catch(c => {
@@ -4291,7 +4290,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            let condicionalesP = [!msg.member.permissions.has("MODERATE_MEMBERS"), !msg.guild.members.me.permissions.has("MODERATE_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has('ModerateMembers'), !msg.guild.members.me.permissions.has('ModerateMembers')]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -4392,7 +4391,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                     let descripciones = [`El usuario proporcionado soy yo, no me puedo aislar a mi mismo.`, `El usuario proporcionado es un bot, no se puede aislar a un bot.`, `¿Por que quieres aislarte a ti mismo si eres el propietario del servidor?, no puedo realizar esa acción.`, `El miembro proporcionado es un administrador en el servidor o tiene permiso de administrador, no lo puedo aislar.`, `El miembro proporcionado ya esta aislado temporalmente y su aislamiento temporal termina <t:${Math.floor(miembro.communicationDisabledUntilTimestamp / 1000)}:R>`, `No proporcionaste el tiempo que estará aislado el miembro.`]
-                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.permissions.has("ADMINISTRATOR"), miembro.isCommunicationDisabled(), !tiempo]
+                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.permissions.has('Administrator'), miembro.isCommunicationDisabled(), !tiempo]
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
@@ -4526,7 +4525,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                     let descripciones = [`El usuario proporcionado soy yo, no me puedo aislar a mi mismo.`, `El usuario proporcionado es un bot, no se puede aislar a un bot.`, `¿Por que quieres aislarte a ti mismo?, no puedo realizar esa acción.`, `El miembro proporcionado es el dueño del servidor, no puedes aislar temporalmente al dueño del servidor, nadie puede.`, `El miembro proporcionado es un administrador en el servidor o tiene permiso de administrador, no lo puedo aislar.`, `El miembro proporcionado tiene un rol igual o mayor al tuyo por lo tanto no lo puedes aislar temporalmente.`, `El miembro proporcionado tiene un rol igual o mayor al mío por lo tanto no lo puedo aislar temporalmente.`, `El miembro proporcionado ya esta aislado temporalmente y su aislamiento temporal termina <t:${Math.floor(miembro.communicationDisabledUntilTimestamp / 1000)}:R>`, `No proporcionaste el tiempo que estará aislado el miembro.`]
-                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, miembro.permissions.has("ADMINISTRATOR"), msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, miembro.isCommunicationDisabled(), !tiempo]
+                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, miembro.permissions.has('Administrator'), msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, miembro.isCommunicationDisabled(), !tiempo]
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
@@ -4665,7 +4664,7 @@ client.on("messageCreate", async msg => {
         if (comando == "unmute") {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let condicionalesP = [!msg.member.permissions.has("MODERATE_MEMBERS"), !msg.guild.members.me.permissions.has("MODERATE_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has('ModerateMembers'), !msg.guild.members.me.permissions.has('ModerateMembers')]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -4768,7 +4767,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                     let descripciones = [`El miembro proporcionado soy yo, no estoy aislado.`, `El miembro proporcionado es un bot, no se puede aislar a un bot por lo tanto ese bot no esta aislado.`, `El miembro que has proporcionado eres tu, tu no estas aislado temporalmente.`, `El miembro proporcionado no esta aislado temporalmente.`, `El miembro proporcionado es administrador o tiene permiso de administrador, no le puedo eliminar el aislamiento.`]
-                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, !miembro.isCommunicationDisabled(), miembro.permissions.has("ADMINISTRATOR")]
+                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, !miembro.isCommunicationDisabled(), miembro.permissions.has('Administrator')]
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
@@ -4827,7 +4826,7 @@ client.on("messageCreate", async msg => {
                         .setTimestamp()
 
                     let descripciones = [`El miembro proporcionado soy yo, no estoy aislado.`, `El miembro proporcionado es un bot, no se puede aislar a un bot por lo tanto ese bot no esta aislado.`, `El miembro que has proporcionado eres tu, tu no estas aislado temporalmente.`, `El miembro proporcionado es el dueño del servidor, nadie lo puede aislar por lo tanto no tiene aislamiento que puedas eliminarle.`, `El miembro proporcionado tiene un rol igual o mayor al tuyo por lo tanto no le puedes eliminar el aislamiento.`, `El miembro proporcionado tiene un rol igual o mayor al mío por lo tanto no le puedo eliminar el aislamiento.`, `El miembro proporcionado no esta aislado temporalmente.`, `El miembro proporcionado es administrador o tiene permiso de administrador, no le puedo eliminar el aislamiento.`]
-                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !miembro.isCommunicationDisabled(), miembro.permissions.has("ADMINISTRATOR")]
+                    let condicionales = [miembro.id === client.user.id, miembro.user.bot, miembro.id === msg.author.id, miembro.id === msg.guild.ownerId, msg.member.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, msg.guild.members.me.roles.highest.comparePositionTo(miembro.roles.highest) <= 0, !miembro.isCommunicationDisabled(), miembro.permissions.has('Administrator')]
 
                     for (let i = 0; i < descripciones.length; i++) {
                         if (condicionales[i]) {
@@ -5039,7 +5038,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            let condicionalesP = [!msg.member.permissions.has("KICK_MEMBERS"), !msg.guild.members.me.permissions.has("KICK_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has('KickMembers'), !msg.guild.members.me.permissions.has('KickMembers')]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -5479,7 +5478,7 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let dataHis = await historialesDB.findOne({ _id: client.user.id })
-            let condicionalesP = [!msg.member.permissions.has("BAN_MEMBERS"), !msg.guild.members.me.permissions.has("BAN_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has('BanMembers'), !msg.guild.members.me.permissions.has('BanMembers')]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -5982,7 +5981,7 @@ client.on("messageCreate", async msg => {
         if (comando == "unban") {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let condicionalesP = [!msg.member.permissions.has("BAN_MEMBERS"), !msg.guild.members.me.permissions.has("BAN_MEMBERS")]
+            let condicionalesP = [!msg.member.permissions.has('BanMembers'), !msg.guild.members.me.permissions.has('BanMembers')]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let p = 0; p < descripcionesP.length; p++) {
                 if (condicionalesP[p]) {
@@ -6170,7 +6169,7 @@ client.on("messageCreate", async msg => {
         if (["clear", "cl", "delete", "eliminar"].some(s => comando == s)) {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let condicionalesP = [!msg.member.permissions.has("MANAGE_MESSAGES"), !msg.guild.members.me.permissions.has("MANAGE_MESSAGES")]
+            let condicionalesP = [!msg.member.permissions.has('ManageMessages'), !msg.guild.members.me.permissions.has('ManageMessages')]
             let descripcionesP = [`No tienes los permisos suficientes para ejecutar el comando.`, `No tengo los permisos suficientes para ejecutar el comando.`]
             for (let c = 0; c < descripcionesP.length; c++) {
                 if (condicionalesP[c]) {
@@ -6371,7 +6370,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Banear miembros."})
                 .setTimestamp()
-            if (!msg.guild.members.me.permissions.has("BAN_MEMBERS")) return msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has('BanMembers')) return msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                 msg.delete().catch(c => {
                     return;
                 })
@@ -6386,7 +6385,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requieres del permiso: Banear miembros."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("BAN_MEMBERS")) return setTimeout(() => {
+            if (!msg.member.permissions.has('BanMembers')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(c => {
                         return;
@@ -6549,7 +6548,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido: Gestionar mensajes, Expulsar miembros o Banear miembros"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_MESSAGES") || !msg.member.permissions.has("KICK_MEMBERS") || !msg.member.permissions.has("BAN_MEMBERS")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageMessages') || !msg.member.permissions.has('KickMembers') || !msg.member.permissions.has('BanMembers')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(dt => setTimeout(() => {
                     msg.delete().catch(c => {
                         return;
@@ -6714,7 +6713,7 @@ client.on("messageCreate", async msg => {
                 .setDescription(`No tienes los permisos suficientes para ejecutar el comando, solo un administrador del servidor puede ejecutar el comando.`)
                 .setColor(ColorError)
                 .setTimestamp()
-            if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
+            if (!msg.member.permissions.has('Administrator')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -6863,7 +6862,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Gestionar canales"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageChannels')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -6880,7 +6879,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido: Gestionar canales"})
                 .setTimestamp()
-            if (!msg.guild.members.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has('ManageChannels')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -6934,7 +6933,7 @@ client.on("messageCreate", async msg => {
 
             if (canal) {
                 let descripciones = [`El canal proporcionado (${canal}) no es de tipo texto, el modo pausado solo se puede establecer en canales de tipo texto.`, `No has proporcionado el tiempo del modo pausado a establecer para el canal.`, `No solo ingreses números determina si son *segundos*, *minutos* o *horas* con \`\`s\`\` segundos, con \`\`m\`\` minutos, con \`\`h\`\` horas, al final del numero, ejemplo \`\`10s\`\`.`, `El tiempo del modo pausado de un canal no debe de superar las **6** horas, proporciona una cantidad menor.`, `No proporcionaste bien la cantidad de tiempo para el modo pausado del canal.`]
-                let condicionales = [!canal.isText(), !args[1], !isNaN(args[1]), ms(args[1]) / 1000 >= 21600, !ms(args[1])]
+                let condicionales = [!canal.type == ChannelType.GuildText, !args[1], !isNaN(args[1]), ms(args[1]) / 1000 >= 21600, !ms(args[1])]
                 for (let d = 0; d < descripciones.length; d++) {
                     if (condicionales[d]) {
                         const embErr = new EmbedBuilder()
@@ -7005,7 +7004,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageRoles')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7022,7 +7021,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.members.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has('ManageRoles')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7386,7 +7385,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageRoles')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7403,7 +7402,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.members.me.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has('ManageRoles')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7779,7 +7778,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageChannels')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -7796,7 +7795,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.members.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has('ManageChannels')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8028,7 +8027,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requieres del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageChannels')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8045,7 +8044,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Requiero del permiso: Gestionar roles."})
                 .setTimestamp()
-            if (!msg.guild.members.me.permissions.has("MANAGE_CHANNELS")) return setTimeout(() => {
+            if (!msg.guild.members.me.permissions.has('ManageChannels')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP2] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8146,7 +8145,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Gestionar roles"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageRoles')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8401,7 +8400,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Gestionar roles"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("MANAGE_ROLES")) return setTimeout(() => {
+            if (!msg.member.permissions.has('ManageRoles')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -8924,7 +8923,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
+            if (!msg.member.permissions.has('Administrator')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -9096,7 +9095,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
+            if (!msg.member.permissions.has('Administrator')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -9271,7 +9270,7 @@ client.on("messageCreate", async msg => {
             if (erroresMsg(msg, erroresP)) return;
 
             let erroresP1 = [
-                { condicion: !msg.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando, el permiso requerido es \`\`administrador\`\`.` },
+                { condicion: !msg.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando, el permiso requerido es \`\`administrador\`\`.` },
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema de puntos.` },
                 { condicion: miembro && miembro.user.bot, descripcion: `El miembro que has proporcionado *(${miembro})* es un bot, un bot no puede utilizar el sistema de puntos.` },
                 { condicion: msg.author.id != msg.guild.ownerId && miembro.id == msg.guild.ownerId, descripcion: `El miembro proporcionado *(${miembro})* es el dueño del servidor, no puedes agregarle puntos.` },
@@ -9369,7 +9368,7 @@ client.on("messageCreate", async msg => {
             if (erroresMsg(msg, erroresP)) return;
 
             let erroresP1 = [
-                { condicion: !msg.member.permissions.has("ADMINISTRATOR"), descripcion: `No tienes los permisos suficientes para ejecutar el comando, el permiso requerido es \`\`administrador\`\`.` },
+                { condicion: !msg.member.permissions.has('Administrator'), descripcion: `No tienes los permisos suficientes para ejecutar el comando, el permiso requerido es \`\`administrador\`\`.` },
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema de puntos.` },
                 { condicion: miembro && miembro.user.bot, descripcion: `El miembro que has proporcionado *(${miembro})* es un bot, un bot no puede utilizar el sistema de puntos.` },
                 { condicion: msg.author.id != msg.guild.ownerId && miembro.id == msg.guild.ownerId, descripcion: `El miembro proporcionado *(${miembro})* es el dueño del servidor, no puedes eliminarle puntos.` },
@@ -9657,7 +9656,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
+            if (!msg.member.permissions.has('Administrator')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -9835,7 +9834,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
+            if (!msg.member.permissions.has('Administrator')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -9925,7 +9924,7 @@ client.on("messageCreate", async msg => {
                 .setColor(ColorError)
                 .setFooter({text: "Permiso requerido:  Administrador"})
                 .setTimestamp()
-            if (!msg.member.permissions.has("ADMINISTRATOR")) return setTimeout(() => {
+            if (!msg.member.permissions.has('Administrator')) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErrP1] }).then(tm => setTimeout(() => {
                     msg.delete().catch(t => {
                         return;
@@ -10298,7 +10297,7 @@ client.on("messageCreate", async msg => {
             let servidor = client.guilds.cache.get(args[0]), canal = client.channels.cache.get(args[0])
     
             if (servidor) {
-                let canalesCrearInv = servidor.channels.cache.filter(f => f.type == "GUILD_TEXT" && servidor.me.permissionsIn(f).has("CREATE_INSTANT_INVITE")).map(m => m)
+                let canalesCrearInv = servidor.channels.cache.filter(f => f.type == "GUILD_TEXT" && servidor.members.me.permissionsIn(f).has("CREATE_INSTANT_INVITE")).map(m => m)
                 if (canalesCrearInv.length > 0) {
                     canalesCrearInv[0].createInvite({ maxAge: 0, reason: "Mi creador quiere visitar este servidor." }).then(invi => setTimeout(() => {
                         msg.channel.send({ content: `La invitacion se creo y es:\n${invi}` })
@@ -10340,7 +10339,7 @@ client.on("messageCreate", async msg => {
                         }, 20000))
                     }, 400)
     
-                    if (servidorDelCanal.me.permissionsIn(canal).has("CREATE_INSTANT_INVITE")) {
+                    if (servidorDelCanal.members.me.permissionsIn(canal).has("CREATE_INSTANT_INVITE")) {
                         canal.createInvite({ maxAge: 0, reason: "Mi creador quiere visitar este servidor." }).then(invi => setTimeout(() => {
                             msg.channel.send({ content: `La invitacion se creo y es:\n${invi}` })
                         }, 400))
@@ -10431,7 +10430,7 @@ client.on("messageCreate", async msg => {
     
             if (servidor) {
                 let creador = servidor.members.cache.get(servidor.ownerId)
-                if (servidor.me.permissions.has("MANAGE_GUILD")) {
+                if (servidor.members.me.permissions.has('ManageGuild')) {
                     let inURL = (await servidor.invites.fetch()).filter(f => f.maxAge == 0).map(mi => mi.url).slice(0, 1)
                     if (inURL.length == 0) {
                         inURL = (await servidor.invites.fetch()).map(mi => mi.url).slice(0, 1)
@@ -10450,11 +10449,11 @@ client.on("messageCreate", async msg => {
                             { name: `<:wer:920166217086537739> **servidor:**`, value: `ID: ${servidor.id}\nCreado: <t:${Math.floor(servidor.createdAt / 1000)}:R>\nMiembros: ${servidor.members.cache.size.toLocaleString()}\nUsuarios: ${servidor.members.cache.filter(f => !f.user.bot).size.toLocaleString()}\nBots: ${servidor.members.cache.filter(f => f.user.bot).size.toLocaleString()}`, inline: true },
                             { name: `👑 **Creador:**`, value: `Tag: ${creador.user.tag}\nID: ${creador.id}\nCreo su cuenta: <t:${Math.floor(creador.user.createdAt / 1000)}:R>`, inline: true },
                             { name: `📨 **Invitaciones:** ${(await servidor.invites.fetch()).size.toLocaleString()}`, value: `${(await servidor.invites.fetch()).map(m => `Creada por: [${m.inviter.tag}](${m.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) | Usos:${m.uses.toLocaleString()}  | Code: ${m.code} | Creada: <t:${Math.floor(m.createdAt / 1000)}:R>`).slice(0, 4).join("\n\n")}`, inline: true },
-                            { name: `📃 **Permisos:** ${servidor.me.permissions.toArray().length}`, value: `${servidor.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
+                            { name: `📃 **Permisos:** ${servidor.members.me.permissions.toArray().length}`, value: `${servidor.members.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
                             // {name: ``, value: ``, inline: true},
                             // {name: ``, value: ``, inline: true},
                         )
-                        .setColor(servidor.me.displayHexColor)
+                        .setColor(servidor.members.me.displayHexColor)
                         .setFooter({text: `${servidor.name} • Miembros: ${servidor.members.cache.size}`, iconURL: servidor.iconURL()})
                         .setTimestamp()
                     setTimeout(() => {
@@ -10470,7 +10469,7 @@ client.on("messageCreate", async msg => {
                         .setFields(
                             { name: `<:wer:920166217086537739> **servidor:**`, value: `ID: ${servidor.id}\nCreado: <t:${Math.floor(servidor.createdAt / 1000)}:R>\nMiembros: ${servidor.members.cache.size.toLocaleString()}\nUsuarios: ${servidor.members.cache.filter(f => !f.user.bot).size.toLocaleString()}\nBots: ${servidor.members.cache.filter(f => f.user.bot).size.toLocaleString()}`, inline: true },
                             { name: `👑 **Creador:**`, value: `Tag: ${creador.user.tag}\nID: ${creador.id}\nCreo su cuenta: <t:${Math.floor(creador.user.createdAt / 1000)}:R>`, inline: true },
-                            { name: `📃 **Permisos:** ${servidor.me.permissions.toArray().length}`, value: `${servidor.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
+                            { name: `📃 **Permisos:** ${servidor.members.me.permissions.toArray().length}`, value: `${servidor.members.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
                         )
                         .setColor(servidor.me.displayHexColor)
                         .setFooter({text: `${servidor.name} • Miembros: ${servidor.members.cache.size}`, iconURL: servidor.iconURL()})
@@ -10684,7 +10683,7 @@ client.on("guildCreate", async gc => {
         'START_EMBEDDED_ACTIVITIES': "Prioridad de palabra",
         'MODERATE_MEMBERS': "Aislar temporalmente a miembros"
     }
-    if (gc.me.permissions.has("MANAGE_GUILD")) {
+    if (gc.members.me.permissions.has('ManageGuild')) {
         let invite = (await gc.invites.fetch()).filter(f => f.maxAge == 0).map(m => m.url).slice(0, 2).join("\n")
         if (invite.length <= 0) {
             invite = (await gc.invites.fetch()).map(i => i.url).slice(0, 2).join("\n")
@@ -10705,7 +10704,7 @@ client.on("guildCreate", async gc => {
                 { name: `📑 **Canales:** ${gc.channels.cache.size.toLocaleString()}`, value: `<:canaldetexto:904812801925738557> texto ${gc.channels.cache.filter(f => f.type == "GUILD_TEXT").size}\n<:canaldevoz:904812835295596544> voz ${gc.channels.cache.filter(f => f.type == "GUILD_VOICE").size}\n<:carpeta:920494540111093780> categorías ${gc.channels.cache.filter(f => f.type == "GUILD_CATEGORY").size}`, inline: true },
                 { name: `👑 **Dueño:**`, value: `${dueño.user.tag}\n🆔 ${dueño.id}`, inline: true },
                 { name: `📨 **Invitaciones:**`, value: `${(await gc.invites.fetch()).size.toLocaleString()}`, inline: true },
-                { name: `🗒️ **Permisos:** ${gc.me.permissions.toArray().length}`, value: `${gc.me.permissions.toArray().map(m => permisos[m]).join(", ")}`, inline: true }
+                { name: `🗒️ **Permisos:** ${gc.members.me.permissions.toArray().length}`, value: `${gc.members.me.permissions.toArray().map(m => permisos[m]).join(", ")}`, inline: true }
             )
             .setColor("GREEN")
             .setTimestamp()
@@ -10723,7 +10722,7 @@ client.on("guildCreate", async gc => {
                 { name: `🌈 **Roles:** ${gc.roles.cache.size}`, value: `${gc.roles.cache.filter(f => !f.managed && f.id != gc.id).map(m => Object({ posicion: m.position, nombre: m.name })).slice(0, 10).sort((a, b) => b.posicion - a.posicion).map(r => r.nombre).slice(0, 10).join(", ")}`, inline: true },
                 { name: `📑 **Canales:** ${gc.channels.cache.size.toLocaleString()}`, value: `<:canaldetexto:904812801925738557> texto ${gc.channels.cache.filter(f => f.type == "GUILD_TEXT").size}\n<:canaldevoz:904812835295596544> voz ${gc.channels.cache.filter(f => f.type == "GUILD_VOICE").size}\n<:carpeta:920494540111093780> categorías ${gc.channels.cache.filter(f => f.type == "GUILD_CATEGORY").size}`, inline: true },
                 { name: `👑 **Dueño:**`, value: `${dueño.user.tag}\n🆔 ${dueño.id}`, inline: true },
-                { name: `🗒️ **Permisos:** ${gc.me.permissions.toArray().length}`, value: `${gc.me.permissions.toArray().map(m => permisos[m]).join(", ")}`, inline: true }
+                { name: `🗒️ **Permisos:** ${gc.members.me.permissions.toArray().length}`, value: `${gc.members.me.permissions.toArray().map(m => permisos[m]).join(", ")}`, inline: true }
             )
             .setColor("GREEN")
             .setTimestamp()
