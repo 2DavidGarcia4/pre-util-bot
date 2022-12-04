@@ -336,7 +336,7 @@ client.on("interactionCreate", async int => {
             let erroresP = [
                 { condicion: miembro.id == client.user.id, descripcion: `El miembro proporcionado *(${miembro})* soy yo, yo no puedo utilizar el sistema de puntos.` },
                 { condicion: miembro && miembro.user.bot, descripcion: `El miembro que has proporcionado *(${miembro})* es un bot, un bot no puede utilizar el sistema de puntos.` },
-                { condicion: dataSP && !dataSP.datos.rolesPersonal.some(s => int.member.roles.cache.has(s)), descripcion: `No puedes utilizar este comando ya que no eres miembro del personal del servidor.` },
+                { condicion: dataSP && dataSP.datos.rolesPersonal.length > 0 && !dataSP.datos.rolesPersonal.some(s => int.member.roles.cache.has(s)), descripcion: `No puedes utilizar este comando ya que no eres miembro del personal del servidor.` },
                 // {condicion: "", descripcion: ``},
             ]
             if (erroresInt(int, erroresP)) return;
@@ -1866,9 +1866,9 @@ client.on("messageCreate", async msg => {
     guild.channelId = msg.channelId
     let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "|"
 
-    // if (dataPre.servidores.some(s => s.id == msg.guildId)) {
-    //     prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
-    // }
+    if (dataPre.servidores.some(s => s.id == msg.guildId)) {
+        prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
+    }
 
     if (dataAFK) {
         if (dataAFK.miembros.some(s => s.id == msg.author.id)) {
@@ -1934,7 +1934,7 @@ client.on("messageCreate", async msg => {
             }
         }
     }
-msg.member.permissions.has('Administrator')
+
     if (!msg.guild.members.me.permissionsIn(msg.channel).has('SendMessages')) return;
     
     if (msg.content.match(new RegExp(`^<@!?${client.user.id}>( |)$`))) {
@@ -8688,7 +8688,7 @@ msg.member.permissions.has('Administrator')
                         .setDescription(`No puedes usar este comando ya que no eres miembro del personal del servidor.`)
                         .setColor(ColorError)
                         .setTimestamp()
-                    if (dataSP.datos.rolesPersonal.length >= 1 && !dataSP.datos.rolesPersonal.some(s => msg.member.roles.cache.has(s))) return setTimeout(() => {
+                    if (dataSP.datos.rolesPersonal.length >= 1 && !msg.member.permissions.has('Administrator') && !dataSP.datos.rolesPersonal.some(s => msg.member.roles.cache.has(s))) return setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embError1] }).then(dt => setTimeout(() => {
                             msg.delete().catch(c => {
                                 return;
