@@ -810,9 +810,8 @@ client.on("interactionCreate", async int => {
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle(ButtonStyle.Secondary)
-                                    .setDisabled(true)
-                            ],
-                            [
+                                    .setDisabled(true),
+                           
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
@@ -828,9 +827,8 @@ client.on("interactionCreate", async int => {
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -846,9 +844,8 @@ client.on("interactionCreate", async int => {
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -1092,9 +1089,8 @@ client.on("interactionCreate", async int => {
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -1124,10 +1120,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
 
                             } else {
@@ -1136,10 +1132,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1150,10 +1146,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
 
                             } else {
@@ -1162,10 +1158,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1273,9 +1269,8 @@ client.on("interactionCreate", async int => {
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -1305,10 +1300,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
 
                             } else {
@@ -1317,10 +1312,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1331,10 +1326,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
 
                             } else {
@@ -1343,10 +1338,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1454,9 +1449,8 @@ client.on("interactionCreate", async int => {
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -1486,10 +1480,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             } else {
                                 hi1--, hi2--, pagina--
@@ -1497,10 +1491,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1511,10 +1505,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             } else {
                                 hi1++, hi2++, pagina++
@@ -1522,10 +1516,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1632,9 +1626,8 @@ client.on("interactionCreate", async int => {
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                       
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -1664,10 +1657,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             } else {
                                 hi1--, hi2--, pagina--
@@ -1675,10 +1668,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1689,10 +1682,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             } else {
                                 hi1++, hi2++, pagina++
@@ -1700,10 +1693,10 @@ client.on("interactionCreate", async int => {
                                 embHistorial
                                     .setDescription(descripcion + historial.slice(hi1, hi2))
                                     .setFooter({ text: `${miembro.nickname ? miembro.nickname : miembro.user.tag} | Pagina: ${pagina}/${totalPag}`, iconURL: miembro.displayAvatarURL() })
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embHistorial], components: [botones] })
                             }
                         }
@@ -1871,11 +1864,11 @@ client.on("messageCreate", async msg => {
     if (msg.author.bot) return;
     guild.id = msg.guildId
     guild.channelId = msg.channelId
-    let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "u!"
+    let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = "|"
 
-    if (dataPre.servidores.some(s => s.id == msg.guildId)) {
-        prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
-    }
+    // if (dataPre.servidores.some(s => s.id == msg.guildId)) {
+    //     prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
+    // }
 
     if (dataAFK) {
         if (dataAFK.miembros.some(s => s.id == msg.author.id)) {
@@ -2075,8 +2068,8 @@ msg.member.permissions.has('Administrator')
                     embComandos.data.fields[0].name = `🌎 **Comandos generales:** *14*`
                     embComandos.data.fields[0].value = `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].options.find(f => f.data.value == "generales").data.default = true
+                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].data.options.find(f => f.data.value == "generales").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
@@ -2084,8 +2077,8 @@ msg.member.permissions.has('Administrator')
                     embComandos.data.fields[0].name = `👮 **Comandos de moderacion:** *11*`
                     embComandos.data.fields[0].value = `*Comandos que solo los moderadores pueden utilizar*.\n\n\`\`${prefijo}record\`\` **|** Muestra el historial de sanciones de un miembro.\n\`\`${prefijo}deleterecord\`\` **|** Elimina una o varias sanciones del historial de un miembro.\n\`\`${prefijo}warn\`\` **|** Advierte a un miembro.\n\`\`${prefijo}mute\`\` **|** Aísla temporalmente a un miembro.\n\`\`${prefijo}unmute\`\` **|** Elimina el aislamiento temporal de un miembro.\n\`\`${prefijo}mutelist\`\` **|** Muestra una lista de todos los miembros que están aislados en el servidor.\n\`\`${prefijo}kick\`\` **|** Expulsa a un miembro del servidor.\n\`\`${prefijo}ban\`\` **|** Prohíbe a un usuario entrar al servidor.\n\`\`${prefijo}unban\`\` **|** Elimina la prohibición de un miembro al servidor.\n\`\`${prefijo}clear\`\` **|** Elimina múltiples mensajes en un canal o de un miembro.\n\`\`${prefijo}banlist\`\` **|** Te muestra una lista de los usuarios baneados en el servidor.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].options.find(f => f.data.value == "moderacion").data.default = true
+                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].data.options.find(f => f.data.value == "moderacion").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
@@ -2093,8 +2086,8 @@ msg.member.permissions.has('Administrator')
                     embComandos.data.fields[0].name = `💎 **Comandos de administración:** *8*`
                     embComandos.data.fields[0].value = `*Comandos que solo los administradores pueden utilizar*.\n\n\`\`${prefijo}setprefix\`\` **|** Establece un prefijo personalizado en este servidor.\n\`\`${prefijo}addrol\`\` **|** Añade un rol a un miembro o mas en el servidor.\n\`\`${prefijo}removerol\`\` **|** Remueve un rol de un miembro o mas en el servidor.\n\`\`${prefijo}createchannel\`\` **|** Crea un canal en el servidor.\n\`\`${prefijo}deletechannel\`\` **|** Elimina un canal del servidor.\n\`\`${prefijo}setslowmode\`\` **|** Establece el modo pausado de un canal de texto.\n\`\`${prefijo}memberswithrole\`\` **|** Muestra una lista con todos los miembros que tienen un rol.\n\`\`${prefijo}memberswithouttherole\`\` **|** Muestra una lista con todos los miembros que no tienen un rol.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].options.find(f => f.data.value == "administracion").data.default = true
+                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].data.options.find(f => f.data.value == "administracion").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
@@ -2102,8 +2095,8 @@ msg.member.permissions.has('Administrator')
                     embComandos.data.fields[0].name = `${emojis.puntos} **Comandos del sistem de puntos:** *10*`
                     embComandos.data.fields[0].value = `*Algunos comandos sólo los pueden utilizar los administradores o miembros del staff*.\n\n\`\`${prefijo}points\`\` **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n\`\`${prefijo}addpoints\`\` **|** Agrega puntos a un miembro.\n\`\`${prefijo}removepoints\`\` **|** Elimina puntos a un miembro.\n\`\`${prefijo}setstaffrole\`\` **|** Establece un rol del staff o personal del servidor.\n\`\`${prefijo}deletestaffrole\`\` **|** Elimina un rol establecido como rol del staff del servidor.\n\`\`${prefijo}setemojipoints\`\` **|** Establece un símbolo o emoji personalizado para el sistema de puntos.\n\`\`${prefijo}pointsleaderboard\`\` **|** Muestra una tabla de clasificaciones con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n\`\`${prefijo}pointsystemstatus\`\` **|** Muestra el estado del sistema en el servidor.\n\`\`${prefijo}removeusersystemp\`\` **|** Elimina a un miembro del sistema de puntos del servidor.\n\`\`${prefijo}updatepointssystem\`\` **|** Actualiza el sistema de puntos en el servidor eliminando del sistema a todos los usuarios que se han ido del servidor.`
                     menu.deferUpdate()
-                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].options.find(f => f.data.value == "puntos").data.default = true
+                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].data.options.find(f => f.data.value == "puntos").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
             })
@@ -2513,12 +2506,11 @@ msg.member.permissions.has('Administrator')
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
-                                .setLabel("Siguiente ")
+                                .setLabel("Siguiente")
                                 .setEmoji("<a:RightArrow:942154978859044905>")
                                 .setStyle(ButtonStyle.Primary)
                         ]
@@ -2541,10 +2533,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embEmojis], components: [botones] })
 
                             } else {
@@ -2553,10 +2545,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embEmojis], components: [botones] })
                             }
                         }
@@ -2567,10 +2559,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
                                 return await botn.update({ embeds: [embEmojis], components: [botones] })
 
                             } else {
@@ -2579,10 +2571,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(descripcion + emojis.map(e => e).map((en, e) => `**${e + 1}.**  ${en}\n\`\`${en}\`\`\n**Nombre:** [${en.name}](${en.url})\n**Tipo:** ${en.animated ? "Animado" : "Normal"}`).slice(em1, em2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 return await botn.update({ embeds: [embEmojis], components: [botones] })
                             }
                         }
@@ -2644,9 +2636,8 @@ msg.member.permissions.has('Administrator')
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -2672,10 +2663,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embEmojis], components: [botones] })
                             } else {
                                 em1 -= 10, em2 -= 10, pagina--
@@ -2683,10 +2674,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embEmojis], components: [botones] })
                             }
                         }
@@ -2697,10 +2688,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
                                 return await botn.update({ embeds: [embEmojis], components: [botones] })
                             } else {
                                 em1 += 10, em2 += 10, pagina++
@@ -2708,10 +2699,10 @@ msg.member.permissions.has('Administrator')
                                 embEmojis
                                     .setDescription(`Stickers: **${stikers.size}**\n\n${stikers.map(e => e).map((en, e) => `**${e + 1}.** \n**Nombre:** [${en.name}](${en.url})\n**Formato:** ${en.format}\n**Descripcion:** ${en.description}\n**ID:** ${en.id}`).slice(em1, em2).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 return await botn.update({ embeds: [embEmojis], components: [botones] })
                             }
                         }
@@ -3311,9 +3302,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Secondary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Secondary),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -3338,10 +3328,10 @@ msg.member.permissions.has('Administrator')
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Secondary
-                                botones.components[0].disabled = true
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Secondary
+                                botones.components[0].data.disabled = true
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embInviteaciones], components: [botones] })
 
                             } else {
@@ -3349,10 +3339,10 @@ msg.member.permissions.has('Administrator')
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 await botn.update({ embeds: [embInviteaciones], components: [botones] })
                             }
                         }
@@ -3362,10 +3352,10 @@ msg.member.permissions.has('Administrator')
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].disabled = false
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[1].style = ButtonStyle.Secondary
-                                botones.components[1].disabled = true
+                                botones.components[0].data.disabled = false
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[1].data.style = ButtonStyle.Secondary
+                                botones.components[1].data.disabled = true
 
                                 return await botn.update({ embeds: [embInviteaciones], components: [botones] })
 
@@ -3375,10 +3365,10 @@ msg.member.permissions.has('Administrator')
                                 embInviteaciones
                                     .setDescription(descripcion + tabla.slice(in1, in2).join("\n\n"))
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
-                                botones.components[0].style = ButtonStyle.Primary
-                                botones.components[0].disabled = false
-                                botones.components[1].disabled = false
-                                botones.components[1].style = ButtonStyle.Primary
+                                botones.components[0].data.style = ButtonStyle.Primary
+                                botones.components[0].data.disabled = false
+                                botones.components[1].data.disabled = false
+                                botones.components[1].data.style = ButtonStyle.Primary
                                 return await botn.update({ embeds: [embInviteaciones], components: [botones] })
                             }
                         }
@@ -4937,9 +4927,8 @@ msg.member.permissions.has('Administrator')
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -4955,9 +4944,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Primary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Primary),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
@@ -4973,9 +4961,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Primary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Primary),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
@@ -6442,9 +6429,8 @@ msg.member.permissions.has('Administrator')
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -6460,9 +6446,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Primary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Primary),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
@@ -6478,9 +6463,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Primary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Primary),
+                      
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
@@ -8263,9 +8247,8 @@ msg.member.permissions.has('Administrator')
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle(ButtonStyle.Secondary)
-                                    .setDisabled(true)
-                            ],
-                            [
+                                    .setDisabled(true),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
@@ -8281,9 +8264,8 @@ msg.member.permissions.has('Administrator')
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -8299,9 +8281,8 @@ msg.member.permissions.has('Administrator')
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -8518,9 +8499,8 @@ msg.member.permissions.has('Administrator')
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle(ButtonStyle.Secondary)
-                                    .setDisabled(true)
-                            ],
-                            [
+                                    .setDisabled(true),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
@@ -8536,9 +8516,8 @@ msg.member.permissions.has('Administrator')
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -8554,9 +8533,8 @@ msg.member.permissions.has('Administrator')
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -9528,9 +9506,8 @@ msg.member.permissions.has('Administrator')
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
                                     .setStyle(ButtonStyle.Secondary)
-                                    .setDisabled(true)
-                            ],
-                            [
+                                    .setDisabled(true),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente ")
@@ -9546,9 +9523,8 @@ msg.member.permissions.has('Administrator')
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                            
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -9564,9 +9540,8 @@ msg.member.permissions.has('Administrator')
                                     .setCustomId("1")
                                     .setLabel("Anterior")
                                     .setEmoji("<a:LeftArrow:942155020017754132>")
-                                    .setStyle(ButtonStyle.Primary)
-                            ],
-                            [
+                                    .setStyle(ButtonStyle.Primary),
+                           
                                 new ButtonBuilder()
                                     .setCustomId("2")
                                     .setLabel("Siguiente")
@@ -10533,9 +10508,8 @@ msg.member.permissions.has('Administrator')
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
                                 .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        ],
-                        [
+                                .setDisabled(true),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente ")
@@ -10551,9 +10525,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Primary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Primary),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
@@ -10569,9 +10542,8 @@ msg.member.permissions.has('Administrator')
                                 .setCustomId("1")
                                 .setLabel("Anterior")
                                 .setEmoji("<a:LeftArrow:942155020017754132>")
-                                .setStyle(ButtonStyle.Primary)
-                        ],
-                        [
+                                .setStyle(ButtonStyle.Primary),
+                        
                             new ButtonBuilder()
                                 .setCustomId("2")
                                 .setLabel("Siguiente")
