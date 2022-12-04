@@ -71,10 +71,10 @@ client.on("ready", async () => {
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
-    canalLogStart.sendTyping()
-    setTimeout(()=> {
-        canalLogStart.send({ embeds: [embReady] })
-    }, 2000)
+    // canalLogStart.sendTyping()
+    // setTimeout(()=> {
+    //     canalLogStart.send({ embeds: [embReady] })
+    // }, 2000)
 
 
     function presencias() {
@@ -768,9 +768,9 @@ client.on("interactionCreate", async int => {
                 for (let i in ordenPs) {
                     let usuario = client.users.cache.get(ordenPs[i].id)
                     if (int.user.id == usuario.id) {
-                        top.push(`**${Number(i) == 0 ? "🥇" : Number(i) == 1 ? "🥈" : Number(i) == 2 ? "🥉" : Number(i) + 1}. [${usuario.tag}](${usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) - ${dataSP.datos.emoji} ${ordenPs[i].puntos}**\n<@${usuario.id}>`)
+                        top.push(`**${Number(i) == 0 ? "🥇" : Number(i) == 1 ? "🥈" : Number(i) == 2 ? "🥉" : Number(i) + 1}. [${usuario.tag}](${usuario.displayAvatarURL({  format: "png" || "gif", size: 4096 })}) - ${dataSP.datos.emoji} ${ordenPs[i].puntos}**\n<@${usuario.id}>`)
                     } else {
-                        top.push(`**${Number(i) == 0 ? "🥇" : Number(i) == 1 ? "🥈" : Number(i) == 2 ? "🥉" : Number(i) + 1}.** [${usuario.tag}](${usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) - ${dataSP.datos.emoji} **${ordenPs[i].puntos}**\n<@${usuario.id}>`)
+                        top.push(`**${Number(i) == 0 ? "🥇" : Number(i) == 1 ? "🥈" : Number(i) == 2 ? "🥉" : Number(i) + 1}.** [${usuario.tag}](${usuario.displayAvatarURL({  format: "png" || "gif", size: 4096 })}) - ${dataSP.datos.emoji} **${ordenPs[i].puntos}**\n<@${usuario.id}>`)
                     }
                 }
 
@@ -1008,10 +1008,10 @@ client.on("interactionCreate", async int => {
             async function elseContenido(usSv) {
                 let servidor = client.guilds.cache.get(usSv.id)
                 if (historial.length >= 1) {
-                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`
+                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`
                     condicionText(tituloSv)
                 } else {
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`)
                 }
             }
 
@@ -1020,10 +1020,10 @@ client.on("interactionCreate", async int => {
                     let svsAdv = usuario.servidores.filter(f => f.advertencias.length > 0 && f.id != int.guildId).length
                     descripcion = svsAdv >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidor.advertencias.length}** advertencias en este servidor y en otros **${svsAdv}** servidores tambien tienes y son las siguientes.\n\n` : `El miembro ${miembro} tiene **${servidor.advertencias.length}** advertencias en este servidor y en otros **${svsAdv}** servidores tambien tiene y son las siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidor.advertencias.length}** advertencias en este servidor, las cuales son las siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidor.advertencias.length}** advertencias en este servidor, las cuales son las siguientes.\n\n`
 
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidor.advertencias.length; i++) {
                         let moderador = await client.users.fetch(servidor.advertencias[i].autor, { force: true })
-                        let texto = `**${i + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.advertencias[i].tiempo}:F> *(<t:${servidor.advertencias[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidor.advertencias[i].razon}*\n`
+                        let texto = `**${i + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.advertencias[i].tiempo}:F> *(<t:${servidor.advertencias[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidor.advertencias[i].razon}*\n`
                         condicionText(texto)
                     }
                     for (let usSv of usuario.servidores) {
@@ -1031,7 +1031,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.advertencias.length; a++) {
                                 let moderador = await client.users.fetch(usSv.advertencias[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.advertencias[a].tiempo}:F> *(<t:${usSv.advertencias[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.advertencias[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.advertencias[a].tiempo}:F> *(<t:${usSv.advertencias[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.advertencias[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1044,7 +1044,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.advertencias.length; a++) {
                                 let moderador = await client.users.fetch(usSv.advertencias[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.advertencias[a].tiempo}:F> *(<t:${usSv.advertencias[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.advertencias[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.advertencias[a].tiempo}:F> *(<t:${usSv.advertencias[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.advertencias[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1058,7 +1058,7 @@ client.on("interactionCreate", async int => {
                         elseContenido(usSv)
                         for (let a = 0; a < usSv.advertencias.length; a++) {
                             let moderador = await client.users.fetch(usSv.advertencias[a].autor, { force: true })
-                            let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.advertencias[a].tiempo}:F> *(<t:${usSv.advertencias[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.advertencias[a].razon}*\n`
+                            let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.advertencias[a].tiempo}:F> *(<t:${usSv.advertencias[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.advertencias[a].razon}*\n`
                             condicionText(texto)
                         }
                     }
@@ -1188,10 +1188,10 @@ client.on("interactionCreate", async int => {
             async function elseContenido(usSv) {
                 let servidor = client.guilds.cache.get(usSv.id)
                 if (historial.length >= 1) {
-                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`
+                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`
                     condicionText(tituloSv)
                 } else {
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidor.name}](${servidor.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidor.members.cache.size.toLocaleString()} miembros\n\n`)
                 }
             }
 
@@ -1199,10 +1199,10 @@ client.on("interactionCreate", async int => {
                 if (servidor.aislamientos.length > 0) {
                     let svsAis = usuario.servidores.filter(f => f.aislamientos.length > 0 && f.id != int.guildId).length
                     descripcion = svsAis >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidor.aislamientos.length}** aislamientos en este servidor y en otros **${svsAis}** servidores tambien tienes y son los siguientes.\n\n` : `El miembro ${miembro} tiene **${servidor.aislamientos.length}** aislamientos en este servidor y en otros **${svsAis}** servidores tambien tiene y son los siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidor.aislamientos.length}** aislamientos en este servidor, las cuales son los siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidor.aislamientos.length}** aislamientos en este servidor, las cuales son los siguientes.\n\n`
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidor.aislamientos.length; i++) {
                         let moderador = await client.user.fetch(servidor.aislamientos[i].autor, { force: true })
-                        let texto = `**${i + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.aislamientos[i].tiempo}:F> *(<t:${servidor.aislamientos[i].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[i].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[i].razon}*\n`
+                        let texto = `**${i + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.aislamientos[i].tiempo}:F> *(<t:${servidor.aislamientos[i].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[i].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[i].razon}*\n`
                         condicionText(texto)
                     }
                     for (let usSv of usuario.servidores) {
@@ -1210,7 +1210,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.aislamientos.length; a++) {
                                 let moderador = await client.user.fetch(servidor.aislamientos[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.aislamientos[a].tiempo}:F> *(<t:${usSv.aislamientos[a].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[a].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.aislamientos[a].tiempo}:F> *(<t:${usSv.aislamientos[a].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[a].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1224,7 +1224,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.aislamientos.length; a++) {
                                 let moderador = await client.user.fetch(servidor.aislamientos[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.aislamientos[a].tiempo}:F> *(<t:${usSv.aislamientos[a].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[a].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.aislamientos[a].tiempo}:F> *(<t:${usSv.aislamientos[a].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${servidor.aislamientos[a].aislamiento}\n📄 Por la razón:\n*${servidor.aislamientos[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1238,7 +1238,7 @@ client.on("interactionCreate", async int => {
                         elseContenido(usSv)
                         for (let a = 0; a < usSv.aislamientos.length; a++) {
                             let moderador = await client.user.fetch(usSv.aislamientos[a].autor, { force: true })
-                            let texto = `**${a + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.aislamientos[a].tiempo}:F> *(<t:${usSv.aislamientos[a].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${usSv.aislamientos[a].aislamiento}\n📄 Por la razón:\n*${usSv.aislamientos[a].razon}*\n`
+                            let texto = `**${a + 1}.** 👮 Aislado temporalmente por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.aislamientos[a].tiempo}:F> *(<t:${usSv.aislamientos[a].tiempo}:R>)*\n<:aislacion:947965052772814848> Durante ${usSv.aislamientos[a].aislamiento}\n📄 Por la razón:\n*${usSv.aislamientos[a].razon}*\n`
                             condicionText(texto)
                         }
                     }
@@ -1368,10 +1368,10 @@ client.on("interactionCreate", async int => {
             async function elseContenido(usSv) {
                 let servidorC = client.guilds.cache.get(usSv.id)
                 if (historial.length >= 1) {
-                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`
+                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`
                     condicionText(tituloSv)
                 } else {
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`)
                 }
             }
 
@@ -1379,10 +1379,10 @@ client.on("interactionCreate", async int => {
                 if (servidor.expulsiones.length > 0) {
                     let svsExp = usuario.servidores.filter(f => f.expulsiones.length > 0 && f.id != int.guildId).length
                     descripcion = svsExp >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidor.expulsiones.length}** expulsiones en este servidor y en otros **${svsExp}** servidores tambien tienes y son las siguientes.\n\n` : `El miembro ${miembro} tiene **${servidor.expulsiones.length}** expulsiones en este servidor y en otros **${svsExp}** servidores tambien tiene y son las siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidor.expulsiones.length}** expulsiones en este servidor, las cuales son las siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidor.expulsiones.length}** expulsiones en este servidor, las cuales son las siguientes.\n\n`
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidor.expulsiones.length; i++) {
                         let moderador = await client.users.fetch(servidor.expulsiones[i].autor, { force: true })
-                        let texto = `**${i + 1}.** 👮 Expulsado por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.expulsiones[i].tiempo}:F> *(<t:${servidor.expulsiones[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidor.expulsiones[i].razon}*\n`
+                        let texto = `**${i + 1}.** 👮 Expulsado por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidor.expulsiones[i].tiempo}:F> *(<t:${servidor.expulsiones[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidor.expulsiones[i].razon}*\n`
                         condicionText(texto)
                     }
                     for (let usSv of usuario.servidores) {
@@ -1390,7 +1390,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.expulsiones.length; a++) {
                                 let moderador = await client.users.fetch(usSv.expulsiones[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Expulsado por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.expulsiones[a].tiempo}:F> *(<t:${usSv.expulsiones[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.expulsiones[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Expulsado por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.expulsiones[a].tiempo}:F> *(<t:${usSv.expulsiones[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.expulsiones[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1404,7 +1404,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.expulsiones.length; a++) {
                                 let moderador = await client.users.fetch(usSv.expulsiones[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.expulsiones[a].tiempo}:F> *(<t:${usSv.expulsiones[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.expulsiones[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.expulsiones[a].tiempo}:F> *(<t:${usSv.expulsiones[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.expulsiones[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1418,7 +1418,7 @@ client.on("interactionCreate", async int => {
                         elseContenido(usSv)
                         for (let a = 0; a < usSv.expulsiones.length; a++) {
                             let moderador = await client.users.fetch(usSv.expulsiones[a].autor, { force: true })
-                            let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.expulsiones[a].tiempo}:F> *(<t:${usSv.expulsiones[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.expulsiones[a].razon}*\n`
+                            let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.expulsiones[a].tiempo}:F> *(<t:${usSv.expulsiones[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.expulsiones[a].razon}*\n`
                             condicionText(texto)
                         }
                     }
@@ -1546,10 +1546,10 @@ client.on("interactionCreate", async int => {
             async function elseContenido(usSv) {
                 let servidorC = client.guilds.cache.get(usSv.id)
                 if (historial.length >= 1) {
-                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`
+                    let tituloSv = `\n\n<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`
                     condicionText(tituloSv)
                 } else {
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${servidorC.name}](${servidorC.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${servidorC.members.cache.size.toLocaleString()} miembros\n\n`)
                 }
             }
 
@@ -1557,10 +1557,10 @@ client.on("interactionCreate", async int => {
                 if (servidorDB.baneos.length > 0) {
                     let svsBan = usuario.servidores.filter(f => f.baneos.length > 0 && f.id != int.guildId).length
                     descripcion = svsBan >= 1 ? miembro.id == int.user.id ? `${miembro} tienes **${servidorDB.baneos.length}** baneos en este servidor y en otros **${svsBan}** servidores tambien tienes y son los siguientes.\n\n` : `El miembro ${miembro} tiene **${servidorDB.baneos.length}** baneos en este servidor y en otros **${svsBan}** servidores tambien tiene y son los siguientes.\n\n` : miembro.id == int.user.id ? `${miembro} solo tienes **${servidorDB.baneos.length}** baneos en este servidor, las cuales son los siguientes.\n\n` : `El miembro ${miembro} solo tiene **${servidorDB.baneos.length}** baneos en este servidor, las cuales son los siguientes.\n\n`
-                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
+                    historial.push(`<:wer:920166217086537739> **Servidor:** [${int.guild.name}](${int.guild.iconURL({  format: "png" || "gif", size: 2048 })}) **|** ${int.guild.members.cache.size.toLocaleString()} miembros\n\n`)
                     for (let i = 0; i < servidorDB.baneos.length; i++) {
                         let moderador = await client.users.fetch(servidorDB.baneos[i].autor, { force: true })
-                        let texto = `**${i + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidorDB.baneos[i].tiempo}:F> *(<t:${servidorDB.baneos[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidorDB.baneos[i].razon}*\n`
+                        let texto = `**${i + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${servidorDB.baneos[i].tiempo}:F> *(<t:${servidorDB.baneos[i].tiempo}:R>)*\n📄 Por la razón:\n*${servidorDB.baneos[i].razon}*\n`
                         condicionText(texto)
                     }
                     for (let usSv of usuario.servidores) {
@@ -1568,7 +1568,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.baneos.length; a++) {
                                 let moderador = await client.users.fetch(usSv.baneos[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.baneos[a].tiempo}:F> *(<t:${usSv.baneos[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.baneos[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.baneos[a].tiempo}:F> *(<t:${usSv.baneos[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.baneos[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1581,7 +1581,7 @@ client.on("interactionCreate", async int => {
                             elseContenido(usSv)
                             for (let a = 0; a < usSv.baneos.length; a++) {
                                 let moderador = await client.users.fetch(usSv.baneos[a].autor, { force: true })
-                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.baneos[a].tiempo}:F> *(<t:${usSv.baneos[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.baneos[a].razon}*\n`
+                                let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.baneos[a].tiempo}:F> *(<t:${usSv.baneos[a].tiempo}:R>)*\n📄 Por la razón:\n*${usSv.baneos[a].razon}*\n`
                                 condicionText(texto)
                             }
                         }
@@ -1595,7 +1595,7 @@ client.on("interactionCreate", async int => {
                         elseContenido(usSv)
                         for (let a = 0; a < usSv.baneos.length; a++) {
                             let moderador = await client.users.fetch(usSv.baneos[a].autor, { force: true })
-                            let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.baneos[a].tiemp}:F> *(<t:${usSv.baneos[a].tiemp}:R>)*\n📄 Por la razón:\n*${usSv.baneos[a].razon}*\n`
+                            let texto = `**${a + 1}.** 👮 Advertido por [${moderador.tag}](${moderador.displayAvatarURL({  format: "png" || "gif", size: 2048 })})\n<:calendario:952037404561264661> El <t:${usSv.baneos[a].tiemp}:F> *(<t:${usSv.baneos[a].tiemp}:R>)*\n📄 Por la razón:\n*${usSv.baneos[a].razon}*\n`
                             condicionText(texto)
                         }
                     }
@@ -1866,7 +1866,7 @@ client.on("messageCreate", async msg => {
     guild.channelId = msg.channelId
     let dataPre = await prefijosDB.findById(client.user.id), dataAFK = await afkDB.findById(msg.guildId), prefijo = enviroment ? '|' : "u!"
 
-    if (dataPre.servidores.some(s => s.id == msg.guildId)) {
+    if ((!enviroment) && dataPre.servidores.some(s => s.id == msg.guildId)) {
         prefijo = dataPre.servidores.find(f => f.id == msg.guildId).prefijo
     }
 
@@ -2068,8 +2068,8 @@ client.on("messageCreate", async msg => {
                     embComandos.data.fields[0].name = `🌎 **Comandos generales:** *14*`
                     embComandos.data.fields[0].value = `*Comandos que todos pueden utilizar*.\n\n\`\`${prefijo}afk\`\` **|** Te establece el estado AFK dentro del servidor.\n\`\`${prefijo}user\`\` **|** Muestra información del usuario.\n\`\`${prefijo}stats\`\` **|** Muestra estadisticas generales de todos los servidores.\n\`\`${prefijo}jumbo\`\` **|** Muestra en grande un emoji del servidor.\n\`\`${prefijo}emojis\`\` **|** Muestra todos los emojis del servidor.\n\`\`${prefijo}avatar\`\` **|** Muestra el avatar del usuario.\n\`\`${prefijo}server\`\` **|** Muestra información del servidor.\n\`\`${prefijo}invite\`\` **|** Te muestra la invitación del bot.\n\`\`${prefijo}qrcode\`\` **|** Genera un código QR de un enlace.\n\`\`${prefijo}botinfo\`\` **|** Te muestra información del bot.\n\`\`${prefijo}invites\`\` **|** Muestra las invitaciones que has creado en el servidor.\n\`\`${prefijo}stickers\`\` **|** Te muestra todos los stikers del servidor.\n\`\`${prefijo}reportbug\`\` **|** Reporta errores del bot.\n\`\`${prefijo}inviteinfo\`\` **|** Muestra información de una invitación.`
                     menu.deferUpdate()
-                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].data.options.find(f => f.data.value == "generales").data.default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "generales").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
@@ -2077,8 +2077,8 @@ client.on("messageCreate", async msg => {
                     embComandos.data.fields[0].name = `👮 **Comandos de moderacion:** *11*`
                     embComandos.data.fields[0].value = `*Comandos que solo los moderadores pueden utilizar*.\n\n\`\`${prefijo}record\`\` **|** Muestra el historial de sanciones de un miembro.\n\`\`${prefijo}deleterecord\`\` **|** Elimina una o varias sanciones del historial de un miembro.\n\`\`${prefijo}warn\`\` **|** Advierte a un miembro.\n\`\`${prefijo}mute\`\` **|** Aísla temporalmente a un miembro.\n\`\`${prefijo}unmute\`\` **|** Elimina el aislamiento temporal de un miembro.\n\`\`${prefijo}mutelist\`\` **|** Muestra una lista de todos los miembros que están aislados en el servidor.\n\`\`${prefijo}kick\`\` **|** Expulsa a un miembro del servidor.\n\`\`${prefijo}ban\`\` **|** Prohíbe a un usuario entrar al servidor.\n\`\`${prefijo}unban\`\` **|** Elimina la prohibición de un miembro al servidor.\n\`\`${prefijo}clear\`\` **|** Elimina múltiples mensajes en un canal o de un miembro.\n\`\`${prefijo}banlist\`\` **|** Te muestra una lista de los usuarios baneados en el servidor.`
                     menu.deferUpdate()
-                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].data.options.find(f => f.data.value == "moderacion").data.default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "moderacion").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
@@ -2086,8 +2086,8 @@ client.on("messageCreate", async msg => {
                     embComandos.data.fields[0].name = `💎 **Comandos de administración:** *8*`
                     embComandos.data.fields[0].value = `*Comandos que solo los administradores pueden utilizar*.\n\n\`\`${prefijo}setprefix\`\` **|** Establece un prefijo personalizado en este servidor.\n\`\`${prefijo}addrol\`\` **|** Añade un rol a un miembro o mas en el servidor.\n\`\`${prefijo}removerol\`\` **|** Remueve un rol de un miembro o mas en el servidor.\n\`\`${prefijo}createchannel\`\` **|** Crea un canal en el servidor.\n\`\`${prefijo}deletechannel\`\` **|** Elimina un canal del servidor.\n\`\`${prefijo}setslowmode\`\` **|** Establece el modo pausado de un canal de texto.\n\`\`${prefijo}memberswithrole\`\` **|** Muestra una lista con todos los miembros que tienen un rol.\n\`\`${prefijo}memberswithouttherole\`\` **|** Muestra una lista con todos los miembros que no tienen un rol.`
                     menu.deferUpdate()
-                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].data.options.find(f => f.data.value == "administracion").data.default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "administracion").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
 
@@ -2095,8 +2095,8 @@ client.on("messageCreate", async msg => {
                     embComandos.data.fields[0].name = `${emojis.puntos} **Comandos del sistem de puntos:** *10*`
                     embComandos.data.fields[0].value = `*Algunos comandos sólo los pueden utilizar los administradores o miembros del staff*.\n\n\`\`${prefijo}points\`\` **|** Muestra la cantidad de puntos que tienes o tiene un miembro.\n\`\`${prefijo}addpoints\`\` **|** Agrega puntos a un miembro.\n\`\`${prefijo}removepoints\`\` **|** Elimina puntos a un miembro.\n\`\`${prefijo}setstaffrole\`\` **|** Establece un rol del staff o personal del servidor.\n\`\`${prefijo}deletestaffrole\`\` **|** Elimina un rol establecido como rol del staff del servidor.\n\`\`${prefijo}setemojipoints\`\` **|** Establece un símbolo o emoji personalizado para el sistema de puntos.\n\`\`${prefijo}pointsleaderboard\`\` **|** Muestra una tabla de clasificaciones con los miembros que han utilizado el sistema de puntos y sus respectivos puntos.\n\`\`${prefijo}pointsystemstatus\`\` **|** Muestra el estado del sistema en el servidor.\n\`\`${prefijo}removeusersystemp\`\` **|** Elimina a un miembro del sistema de puntos del servidor.\n\`\`${prefijo}updatepointssystem\`\` **|** Actualiza el sistema de puntos en el servidor eliminando del sistema a todos los usuarios que se han ido del servidor.`
                     menu.deferUpdate()
-                    menuComandos.components[0].data.options.find(f => f.data.default).data.default = false
-                    menuComandos.components[0].data.options.find(f => f.data.value == "puntos").data.default = true
+                    menuComandos.components[0].options.find(f => f.data.default).data.default = false
+                    menuComandos.components[0].options.find(f => f.data.value == "puntos").data.default = true
                     mensajeSend.edit({ embeds: [embComandos], components: [menuComandos] })
                 }
             })
@@ -2239,32 +2239,31 @@ client.on("messageCreate", async msg => {
             let presencia = {
                 "dnd": "<:nomolestar:910277499865407539> No molestar",
                 "idle": "<:ausente:910277557516124180> Ausente",
-                "undefined": "<:desconectado:910277715293245541> Desconectado",
                 "offline": "<:desconectado:910277715293245541> Desconectado",
                 "online": "<:online:910277439928807434> Conectado"
             }
             let tyEstado = {
-                "CUSTOM": "Personalizada:",
-                "COMPETING": "Compitiendo",
-                "LISTENING": "Escuchando",
-                "PLAYING": "Jugando a",
-                "STREAMING": "Trasmitiendo",
-                "WATCHING": "Viendo"
+                "0": "Jugando a",
+                "1": "Trasmitiendo",
+                "2": "Escuchando",
+                "3": "Viendo",
+                "4": "Personalizada:",
+                "5": "Compitiendo",
             }
             let insignias = {
-                "BUGHUNTER_LEVEL_1": "<:BughunterLevel1:920743741512368178> Cazador de bugs nivel 1",
-                "BUGHUNTER_LEVEL_2": "<:BughunterLevel2:920744747914657842> Cazador de bugs nivel 2",
-                "DISCORD_CERTIFIED_MODERATOR": "<:DiscordCertifiedModerator:920751094928384041> Moderador",
-                "DISCORD_EMPLOYEE": "<:DiscordEmployee:920745583151575071> Empleado de Discord",
-                "EARLY_SUPPORTER": "<:EarlySupporter:920741677931569182>",
-                "EARLY_VERIFIED_BOT_DEVELOPER": "<:VerifiedBotDeveloper:920746956706414693> Desarrollador de bots verificado ",
-                "HOUSE_BALANCE": "<:HouaseBalance:920750191508860928> Balance",
-                "HOUSE_BRAVERY": "<:HouseBravery:920750033660416103> Bravery",
-                "HOUSE_BRILLIANCE": "<:HouseBrilliance:920749159743635457> Brilliance",
-                "HYPESQUAD_EVENTS": "<:HypeSquad:920754083940413500> Eventos de la hypesquad",
-                "PARTNERED_SERVER_OWNER": "<:DiscordPartner:920746109259898890> Servidor socio",
-                "VERIFIED_BOT": "<:VerifiedBot:920750538012885013> Bot verificado",
-                "TEAM_USER": "👥"
+                "BugHunterLevel1": "<:BughunterLevel1:920743741512368178> Cazador de bugs nivel 1",
+                "BugHunterLevel2": "<:BughunterLevel2:920744747914657842> Cazador de bugs nivel 2",
+                "CertifiedModerator": "<:DiscordCertifiedModerator:920751094928384041> Moderador",
+                "Staff": "<:DiscordEmployee:920745583151575071> Empleado de Discord",
+                "PremiumEarlySupporter": "<:EarlySupporter:920741677931569182>",
+                "VerifiedDeveloper": "<:VerifiedBotDeveloper:920746956706414693> Desarrollador de bots verificado ",
+                "HypeSquadOnlineHouse1": "<:HouseBravery:920750033660416103> Bravery",
+                "HypeSquadOnlineHouse2": "<:HouseBrilliance:920749159743635457> Brilliance",
+                "HypeSquadOnlineHouse3": "<:HouaseBalance:920750191508860928> Balance",
+                "Hypesquad": "<:HypeSquad:920754083940413500> Eventos de la hypesquad",
+                "Partner": "<:DiscordPartner:920746109259898890> Servidor socio",
+                "VerifiedBot": "<:VerifiedBot:920750538012885013> Bot verificado",
+                "TeamPseudoUser": "👥"
             }
 
             let alias = ["user", "usuario", "userinfo"]
@@ -2299,8 +2298,8 @@ client.on("messageCreate", async msg => {
             let bannerUser = miembro ? miembro.id == msg.author.id ? await client.users.fetch(msg.author.id, { force: true }) : await client.users.fetch(miembro.id, { force: true }) : await client.users.fetch(msg.author.id, { force: true })
             const embMiembro = new EmbedBuilder()
                 .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu información ${msg.member.nickname ? msg.member.nickname : msg.author.username}` : `Información de ${miembro.nickname ? miembro.nickname : miembro.user.username} pedida por ${msg.member.nickname ? msg.member.nickname : msg.author.username}` : `Tu información ${msg.member.nickname ? msg.member.nickname : msg.author.username}`, iconURL: msg.author.displayAvatarURL() })
-                .setThumbnail(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                .setImage(bannerUser.bannerURL({ dynamic: true, format: "jpg" || "gif", size: 4096 }))
+                .setThumbnail(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({  format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
+                .setImage(bannerUser.bannerURL({  format: "jpg" || "gif", size: 4096 }))
                 .setDescription(miembro ? miembro.id == msg.author.id ? `👤 Tu: ${msg.author}` : miembro.user.bot ? `🤖 Bot: ${miembro}` : `👤 Miembro: ${miembro}` : `👤 Tu: ${msg.author}`)
                 .setFields(
                     { name: "🏷 **Tag:**", value: `${miembro ? miembro.id == msg.author.id ? msg.author.tag : miembro.user.tag : msg.author.tag}`, inline: true },
@@ -2317,8 +2316,8 @@ client.on("messageCreate", async msg => {
                 .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.members.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.members.me.displayHexColor)
                 .setFooter( miembro ? miembro.id == msg.author.id ? { text: msg.guild.name, iconURL: msg.guild.iconURL() } : { text: miembro.user.tag, iconURL: miembro.displayAvatarURL() } : { text: msg.guild.name, iconURL: msg.guild.iconURL() })
                 .setTimestamp()
-            miembro ? miembro.user.bot ? embMiembro.fields.splice(6, 1) : null : null
-            miembro ? miembro.id != msg.author.id && !miembro.user.bot ? "hola" : embMiembro.fields.length == 9 ? embMiembro.fields.splice(6, 1) : embMiembro.fields.splice(7, 1) : embMiembro.fields.length == 9 ? embMiembro.fields.splice(6, 1) : embMiembro.fields.splice(7, 1)
+            miembro ? miembro.user.bot ? embMiembro.data.fields.splice(6, 1) : null : null
+            miembro ? miembro.id != msg.author.id && !miembro.user.bot ? "hola" : embMiembro.data.fields.length == 9 ? embMiembro.data.fields.splice(6, 1) : embMiembro.data.fields.splice(7, 1) : embMiembro.data.fields.length == 9 ? embMiembro.data.fields.splice(6, 1) : embMiembro.data.fields.splice(7, 1)
             if (!args[0] || miembro) {
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embMiembro] })
@@ -2334,11 +2333,10 @@ client.on("messageCreate", async msg => {
 
             if (args[0] && !miembro) {
                 await client.users.fetch(args[0], { force: true }).then(async usuario => {
-                    console.log(usuario.hexAccentColo)
                     const embUser = new EmbedBuilder()
                         .setAuthor({ name: `Información de ${usuario.tag} pedida por ${msg.member.nickname ? msg.member.nickname : msg.author.username}`, iconURL: msg.author.displayAvatarURL() })
-                        .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                        .setImage(usuario.bannerURL({ dynamic: true, format: "jpg" || "gif", size: 4096 }))
+                        .setThumbnail(usuario.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
+                        .setImage(usuario.bannerURL({  format: "jpg" || "gif", size: 4096 }))
                         .setDescription(usuario.bot ? `🤖 Bot externo: ${usuario}` : `👤 Usuario externo: ${usuario}`)
                         .setFields(
                             { name: "🏷 **Tag:**", value: `${usuario.tag}`, inline: true },
@@ -2373,7 +2371,7 @@ client.on("messageCreate", async msg => {
         if (comando == "stats") {
             msg.channel.sendTyping()
             botDB.comandos.usos++
-            let textCh = client.channels.cache.filter(ft => ft.type == "GUILD_TEXT").size, voiseCH = client.channels.cache.filter(fv => fv.type == "GUILD_VOICE").size, cateCh = client.channels.cache.filter(fc => fc.type == "GUILD_CATEGORY").size
+            let textCh = client.channels.cache.filter(ft => ft.type == ChannelType.GuildText).size, voiseCH = client.channels.cache.filter(fv => fv.type == ChannelType.GuildVoice).size, cateCh = client.channels.cache.filter(fc => fc.type == ChannelType.GuildCategory).size
 
             let ping = client.ws.ping <= 60 ? "<:30ms:917227036890791936>" : client.ws.ping > 60 && client.ws.ping < 120 ? "<:60ms:917227058399162429>" : client.ws.ping > 120 ? "<:150ms:917227075243503626>" : "*error*"
 
@@ -2763,7 +2761,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInfo] })
             }, 500)
 
-            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag === args.join(" "))
+            let miembro = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(f => f.user.tag == args.join(" "))
 
             let erroresP = [
                 { condicion: args[0] && !["server", "servidor", "guild", "sv"].some(s => args[0] == s) && !miembro && !isNaN(args[0]) && args[0].length < 18, descripcion: `El argumento numérico  ingresado (*${args[0]}*) no es una ID valida ya que contiene menos de **18** caracteres numéricos, una ID esta constituida por 18 caracteres numéricos.` },
@@ -2774,23 +2772,24 @@ client.on("messageCreate", async msg => {
             if (erroresMsg(msg, erroresP)) return;
 
             const embAvatar = new EmbedBuilder()
-                .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu avatar ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : `Avatar de ${miembro.nickname ? miembro.nickname : miembro.user.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? `Avatar del servidor pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}` : `Tu avatar ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
-                .setTitle("Avatar")
-                .setURL(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                .setImage(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                .setColor(miembro ? miembro.user.hexAccentColor ? miembro.user.hexAccentColor : msg.guild.members.me.displayHexColor : msg.author.hexAccentColor ? msg.author.hexAccentColor : msg.guild.members.me.displayHexColor)
-                .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
-                .setTimestamp()
-            if (args[0] ? ["server", "servidor", "guild", "sv"].some(s => args[0] == s) || miembro ? true : false : true) return setTimeout(() => {
+            .setAuthor({ name: miembro ? miembro.id == msg.author.id ? `Tu avatar ${msg.member.nickname || msg.author.tag}` : `Avatar de ${miembro.nickname || miembro.user.tag} pedido por ${msg.member.nickname || msg.author.tag}` : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? `Avatar del servidor pedido por ${msg.member.nickname || msg.author.tag}` : `Tu avatar ${msg.member.nickname || msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
+            .setTitle("Avatar")
+            .setURL(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({  format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({  format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
+            .setImage(miembro ? miembro.id == msg.author.id ? msg.author.displayAvatarURL({  format: "png" || "gif", size: 4096 }) : miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }) : args[0] && ["server", "servidor", "guild", "sv"].some(s => args[0] == s) ? msg.guild.iconURL({  format: "png" || "gif", size: 4096 }) : msg.author.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
+            .setColor(miembro ? miembro.user.hexAccentColor || msg.guild.members.me.displayHexColor : msg.author.hexAccentColor || msg.guild.members.me.displayHexColor)
+            .setFooter({ text: msg.guild.name, iconURL: msg.guild.iconURL() })
+            .setTimestamp()
+
+            if (args[0] ? ["server", "servidor", "guild", "sv"].some(s => args[0] == s) || miembro : true) return setTimeout(() => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAvatar] })
             }, 500)
 
             if (args[0] && !["server", "servidor", "guild", "sv"].some(s => args[0] == s) && !miembro) {
                 await client.users.fetch(args[0], { force: true }).then(usuario => {
-                    embAvatar.author = { name: `Avatar de ${usuario.tag} pedido por ${msg.member.nickname ? msg.member.nickname : msg.author.tag}`, iconURL: msg.author.displayAvatarURL() }
-                    embAvatar.url = usuario.displayAvatarURL({ dynamic: true, format: "png", size: 4096 })
-                    embAvatar.image = { url: usuario.displayAvatarURL({ dynamic: true, format: "png", size: 4096 }) }
-                    embAvatar.color = usuario.hexAccentColor ? usuario.hexAccentColor : msg.guild.members.me.displayHexColor
+                    embAvatar.data.author = { name: `Avatar de ${usuario.tag} pedido por ${msg.member.nickname || msg.author.tag}`, iconURL: msg.author.displayAvatarURL() }
+                    embAvatar.data.url = usuario.displayAvatarURL({  format: "png", size: 4096 })
+                    embAvatar.data.image = { url: usuario.displayAvatarURL({  format: "png", size: 4096 }) }
+                    embAvatar.setColor(usuario.hexAccentColor || msg.guild.members.me.displayHexColor)
                     setTimeout(() => {
                         msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embAvatar] })
                     }, 500)
@@ -2816,6 +2815,8 @@ client.on("messageCreate", async msg => {
             botDB.comandos.usos++
             let feat = {
                 "ANIMATED_ICON": "Icono animado",
+                "ANIMATED_BANNER": "Banner animado",
+                "AUTO_MODERATION": "Moderación automática",
                 "BANNER": "Banner",
                 "COMMERCE": "Comercio",
                 "COMMUNITY": "Comunidad",
@@ -2828,6 +2829,7 @@ client.on("messageCreate", async msg => {
                 "NEWS": "Noticias",
                 "PARTNERED": "Asociado",
                 "THREADS_ENABLED": "Hilos habilitados",
+                "TEXT_IN_VOICE_ENABLED": "Texto en voz habilitado",
                 "PREVIEW_ENABLED": "Vista previa habilitada",
                 "PRIVATE_THREADS": "Hilos privados",
                 "SEVEN_DAY_THREAD_ARCHIVE": "Archivo de hilo de siete días",
@@ -2838,33 +2840,40 @@ client.on("messageCreate", async msg => {
                 "VIP_REGIONS": "Regiones VIP",
                 "WELCOME_SCREEN_ENABLED": "Pantalla de bienvenida habilitada",
                 "ENABLED_DISCOVERABLE_BEFORE": "Descubrimiento habilitado antes",
-                "NEW_THREAD_PERMISSIONS": "Permisos para hilos nuevos"
+                "NEW_THREAD_PERMISSIONS": "Permisos para hilos nuevos",
+                "HAS_DIRECTORY_ENTRY": "Tiene entrada de directorio",
+                "HUB": "Centro",
+                "INVITES_DISABLED": "Invitaciones deshabilitadas",
+                "LINKED_TO_HUB": "Vinculo al centro",
+                "RELAY_ENABLED": "Relé habilitado",
+                "ROLE_ICONS": "Iconos de rol",
+                "APPLICATION_COMMAND_PERMISSIONS_V2": "Permisos de comando de aplicación V2"
             }
 
             let verificacion = {
-                "NONE": "Ninguno",
-                "LOW": "Bajo",
-                "MEDIUM": "Medio",
-                "HIGH": "Alto",
-                "VERY_HIGH": "Muy alto"
+                "0": "Ninguno",
+                "1": "Bajo",
+                "2": "Medio",
+                "3": "Alto",
+                "4": "Muy alto"
             }
 
             let levelMejora = {
-                "NONE": "Ninguno",
-                "TIER_1": "<:Tier1:921852504713625670> Nivel 1",
-                "TIER_2": "<:Tier2:921852557691863082> Nivel 2",
-                "TIER_3": "<:Tier3:921852589933469716> Nivel 3"
+                "0": "Ninguno",
+                "1": "<:Tier1:921852504713625670> Nivel 1",
+                "2": "<:Tier2:921852557691863082> Nivel 2",
+                "3": "<:Tier3:921852589933469716> Nivel 3"
             }
 
             let filterNSFW = {
-                "DISABLED": "Deshabilitado",
-                "MEMBERS_WITHOUT_ROLES": "Miembros sin rol",
-                "ALL_MEMBERS": "Todos los miembros"
+                "0": "Deshabilitado",
+                "1": "Miembros sin rol",
+                "2": "Todos los miembros"
             }
 
             let notifi = {
-                "ALL_MESSAGES": "Todos los mensajes",
-                "ONLY_MENTIONS": "Solo menciones"
+                "0": "Todos los mensajes",
+                "1": "Solo menciones"
             }
 
             let imgs = []
@@ -2874,23 +2883,22 @@ client.on("messageCreate", async msg => {
             msg.guild.splashURL() ? imgs.push(`[Discovery](${msg.guild.discoverySplashURL({ size: 4096, format: "png" })})`) : ""
 
             let mgmc = msg.guild.members.cache
-            let enlinea = mgmc.filter(fm => fm.presence?.status === "online").size
-            let ausente = mgmc.filter(fm => fm.presence?.status === "idle").size
-            let nomolestar = mgmc.filter(fm => fm.presence?.status === "dnd").size
-            let todos = msg.guild.members.cache.size
+            let enlinea = mgmc.filter(fm => fm.presence?.status == 'online').size
+            let ausente = mgmc.filter(fm => fm.presence?.status == 'idle').size
+            let nomolestar = mgmc.filter(fm => fm.presence?.status == 'dnd').size
+            let todos = msg.guild.memberCount
             let bots = msg.guild.members.cache.filter(fb => fb.user.bot).size.toLocaleString()
 
-            let chText = msg.guild.channels.cache.filter(t => t.type === "GUILD_TEXT").size, chVoize = msg.guild.channels.cache.filter(v => v.type === "GUILD_VOICE").size, chCategorie = msg.guild.channels.cache.filter(c => c.type === "GUILD_CATEGORY").size
+            let chText = msg.guild.channels.cache.filter(t => t.type == ChannelType.GuildText).size, chVoize = msg.guild.channels.cache.filter(v => v.type == ChannelType.GuildVoice).size, chCategorie = msg.guild.channels.cache.filter(c => c.type == ChannelType.GuildCategory).size
 
             const embServer = new EmbedBuilder()
-                .setThumbnail(msg.guild.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                .setAuthor({name: msg.guild.name, iconURL: msg.guild.iconURL()})
-                .setImage(msg.guild.bannerURL({ format: "png", size: 4096 }))
-                .setTitle("<a:Info:926972188018479164> Informacion del servidor")
-                .setColor(msg.guild.members.me.displayHexColor)
-                .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
-                .setTimestamp()
-
+            .setThumbnail(msg.guild.iconURL({  format: "png" || "gif", size: 4096 }))
+            .setAuthor({name: msg.guild.name, iconURL: msg.guild.iconURL()})
+            .setImage(msg.guild.bannerURL({ format: "png", size: 4096 }))
+            .setTitle("<a:Info:926972188018479164> Informacion del servidor")
+            .setColor(msg.guild.members.me.displayHexColor)
+            .setFooter({text: msg.guild.name, iconURL: msg.guild.iconURL()})
+            .setTimestamp()
             if (msg.guild.features.length >= 1 && msg.guild.members.me.permissions.has(['BanMembers', 'ManageGuild'])) {
                 embServer.setFields(
                     { name: "📃 **Descripcion:**", value: `${msg.guild.description !== null ? msg.guild.description : "Sin descripción"}` },
@@ -2909,9 +2917,9 @@ client.on("messageCreate", async msg => {
                     { name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true },
                     { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                     { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
-                    { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                    { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
-                    { name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.map(f => feat[f]).join(" **|** ")}`, inline: false },
+                    { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()} categoía`, inline: true },
+                    { name: `👥 **Miembros:** ${msg.guild.memberCount.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                    { name: `📋 **Características:** ${msg.guild.features.length}`, value: `${msg.guild.features.length>0 ? msg.guild.features.map(f => feat[f]).join(" **|** ") : '*No hay*'}`, inline: false },
                 )
 
             } else {
@@ -2933,8 +2941,8 @@ client.on("messageCreate", async msg => {
                         { name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true },
                         { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                         { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
-                        { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                        { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                        { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()} categoía`, inline: true },
+                        { name: `👥 **Miembros:** ${msg.guild.memberCount.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                     )
 
                 } else {
@@ -2955,8 +2963,8 @@ client.on("messageCreate", async msg => {
                             { name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true },
                             { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                             { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
-                            { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                            { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                            { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()} categoía`, inline: true },
+                            { name: `👥 **Miembros:** ${msg.guild.memberCount.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                         )
 
                     } else {
@@ -2977,8 +2985,8 @@ client.on("messageCreate", async msg => {
                                 { name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true },
                                 { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                                 { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
-                                { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                                { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                                { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()} categoía`, inline: true },
+                                { name: `👥 **Miembros:** ${msg.guild.memberCount.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                             )
 
                         } else {
@@ -2997,8 +3005,8 @@ client.on("messageCreate", async msg => {
                                 { name: `🏆 **Nivel de mejoras:**`, value: `${levelMejora[msg.guild.premiumTier]}`, inline: true },
                                 { name: `🔞 **Filtro de contenido explicito:**`, value: `${filterNSFW[msg.guild.explicitContentFilter]}`, inline: true },
                                 { name: `<:notificacion:920493717398356010> **Notificaciones:**`, value: `${notifi[msg.guild.defaultMessageNotifications]}`, inline: true },
-                                { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()}`, inline: true },
-                                { name: `👥 **Miembros:** ${msg.guild.members.cache.size.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:904556872005222480> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
+                                { name: `<:menu:947318717371527178> **Canales:** ${(chText + chVoize + chCategorie).toLocaleString()}`, value: `<:canaldetexto:904812801925738557> ${chText.toLocaleString()} texto\n<:canaldevoz:904812835295596544> ${chVoize.toLocaleString()} voz\n<:carpeta:920494540111093780> ${chCategorie.toLocaleString()} categoía`, inline: true },
+                                { name: `👥 **Miembros:** ${msg.guild.memberCount.toLocaleString()}`, value: `👤 ${mgmc.filter(u => !u.user.bot).size.toLocaleString()} usuarios\n🤖 ${bots} bots\n<:online:910277439928807434> ${(enlinea + ausente + nomolestar).toLocaleString()} conectados\n<:desconectado:910277715293245541> ${(todos - enlinea - ausente - nomolestar).toLocaleString()} desconectados`, inline: true },
                             )
                         }
                     }
@@ -3039,7 +3047,6 @@ client.on("messageCreate", async msg => {
             msg.channel.sendTyping()
             botDB.comandos.usos++
             let urQR = `http://api.qrserver.com/v1/create-qr-code/?data=${args[0]}&size=600x600`
-            console.log(isURL.lenient(args[0]))
 
             if (!args[0]) {
                 if (msg.guild.members.me.permissions.has('ManageGuild')) {
@@ -3091,7 +3098,7 @@ client.on("messageCreate", async msg => {
                 msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embErr2] })
             }, 500)
 
-            const attachment = new AttachmentBuilder(urQR, `imagen.png`)
+            const attachment = new AttachmentBuilder(urQR, {name: `imagen.png`})
 
             const embQR = new EmbedBuilder()
                 .setAuthor({name: `Codigo QR creado por ${msg.member.nickname || msg.author.tag}`, iconURL: msg.author.displayAvatarURL()})
@@ -3153,9 +3160,8 @@ client.on("messageCreate", async msg => {
                             .setCustomId("confirmar")
                             .setEmoji(emojis.acierto)
                             .setLabel("Confirmar")
-                            .setStyle(ButtonStyle.Success)
-                    ],
-                    [
+                            .setStyle(ButtonStyle.Success),
+                    
                         new ButtonBuilder()
                             .setCustomId("cancelar")
                             .setEmoji(emojis.negativo)
@@ -3179,7 +3185,7 @@ client.on("messageCreate", async msg => {
                         cll.update({ embeds: [embConfirmar], components: [] }).then(tb => {
                             const embReporte = new EmbedBuilder()
                                 .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                                .setThumbnail(msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                                .setThumbnail(msg.author.displayAvatarURL({extension: "png", size: 2048 }))
                                 .setTitle(`<:report:959201948169564210> Nuevo reporte`)
                                 .setFields(
                                     { name: `👤 **Reporte de:**`, value: `${msg.author.tag}\n${msg.author.id}`, inline: true },
@@ -3397,14 +3403,13 @@ client.on("messageCreate", async msg => {
             }, 500)
 
             await client.fetchInvite(`${args[0]}`).then(invite => {
-                // console.log(invite.guild.name)
                 const embInviteInfo = new EmbedBuilder()
-                    .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 }) })
+                    .setAuthor({ name: msg.member.nickname ? msg.member.nickname : msg.author.username, iconURL: msg.author.displayAvatarURL({  format: "png" || "gif", size: 1024 }) })
                     .setTitle(`<a:Info:926972188018479164> Información de invitación`)
-                    // .setDescription(`Invitación creada por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({dynamic: true, format: "png"||"gif", size: 1024})}), ID: \`\`${invite.inviterId}\`\``} en el canal **${invite.guild.id==msg.guildId ? invite.channel : invite.channel.name}** ${invite.guild.id==msg.guildId ? "*en este servidor.*" : `en el servidor **${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount-invite.presenceCount).toLocaleString()}** desconectados.`}`)
+                    // .setDescription(`Invitación creada por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({ format: "png"||"gif", size: 1024})}), ID: \`\`${invite.inviterId}\`\``} en el canal **${invite.guild.id==msg.guildId ? invite.channel : invite.channel.name}** ${invite.guild.id==msg.guildId ? "*en este servidor.*" : `en el servidor **${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount-invite.presenceCount).toLocaleString()}** desconectados.`}`)
                     .setFields(
                         { name: `<:servidores:954823483794276383> **Servidor:**`, value: `${invite.guild.id == msg.guildId ? "*de este servidor*" : `**${invite.guild.name}** el cual cuenta con **${invite.memberCount.toLocaleString()}** miembros, **${invite.presenceCount.toLocaleString()}** conectados y **${(invite.memberCount - invite.presenceCount).toLocaleString()}** desconectados.`}` },
-                        { name: `<:calendario:952037404561264661> **Creada:**`, value: `en el canal **${invite.guild.id == msg.guildId ? invite.channel : invite.channel.name}**, por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 1024 })}), ID: \`\`${invite.inviterId}\`\``}` },
+                        { name: `<:calendario:952037404561264661> **Creada:**`, value: `en el canal **${invite.guild.id == msg.guildId ? invite.channel : invite.channel.name}**, por ${msg.guild.members.cache.has(invite.inviterId) ? `**<@${invite.inviterId}>**` : `[**${invite.inviter.tag}**](${invite.inviter.displayAvatarURL({  format: "png" || "gif", size: 1024 })}), ID: \`\`${invite.inviterId}\`\``}` },
                         // {name: ``, value: ``},
                         // {name: ``, value: ``},
                     )
@@ -3414,7 +3419,6 @@ client.on("messageCreate", async msg => {
                 setTimeout(() => {
                     msg.reply({ allowedMentions: { repliedUser: false }, embeds: [embInviteInfo] })
                 }, 500)
-                console.log(invite.guild.name)
 
             }).catch(ci => {
                 console.log("catch")
@@ -4105,7 +4109,7 @@ client.on("messageCreate", async msg => {
 
                     const embMencion = new EmbedBuilder()
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<:advertencia:929204500739268608> Miembro advertido")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#E5DA00")
@@ -4202,7 +4206,7 @@ client.on("messageCreate", async msg => {
 
                     const embMencion = new EmbedBuilder()
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<:advertencia:929204500739268608> Miembro advertido")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#E5DA00")
@@ -4442,7 +4446,7 @@ client.on("messageCreate", async msg => {
 
                     const embMencion = new EmbedBuilder()
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<:aislacion:947965052772814848> Miembro aislado/a")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n⏱️ **Aislado/a por:** ${tiempo}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#0283F6")
@@ -4577,7 +4581,7 @@ client.on("messageCreate", async msg => {
 
                     const embMencion = new EmbedBuilder()
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<:aislacion:947965052772814848> Miembro aislado/a")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n⏱️ **Aislado/a por:** ${tiempo}\n\n📝 **razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#0283F6")
@@ -4779,7 +4783,7 @@ client.on("messageCreate", async msg => {
 
                     const embMencion = new EmbedBuilder()
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<a:afirmativo:856966728806432778> Aislamiento temporal eliminado del miembro")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor('Green')
@@ -4839,7 +4843,7 @@ client.on("messageCreate", async msg => {
 
                     const embMencion = new EmbedBuilder()
                         .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<a:afirmativo:856966728806432778> Aislamiento temporal eliminado del miembro")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.id}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor('Green')
@@ -5170,7 +5174,7 @@ client.on("messageCreate", async msg => {
 
                         const embedKickB = new EmbedBuilder()
                             .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                            .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                            .setThumbnail(miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                             .setTitle("<:salir12:879519859694776360> Bot expulsado")
                             .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#F78701")
@@ -5213,7 +5217,7 @@ client.on("messageCreate", async msg => {
                         const embedKickM = new EmbedBuilder()
                             .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
                             .setTitle("<:salir12:879519859694776360> Miembro expulsado")
-                            .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                            .setThumbnail(miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                             .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#F78701")
                             .setFooter({text: miembro.user.tag, iconURL: miembro.displayAvatarURL()})
@@ -5325,7 +5329,7 @@ client.on("messageCreate", async msg => {
 
                         const embedMencion = new EmbedBuilder()
                             .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                            .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                            .setThumbnail(miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                             .setTitle("<:salir12:879519859694776360> Bot expulsado")
                             .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#F78701")
@@ -5385,7 +5389,7 @@ client.on("messageCreate", async msg => {
 
                         const embedKickM = new EmbedBuilder()
                         .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("<:salir12:879519859694776360> Miembro expulsado")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#F78701")
@@ -5583,7 +5587,7 @@ client.on("messageCreate", async msg => {
 
                         const embBaneo = new EmbedBuilder()
                             .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                            .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                            .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                             .setTitle("⛔ Bot baneado")
                             .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#ff0000")
@@ -5621,7 +5625,7 @@ client.on("messageCreate", async msg => {
 
                         const embBaneo = new EmbedBuilder()
                             .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                            .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                            .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                             .setTitle("⛔ Miembro baneado")
                             .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                             .setColor("#ff0000")
@@ -5730,7 +5734,7 @@ client.on("messageCreate", async msg => {
 
                         const embBaneo = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Bot baneado")
                         .setDescription(`🤖 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
@@ -5765,7 +5769,7 @@ client.on("messageCreate", async msg => {
 
                         const embBaneo = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(miembro.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(miembro.user.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Miembro baneado")
                         .setDescription(`👤 ${miembro}\n${miembro.user.tag}\n${miembro.user.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
@@ -5854,7 +5858,7 @@ client.on("messageCreate", async msg => {
 
                         const embBaneo = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(usuario.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Bot externo baneado")
                         .setDescription(`🤖 ${usuario.tag}\n${usuario.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
@@ -5889,7 +5893,7 @@ client.on("messageCreate", async msg => {
 
                         const embBaneo = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname ? msg.member.nickname : msg.author.tag, iconURL: msg.author.displayAvatarURL()})
-                        .setThumbnail(usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(usuario.displayAvatarURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle("⛔ Usuario externo baneado")
                         .setDescription(`👤 ${usuario.tag}\n${usuario.id}\n\n📝 **Razón:** ${razon}\n\n👮 **Moderador:** ${msg.author}\n${msg.author.id}`)
                         .setColor("#ff0000")
@@ -8221,7 +8225,7 @@ client.on("messageCreate", async msg => {
                     const embMiembros = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros con el rol")
-                        .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
+                        .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros con el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
                         .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
@@ -8234,7 +8238,7 @@ client.on("messageCreate", async msg => {
                     const embMiembros = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros con el rol")
-                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                         .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
@@ -8306,14 +8310,14 @@ client.on("messageCreate", async msg => {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones1] })
                                 } else {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
@@ -8323,14 +8327,14 @@ client.on("messageCreate", async msg => {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones3] })
                                 } else {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
@@ -8473,7 +8477,7 @@ client.on("messageCreate", async msg => {
                     const embMiembros = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros sin el rol")
-                        .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
+                        .setDescription(`${rol}\nHay **${miembros.length.toLocaleString()}** miembros sin el rol.\n\n${miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).join("\n\n")}`)
                         .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - 1/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
@@ -8486,7 +8490,7 @@ client.on("messageCreate", async msg => {
                     const embMiembros = new EmbedBuilder()
                         .setAuthor({name: msg.member.nickname || msg.author.username, iconURL: msg.author.displayAvatarURL()})
                         .setTitle("👥 Miembros sin el rol")
-                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                         .setColor(msg.guild.members.me.displayHexColor)
                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                         .setTimestamp()
@@ -8559,14 +8563,14 @@ client.on("messageCreate", async msg => {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones1] })
                                 } else {
                                     m1 -= 10, m2 -= 10, pagina--
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
@@ -8576,14 +8580,14 @@ client.on("messageCreate", async msg => {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     return await botn.update({ embeds: [embMiembros], components: [botones3] })
                                 } else {
                                     m1 += 10, m2 += 10, pagina++
 
                                     embMiembros
-                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
+                                        .setDescription(descripcion + miembros.map((m, r) => `**${r + 1}.** [${m.user.tag}](${m.user.displayAvatarURL({  format: "png" || "gif", size: 4096 })})\n${m}`).slice(m1, m2).join("\n\n"))
                                         .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                     await botn.update({ embeds: [embMiembros], components: [botones2] })
                                 }
@@ -9467,7 +9471,7 @@ client.on("messageCreate", async msg => {
                 for (let i in ordenPs) {
                     let usuario = client.users.cache.get(ordenPs[i].id)
                     if (usuario) {
-                        top.push(`**${Number(i) + 1}.** [${usuario.tag}](${usuario.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) - ${dataSP.datos.emoji} **${ordenPs[i].puntos}**\n<@${usuario.id}>`)
+                        top.push(`**${Number(i) + 1}.** [${usuario.tag}](${usuario.displayAvatarURL({  format: "png" || "gif", size: 4096 })}) - ${dataSP.datos.emoji} **${ordenPs[i].puntos}**\n<@${usuario.id}>`)
                     }
                 }
 
@@ -10414,14 +10418,14 @@ client.on("messageCreate", async msg => {
     
                     const embInfoSv = new EmbedBuilder()
                         .setAuthor({name: creador.user.tag, iconURL: creador.user.displayAvatarURL()})
-                        .setThumbnail(servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                        .setImage(servidor.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(servidor.iconURL({  format: "png" || "gif", size: 4096 }))
+                        .setImage(servidor.bannerURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle(`<a:Info:926972188018479164> Información del servidor ${servidor.name}`)
                         .setDescription(servidor.description ? "📄 **Descripción:**\n" + servidor.description : "*El servidor no tiene descripción.*")
                         .setFields(
                             { name: `<:wer:920166217086537739> **servidor:**`, value: `ID: ${servidor.id}\nCreado: <t:${Math.floor(servidor.createdAt / 1000)}:R>\nMiembros: ${servidor.members.cache.size.toLocaleString()}\nUsuarios: ${servidor.members.cache.filter(f => !f.user.bot).size.toLocaleString()}\nBots: ${servidor.members.cache.filter(f => f.user.bot).size.toLocaleString()}`, inline: true },
                             { name: `👑 **Creador:**`, value: `Tag: ${creador.user.tag}\nID: ${creador.id}\nCreo su cuenta: <t:${Math.floor(creador.user.createdAt / 1000)}:R>`, inline: true },
-                            { name: `📨 **Invitaciones:** ${(await servidor.invites.fetch()).size.toLocaleString()}`, value: `${(await servidor.invites.fetch()).map(m => `Creada por: [${m.inviter.tag}](${m.inviter.displayAvatarURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) | Usos:${m.uses.toLocaleString()}  | Code: ${m.code} | Creada: <t:${Math.floor(m.createdAt / 1000)}:R>`).slice(0, 4).join("\n\n")}`, inline: true },
+                            { name: `📨 **Invitaciones:** ${(await servidor.invites.fetch()).size.toLocaleString()}`, value: `${(await servidor.invites.fetch()).map(m => `Creada por: [${m.inviter.tag}](${m.inviter.displayAvatarURL({  format: "png" || "gif", size: 4096 })}) | Usos:${m.uses.toLocaleString()}  | Code: ${m.code} | Creada: <t:${Math.floor(m.createdAt / 1000)}:R>`).slice(0, 4).join("\n\n")}`, inline: true },
                             { name: `📃 **Permisos:** ${servidor.members.me.permissions.toArray().length}`, value: `${servidor.members.me.permissions.toArray().map(m => `__${permisos[m]}__`).join(", ")}`, inline: true },
                             // {name: ``, value: ``, inline: true},
                             // {name: ``, value: ``, inline: true},
@@ -10435,8 +10439,8 @@ client.on("messageCreate", async msg => {
                 } else {
                     const embInfoSv = new EmbedBuilder()
                         .setAuthor({name: creador.user.tag, iconURL: creador.user.displayAvatarURL()})
-                        .setThumbnail(servidor.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-                        .setImage(servidor.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+                        .setThumbnail(servidor.iconURL({  format: "png" || "gif", size: 4096 }))
+                        .setImage(servidor.bannerURL({  format: "png" || "gif", size: 4096 }))
                         .setTitle(`<a:Info:926972188018479164> Información del servidor ${servidor.name}`)
                         .setDescription(servidor.description ? "📄 **Descripción:**\n" + servidor.description : "*El servidor no tiene descripción.*")
                         .setFields(
@@ -10483,7 +10487,7 @@ client.on("messageCreate", async msg => {
                 const embServidores = new EmbedBuilder()
                     .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Lista de servidores en los que estoy.")
-                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
+                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({  format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                     .setColor(colorEmb)
                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
@@ -10495,7 +10499,7 @@ client.on("messageCreate", async msg => {
                 const embServidores = new EmbedBuilder()
                     .setAuthor({name: msg.author.username, iconURL: msg.author.displayAvatarURL()})
                     .setTitle("🧾 Lista de servidores en los que estoy.")
-                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
+                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({  format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                     .setColor(colorEmb)
                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                     .setTimestamp()
@@ -10567,14 +10571,14 @@ client.on("messageCreate", async msg => {
                                 s0 -= 10, s1 -= 10, pagina--
     
                                 embServidores
-                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
+                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({  format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 return await botn.update({ embeds: [embServidores], components: [botones1] })
                             } else {
                                 s0 -= 10, s1 -= 10, pagina--
     
                                 embServidores
-                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
+                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({  format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 await botn.update({ embeds: [embServidores], components: [botones2] })
                             }
@@ -10584,14 +10588,14 @@ client.on("messageCreate", async msg => {
                                 s0 += 10, s1 += 10, pagina++
     
                                 embServidores
-                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
+                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({  format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 await botn.update({ embeds: [embServidores], components: [botones3] })
                             } else {
                                 s0 += 10, s1 += 10, pagina++
     
                                 embServidores
-                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({ dynamic: true, format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
+                                    .setDescription(`<:wer:920166217086537739>  **Servidores:** ${servidores.length.toLocaleString()}\n\n${servidores.map((m, s) => `**${s + 1}.** [${client.guilds.cache.get(m.id)}](${client.guilds.cache.get(m.id).iconURL({  format: "png" || "gif", size: 4096 })}) **|** 👥 ${m.miembros.toLocaleString()}\n🆔 ${m.id}`).slice(s0, s1).join("\n\n")}`)
                                     .setFooter({text: `Pagina - ${pagina}/${segPage}`, iconURL: msg.guild.iconURL()})
                                 await botn.update({ embeds: [embServidores], components: [botones2] })
                             }
@@ -10663,8 +10667,8 @@ client.on("guildCreate", async gc => {
         }
         const embGC = new EmbedBuilder()
             .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
-            .setThumbnail(gc.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-            .setImage(gc.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+            .setThumbnail(gc.iconURL({  format: "png" || "gif", size: 4096 }))
+            .setImage(gc.bannerURL({  format: "png" || "gif", size: 4096 }))
             .setTitle("➕ Añadido en un nuevo servidor")
             .setDescription(`${gc.name}\n${gc.description ? gc.description : "No tiene descripción"}`)
             .setFields(
@@ -10682,8 +10686,8 @@ client.on("guildCreate", async gc => {
     } else {
         const embGC = new EmbedBuilder()
             .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
-            .setThumbnail(gc.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-            .setImage(gc.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+            .setThumbnail(gc.iconURL({  format: "png" || "gif", size: 4096 }))
+            .setImage(gc.bannerURL({  format: "png" || "gif", size: 4096 }))
             .setTitle("➕ Añadido en un nuevo servidor")
             .setDescription(`${gc.name}\n${gc.description ? gc.description : "No tiene descripción"}`)
             .setFields(
@@ -10705,8 +10709,8 @@ client.on("guildDelete", async gd => {
     let dueño = gd.members.cache.get(gd.ownerId), servidorSP = client.guilds.cache.get("940034044819828767")
     const embGD = new EmbedBuilder()
         .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
-        .setThumbnail(gd.iconURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
-        .setImage(gd.bannerURL({ dynamic: true, format: "png" || "gif", size: 4096 }))
+        .setThumbnail(gd.iconURL({  format: "png" || "gif", size: 4096 }))
+        .setImage(gd.bannerURL({  format: "png" || "gif", size: 4096 }))
         .setTitle("➖ Expulsado de un servidor")
         .setDescription(`${gd.name}\n${gd.description ? gd.description : "No tiene descripción"}`)
         .setFields(
