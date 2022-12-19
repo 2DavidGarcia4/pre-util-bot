@@ -71,10 +71,10 @@ client.on("ready", async () => {
     .setColor("00ff00")
     .setTimestamp()
     const canalLogStart = miServidor.channels.cache.get("940078303694442566")
-    // canalLogStart.sendTyping()
-    // setTimeout(()=> {
-    //     canalLogStart.send({ embeds: [embReady] })
-    // }, 2000)
+    canalLogStart.sendTyping()
+    setTimeout(()=> {
+        canalLogStart.send({ embeds: [embReady] })
+    }, 2000)
 
 
     function presencias() {
@@ -10702,10 +10702,11 @@ client.on("guildCreate", async gc => {
             .setTimestamp()
         servidorSP.channels.cache.get("940078302880743505").send({ embeds: [embGC], content: `No pude obtener ninguna invitación al servidor.` })
     }
-})
+});
 
 // Registro de expulsion de servidor
 client.on("guildDelete", async gd => {
+    if(!gd.name) return
     let dueño = gd.members.cache.get(gd.ownerId), servidorSP = client.guilds.cache.get("940034044819828767")
     const embGD = new EmbedBuilder()
         .setAuthor({name: dueño.user.tag, iconURL: dueño.user.displayAvatarURL()})
@@ -10732,7 +10733,7 @@ client.on("guildDelete", async gd => {
     if (dataAFK) {
         await afkDB.findByIdAndDelete(gd.id)
     }
-})
+});
 
 process.on("unhandledRejection", err => {
     const server = client.guilds.cache.get(guild.id)
